@@ -14,7 +14,7 @@ public class WebCrawler implements Runnable {
     private ArrayList<String> visitedLinks;
 
     public WebCrawler(String link, int num) {
-        System.out.println("WebCrawler Created");
+        System.out.println("WebCrawler Created with ID = "+ID);
         firstLink = link;
         ID = num;
         visitedLinks =new ArrayList<>();
@@ -46,8 +46,7 @@ public class WebCrawler implements Runnable {
             Connection connection = Jsoup.connect(url);
             Document document = connection.get();
             if (connection.response().statusCode() == 200) {
-                System.out.println("Bot with ID = " + ID + " Received webpage with url = " + url);
-                String title = document.title();
+                System.out.println("Bot with ID = " + ID + " Received webpage with url = " + url + "and the Title is : "+document.title());
                 visitedLinks.add(url);
                 return document;
             }
