@@ -6,7 +6,11 @@ import SpeechRecognition, {
 	// @ts-ignore
 } from "react-speech-recognition";
 
-export default function Voice() {
+type Props = {
+	txt: string;
+	setText: React.Dispatch<React.SetStateAction<string>>;
+};
+export default function Voice({ txt, setText }: Props) {
 	const { transcript, resetTranscript } = useSpeechRecognition();
 	const [isListening, setIsListening] = useState(false);
 
@@ -24,7 +28,8 @@ export default function Voice() {
 	const handelClick = () => {
 		if (isListening) {
 			stopHandle();
-			console.log(transcript);
+			setText(txt + transcript);
+			resetTranscript();
 		} else {
 			resetTranscript();
 			handleListing();
