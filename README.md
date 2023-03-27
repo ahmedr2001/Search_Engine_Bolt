@@ -19,4 +19,10 @@ To run MongoDB: <br>
 Just type in the command: 
 - docker-compose up --build <br> 
 And then navigate to : http://localhost:8081/ 
+--------------------------------------------------------------------------
+*Spring Boot Section*
+Head to https://start.spring.io/ 
+And then select the following dependencies <br> 
+![image](https://user-images.githubusercontent.com/55411484/227909135-7dbb2020-fa4a-4e28-b57f-874e96984c29.png)
+
 # Hola !
