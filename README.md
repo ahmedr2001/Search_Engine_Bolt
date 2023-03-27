@@ -1,4 +1,7 @@
 # Search_Engine_Bolt
+
+/// All of this is unused due to docker xD! Jump to the docker section 
+-------------------------------------------------------------------------------------------------------
 To install MongoDB: 
   - Ubuntu: 
       Run the following commands: <br>
@@ -11,3 +14,7 @@ To run MongoDB: <br>
   - Linux: <br>
     Run the following commands: <br>
       - sudo systemctl start mongod <br>
+-----------------------------------------------------------------------------------
+*Docker Section:* 
+Just type in the command: 
+- docker-compose up --build <br> 
