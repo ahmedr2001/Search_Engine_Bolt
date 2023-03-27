@@ -18,3 +18,5 @@ To run MongoDB: <br>
 *Docker Section:* 
 Just type in the command: 
 - docker-compose up --build <br> 
+And then navigate to : http://localhost:8081/ 
+#Hola !
