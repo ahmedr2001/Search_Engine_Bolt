@@ -4,41 +4,50 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 
 public class WebCrawler implements Runnable {
-    public static final int MAX_DEPTH = 7;
+
+    public int MAX_LINKS_NUM = 5000;
     private Thread thread;
-    private String firstLink;
     private int ID;
     private ArrayList<String> visitedLinks;
 
+    private Queue<String> bfs;
+
     public WebCrawler(String link, int num) {
-        System.out.println("WebCrawler Created with ID = "+ID);
-        firstLink = link;
+        bfs =new LinkedList<String>();
+        bfs.add(link);
         ID = num;
-        visitedLinks =new ArrayList<>();
+        visitedLinks = new ArrayList<>();
+        System.out.println("WebCrawler Created with ID = " + ID);
         thread = new Thread(this);
         thread.start();
     }
 
     @Override
     public void run() {
-        crawl(1, firstLink);
+        String firstLink = bfs.poll();
+        crawl(firstLink);
     }
 
-    private void crawl(int level, String url) {
-        if (level <= MAX_DEPTH) {
+    private void crawl(String url) {
+        if (visitedLinks.size() < MAX_LINKS_NUM) {
             Document document = request(url);
             if (document != null) {
                 for (Element link : document.select("a[href]")) {
                     String nextLink = link.absUrl("href");
-                    if (visitedLinks.contains(nextLink) == false) {
-                        crawl(level++, nextLink);
+                    if (!visitedLinks.contains(nextLink)) {
+                        bfs.add(nextLink);
                     }
                 }
             }
+            if (!bfs.isEmpty()) {
+                String nextLink = bfs.poll();
+                crawl(nextLink);
+            }
         }
+        return;
     }
 
     private Document request(String url) {
@@ -46,7 +55,7 @@ public class WebCrawler implements Runnable {
             Connection connection = Jsoup.connect(url);
             Document document = connection.get();
             if (connection.response().statusCode() == 200) {
-                System.out.println("Bot with ID = " + ID + " Received webpage with url = " + url + "and the Title is : "+document.title());
+                System.out.println("Bot with ID = " + ID + " Received webpage with url = " + url + "and the Title is : " + document.title());
                 visitedLinks.add(url);
                 return document;
             }
@@ -56,7 +65,7 @@ public class WebCrawler implements Runnable {
         }
     }
 
-    public Thread getThread(){
+    public Thread getThread() {
         return thread;
     }
 }
