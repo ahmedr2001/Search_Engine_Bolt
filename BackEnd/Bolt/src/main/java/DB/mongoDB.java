@@ -1,5 +1,6 @@
 package DB;
 
+import Crawler.WebCrawler;
 import com.mongodb.BasicDBObject;
 import com.mongodb.ConnectionString;
 import com.mongodb.client.*;
@@ -7,6 +8,7 @@ import org.bson.Document;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.Scanner;
 
@@ -18,28 +20,17 @@ public class mongoDB {
     MongoCollection<Document> seedCollection;
     MongoCollection<Document> crawlerCollection;
 
-    //    public static void main(String[] args) {
-//        System.out.println("Hello world!");
-//        MongoClient client = MongoClients.create("mongodb+srv://ahmedr2001:eng3469635@javasearchengine.8xarqeo.mongodb.net/?retryWrites=true&w=majority");
-//
-//        MongoDatabase db = client.getDatabase("MangaDB");
-//        System.out.println("Database connected !");
-//        MongoCollection col = db.getCollection("Mangas");
-//
-//        Document sampleDoc = new Document().append("name", "Manga");
-//
-//        col.insertOne(sampleDoc);
-//
-//        List_All(col);
-//
-//    }
     public mongoDB(String DB_Name) {
+
         if (client == null) {
-            ConnectionString connectionString = new ConnectionString("mongodb+srv://ahmedr2001:eng3469635@javasearchengine.8xarqeo.mongodb.net/?retryWrites=true&w=majority");
+//            ConnectionString connectionString = new ConnectionString("mongodb+srv://ahmedr2001:eng3469635@javasearchengine.8xarqeo.mongodb.net/?retryWrites=true&w=majority");
+            ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017");
             client = MongoClients.create(connectionString);
             DB = client.getDatabase(DB_Name);
             seedCollection = DB.getCollection("Seed");
             crawlerCollection = DB.getCollection("CrawledPages");
+//            crawlerCollection.drop();
+//            seedCollection.drop();
         } else {
             System.out.println("Already connected to the client");
         }
@@ -56,11 +47,15 @@ public class mongoDB {
                 File file = new File("seed.txt");
                 Scanner cin = new Scanner(file);
                 while (cin.hasNextLine()) {
-                    Document url = new Document("URL", cin.nextLine());
-                    seedCollection.insertOne(url);
+                    String url = cin.nextLine();
+                    org.jsoup.nodes.Document jdoc =WebCrawler.getDocument(url);
+                    if (jdoc != null){
+                        Document doc = new Document("URL", url).append("KEY", WebCrawler.toHexString(WebCrawler.getSHA(jdoc.body().toString())));
+                        seedCollection.insertOne(doc);
+                    }
                 }
                 cin.close();
-            } catch (FileNotFoundException e) {
+            } catch (FileNotFoundException | NoSuchAlgorithmException e) {
                 System.out.println("Reading seed file failed :" + e);
             }
         } else {
@@ -69,31 +64,51 @@ public class mongoDB {
     }
 
     public void addToCrawledPages(Document doc) {
-        crawlerCollection.insertOne(doc);
+        synchronized (this) {
+            if (doc == null) return;
+            if (getNumOfCrawledPages() + getSeedSize() < mongoDB.MAX_PAGES_NUM) {
+                crawlerCollection.insertOne(doc);
+            }
+        }
     }
 
-    public boolean isCrawled(String url) {
-        return crawlerCollection.find(new Document("URL", url)).cursor().hasNext();
+    public boolean isCrawled(Document doc) {
+        synchronized (this) {
+            return crawlerCollection.find(doc).cursor().hasNext();
+        }
     }
 
     public void pushSeed(Document doc) {
-        seedCollection.insertOne(doc);
+        synchronized (this) {
+            if (doc == null) return;
+            if (getNumOfCrawledPages() + getSeedSize() < mongoDB.MAX_PAGES_NUM) {
+                seedCollection.insertOne(doc);
+            }
+        }
     }
 
     public Document popSeed() {
-        return seedCollection.findOneAndDelete(new Document());
+        synchronized (this) {
+            return seedCollection.findOneAndDelete(new Document());
+        }
     }
 
-    public boolean isSeeded(String url) {
-        return seedCollection.find(new org.bson.Document("URL", url)).cursor().hasNext();
+    public boolean isSeeded(Document doc) {
+        synchronized (this) {
+            return seedCollection.find(doc).cursor().hasNext();
+        }
     }
 
     public long getSeedSize() {
-        return seedCollection.countDocuments();
+        synchronized (this) {
+            return seedCollection.countDocuments();
+        }
     }
 
     public long getNumOfCrawledPages() {
-        return crawlerCollection.countDocuments();
+        synchronized (this) {
+            return crawlerCollection.countDocuments();
+        }
     }
 
     public static void List_All(MongoCollection collection) {

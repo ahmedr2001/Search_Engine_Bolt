@@ -24,7 +24,7 @@ public class Main {
         ArrayList<WebCrawler> bots = new ArrayList<>();
 
         for (int i = 1; i <= numOfThreads; i++) {
-            bots.add(new WebCrawler(i,DB));
+            bots.add(new WebCrawler(i, DB));
         }
 
         for (WebCrawler crawler : bots) {
@@ -34,5 +34,7 @@ public class Main {
                 e.printStackTrace();
             }
         }
+
+        System.out.println("Crawler Mission Done");
     }
 }
