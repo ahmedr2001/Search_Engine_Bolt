@@ -99,7 +99,7 @@ public class WebCrawler implements Runnable {
         try {
             URL url = new URL(link);
             String host = url.getHost();
-            URL robotUrl = new URL("https://" + host + "/robot.txt");
+            URL robotUrl = new URL("https://" + host + "/robots.txt");
             URLConnection robotConn = robotUrl.openConnection();
             BufferedReader robotReader = new BufferedReader(new InputStreamReader(robotConn.getInputStream()));
             String line;
@@ -128,7 +128,7 @@ public class WebCrawler implements Runnable {
             }
             robotReader.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Robot.txt not found : "+link);
         }
         return true;
     }
