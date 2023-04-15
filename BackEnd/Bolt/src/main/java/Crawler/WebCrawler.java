@@ -8,20 +8,16 @@ import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
 
 public class WebCrawler implements Runnable {
 
     mongoDB DB;
     private Thread thread;
     private int ID;
-    private ArrayList<String> visitedLinks;
 
     public WebCrawler(int num, mongoDB DB) {
         this.DB = DB;
         ID = num;
-        visitedLinks = new ArrayList<>();
         System.out.println("WebCrawler Created with ID = " + ID);
         thread = new Thread(this);
         thread.start();
@@ -69,7 +65,6 @@ public class WebCrawler implements Runnable {
             Document document = connection.get();
             if (connection.response().statusCode() == 200) {
                 System.out.println("Bot with ID = " + ID + " Received webpage with url = " + url + "and the Title is : " + document.title());
-                //add to crawled pages
                 org.bson.Document newurl = new org.bson.Document("URL", url);
                 DB.addToCrawledPages(newurl);
                 return document;

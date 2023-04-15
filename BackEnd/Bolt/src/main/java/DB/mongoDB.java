@@ -36,18 +36,13 @@ public class mongoDB {
     public mongoDB(String DB_Name) {
         if (client == null) {
             ConnectionString connectionString = new ConnectionString("mongodb+srv://ahmedr2001:eng3469635@javasearchengine.8xarqeo.mongodb.net/?retryWrites=true&w=majority");
-            try (MongoClient mongoClient = MongoClients.create(connectionString)) {
-                client = mongoClient;
-                DB = mongoClient.getDatabase(DB_Name);
-                seedCollection = DB.getCollection("Seed");
-                crawlerCollection = DB.getCollection("CrawledPages");
-            } catch (Exception e) {
-                System.out.println("Connection to mongoDB failed" + e);
-            }
+            client = MongoClients.create(connectionString);
+            DB = client.getDatabase(DB_Name);
+            seedCollection = DB.getCollection("Seed");
+            crawlerCollection = DB.getCollection("CrawledPages");
         } else {
             System.out.println("Already connected to the client");
         }
-
     }
 
     public void initializeSeed() {
@@ -78,7 +73,7 @@ public class mongoDB {
     }
 
     public boolean isCrawled(String url) {
-        return crawlerCollection.find(new org.bson.Document("URL", url)).iterator().hasNext();
+        return crawlerCollection.find(new Document("URL", url)).cursor().hasNext();
     }
 
     public void pushSeed(Document doc) {
@@ -90,7 +85,7 @@ public class mongoDB {
     }
 
     public boolean isSeeded(String url) {
-        return seedCollection.find(new org.bson.Document("URL", url)).iterator().hasNext();
+        return seedCollection.find(new org.bson.Document("URL", url)).cursor().hasNext();
     }
 
     public long getSeedSize() {
