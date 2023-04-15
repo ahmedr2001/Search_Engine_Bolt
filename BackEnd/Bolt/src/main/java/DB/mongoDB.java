@@ -1,12 +1,11 @@
-package org.example;
+package DB;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.*;
 import org.bson.Document;
 
 import java.util.Iterator;
-
-public class Main {
+public class mongoDB {
     public static void main(String[] args) {
         System.out.println("Hello world!");
         MongoClient client = MongoClients.create("mongodb+srv://ahmedr2001:eng3469635@javasearchengine.8xarqeo.mongodb.net/?retryWrites=true&w=majority");
@@ -19,7 +18,7 @@ public class Main {
 
         col.insertOne(sampleDoc);
 
-       List_All(col);
+        List_All(col);
 
     }
 

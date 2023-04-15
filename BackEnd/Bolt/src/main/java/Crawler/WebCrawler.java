@@ -1,14 +1,18 @@
+package Crawler;
+
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class WebCrawler implements Runnable {
 
-    public int MAX_LINKS_NUM = 5000;
+    public int MAX_LINKS_NUM = 6000;
     private Thread thread;
     private int ID;
     private ArrayList<String> visitedLinks;
@@ -16,7 +20,7 @@ public class WebCrawler implements Runnable {
     private Queue<String> bfs;
 
     public WebCrawler(String link, int num) {
-        bfs =new LinkedList<String>();
+        bfs =new LinkedList<>();
         bfs.add(link);
         ID = num;
         visitedLinks = new ArrayList<>();
@@ -69,3 +73,4 @@ public class WebCrawler implements Runnable {
         return thread;
     }
 }
+
