@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -56,7 +57,7 @@ public class WebCrawler implements Runnable {
                         if (jdoc != null) {
                             org.bson.Document newurl = new org.bson.Document("URL", nextLink).append("KEY", toHexString(getSHA(jdoc.body().toString())));
                             if (!DB.isCrawled(newurl) && !DB.isSeeded(newurl)) {
-                                if (handleRobot(nextLink)) {
+                                if (handleRobot("*", nextLink)) {
                                     DB.pushSeed(newurl);
                                     synchronized (this) {
                                         this.notifyAll();
@@ -93,37 +94,43 @@ public class WebCrawler implements Runnable {
             return null;
         }
     }
-    private boolean handleRobot(String link) {
-        boolean Allow = true;
+
+    public static boolean handleRobot(String useragent, String link) {
         try {
             URL url = new URL(link);
-            String origin = url.getProtocol() + "://" + url.getHost();
-            String robot = origin + "/robots.txt";
-            BufferedReader in = new BufferedReader(new InputStreamReader(new URL(robot).openStream()));
+            String host = url.getHost();
+            URL robotUrl = new URL("https://" + host + "/robot.txt");
+            URLConnection robotConn = robotUrl.openConnection();
+            BufferedReader robotReader = new BufferedReader(new InputStreamReader(robotConn.getInputStream()));
             String line;
-            while ((line = in.readLine()) != null) {
-                if (line.startsWith("User-agent: *"))
-                    break;
+            boolean matched = false;
+            while ((line = robotReader.readLine()) != null) {
+                if (line.isEmpty() || line.startsWith("#")) {
+                    continue;
+                }
+                if (line.startsWith("User-agent: ")) {
+                    String pattern = line.substring(12);
+                    if (pattern.equals("*") || pattern.equals(useragent)) {
+                        matched = true;
+                    } else {
+                        matched = false;
+                    }
+                }
+                if (matched) {
+                    if (line.startsWith("Disallow: ")) {
+                        String path = line.substring(10);
+                        if (link.contains(path)) {
+                            System.out.println("Robot.txt Blocked : " + link);
+                            return false;
+                        }
+                    }
+                }
             }
-            while ((line = in.readLine()) != null) {
-                if (line.startsWith("Disallow: ") && link.startsWith(origin + line.substring(10))) {
-                    Allow = false;
-                }
-                if (line.startsWith("Allow: ") && link.startsWith(origin + line.substring(8))) {
-                    Allow = true;
-                }
-                if (line.startsWith("User-agent: ")){
-                    break;
-                }
-            }
+            robotReader.close();
         } catch (Exception e) {
-            System.out.println("Cannot Open robots.txt");
-            return false;
+            e.printStackTrace();
         }
-        if (!Allow) {
-            System.out.println("Robot Blocked : "+link);
-        }
-        return Allow;
+        return true;
     }
 
     static public Document getDocument(String url) {
