@@ -5,6 +5,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.ConnectionString;
 import com.mongodb.client.*;
 import org.bson.Document;
+import static com.mongodb.client.model.Filters.eq;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,8 +36,8 @@ public class mongoDB {
             DB = client.getDatabase(DB_Name);
             seedCollection = DB.getCollection("Seed");
             crawlerCollection = DB.getCollection("CrawledPages");
-//            crawlerCollection.drop();
-//            seedCollection.drop();
+            crawlerCollection.drop();
+            seedCollection.drop();
         } else {
             System.out.println("Already connected to the client");
         }
@@ -54,10 +55,12 @@ public class mongoDB {
                 Scanner cin = new Scanner(file);
                 while (cin.hasNextLine()) {
                     String url = cin.nextLine();
-                    org.jsoup.nodes.Document jdoc =WebCrawler.getDocument(url);
-                    if (jdoc != null){
-                        Document doc = new Document("URL", url).append("KEY", WebCrawler.toHexString(WebCrawler.getSHA(jdoc.body().toString())));
-                        seedCollection.insertOne(doc);
+                    if (WebCrawler.handleRobot("*",url)){
+                        org.jsoup.nodes.Document jdoc =WebCrawler.getDocument(url);
+                        if (jdoc != null){
+                            Document doc = new Document("URL", url).append("KEY", WebCrawler.toHexString(WebCrawler.getSHA(jdoc.body().toString()))).append("BODY",jdoc.body().toString());
+                            seedCollection.insertOne(doc);
+                        }
                     }
                 }
                 cin.close();
@@ -80,7 +83,7 @@ public class mongoDB {
 
     public boolean isCrawled(Document doc) {
         synchronized (this) {
-            return crawlerCollection.find(doc).cursor().hasNext();
+            return crawlerCollection.find(eq("KEY",doc.get("KEY"))).cursor().hasNext();
         }
     }
 
@@ -101,7 +104,7 @@ public class mongoDB {
 
     public boolean isSeeded(Document doc) {
         synchronized (this) {
-            return seedCollection.find(doc).cursor().hasNext();
+            return seedCollection.find(eq("KEY",doc.get("KEY"))).cursor().hasNext();
         }
     }
 
