@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3105906b-9e79-457b-a768-4fd4e62bab06" name="Changes" comment="spring boot init" />
+    <list default="true" id="3105906b-9e79-457b-a768-4fd4e62bab06" name="Changes" comment="spring boot init">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BackEnd/Bolt/StopWords.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/StopWords.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/Indexer/Cleaner.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/Indexer/Cleaner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/Indexer/StopWordsRemover.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/Indexer/StopWordsRemover.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/Indexer/Tokenizer.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/Indexer/Tokenizer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/Indexer/WebIndexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/Indexer/WebIndexer.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -20,6 +29,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
@@ -27,13 +39,22 @@
       </MavenGeneralSettings>
     </option>
   </component>
+  <component name="ProjectId" id="2OWZOQUk1SmbwSdiktY6eJ7ECmW" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
   </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
     "jdk.selected.JAVA_MODULE": "openjdk-19",
-    "last_opened_file_path": "/home/ahmedosama/IdeaProjects/Search_Engine_Bolt/BackEnd/Bolt/src/main/java/Indexer",
+    "last_opened_file_path": "/home/ahmedosama/IdeaProjects/Search_Engine_Bolt",
     "onboarding.tips.debug.path": "/home/ahmedosama/IdeaProjects/Search_Engine_Bolt/src/Main.java",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
@@ -42,6 +63,8 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/BackEnd/Bolt" />
       <recent name="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/Indexer" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -58,7 +81,15 @@
       </method>
     </configuration>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="3105906b-9e79-457b-a768-4fd4e62bab06" name="Changes" comment="spring boot init" />
+      <created>1681678269660</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1681678269660</updated>
+    </task>
     <servers />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">

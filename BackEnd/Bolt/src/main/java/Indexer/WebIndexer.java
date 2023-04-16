@@ -24,12 +24,15 @@ public class WebIndexer {
         Cleaner cleaner = new Cleaner() ;
         body = cleaner.runCleaner(body);
         System.out.println("After Cleaning");
-        System.out.println(body);
+//        System.out.println(body);
         // 3 -  Tokenization
         Tokenizer tokenizer = new Tokenizer();
+        List<String> words = tokenizer.runTokenizer(body);
 
-
-
+        // 4 - Removing redundant words (Stop Words)
+        StopWordsRemover stopWordsRemover = new StopWordsRemover();
+        words = stopWordsRemover.runStopWordsRemover(words);
+        for(String word : words) System.out.println("Word: " + word);
     }
 
 
