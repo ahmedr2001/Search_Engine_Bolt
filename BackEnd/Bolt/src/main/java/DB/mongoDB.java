@@ -36,8 +36,8 @@ public class mongoDB {
             DB = client.getDatabase(DB_Name);
             seedCollection = DB.getCollection("Seed");
             crawlerCollection = DB.getCollection("CrawledPages");
-            crawlerCollection.drop();
-            seedCollection.drop();
+//            crawlerCollection.drop();
+//            seedCollection.drop();
         } else {
             System.out.println("Already connected to the client");
         }
@@ -55,7 +55,7 @@ public class mongoDB {
                 Scanner cin = new Scanner(file);
                 while (cin.hasNextLine()) {
                     String url = cin.nextLine();
-                    if (WebCrawler.handleRobot("*",url)){
+                    if (WebCrawler.handleRobot("*",url,-1)){
                         org.jsoup.nodes.Document jdoc =WebCrawler.getDocument(url);
                         if (jdoc != null){
                             Document doc = new Document("URL", url).append("KEY", WebCrawler.toHexString(WebCrawler.getSHA(jdoc.body().toString()))).append("BODY",jdoc.body().toString());

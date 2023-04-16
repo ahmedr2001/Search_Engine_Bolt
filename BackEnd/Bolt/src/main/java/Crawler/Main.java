@@ -29,12 +29,13 @@ public class Main {
 
         for (WebCrawler crawler : bots) {
             try {
+                String num = crawler.getThread().getName();
                 crawler.getThread().join();
+                System.out.println(num+" has arrived");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-
         System.out.println("Crawler Mission Done");
     }
 }

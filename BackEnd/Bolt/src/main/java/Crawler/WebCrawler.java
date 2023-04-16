@@ -17,6 +17,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class WebCrawler implements Runnable {
+
+    public static boolean done = false;
     mongoDB DB;
     private final Thread thread;
     private final int ID;
@@ -33,8 +35,10 @@ public class WebCrawler implements Runnable {
     public void run() {
         try {
             crawl();
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+//        System.out.println(ID + " finished");
     }
 
     private void crawl() throws NoSuchAlgorithmException {
@@ -43,8 +47,9 @@ public class WebCrawler implements Runnable {
             if (doc != null) {
                 Document document = request(doc);
                 if (document != null) {
+                    if (DB.getNumOfCrawledPages() + DB.getSeedSize() >= mongoDB.MAX_PAGES_NUM) break;
                     for (Element link : document.select("a[href]")) {
-
+                        if (DB.getNumOfCrawledPages() + DB.getSeedSize() >= mongoDB.MAX_PAGES_NUM) break;
                         String nextLink = link.absUrl("href");
                         if (nextLink.contains("#")) {
                             nextLink = nextLink.substring(0, nextLink.indexOf("#") - 1);
@@ -55,40 +60,40 @@ public class WebCrawler implements Runnable {
 
                         Document jdoc = getDocument(nextLink);
                         if (jdoc != null) {
-                            org.bson.Document newurl = new org.bson.Document("URL", nextLink).append("KEY", toHexString(getSHA(jdoc.body().toString()))).append("BODY",jdoc.body().toString());
+                            org.bson.Document newurl = new org.bson.Document("URL", nextLink).append("KEY", toHexString(getSHA(jdoc.body().toString()))).append("BODY", jdoc.body().toString());
                             if (!DB.isCrawled(newurl) && !DB.isSeeded(newurl)) {
-                                if (handleRobot("*", nextLink)) {
+                                if (handleRobot("*", nextLink, ID)) {
                                     DB.pushSeed(newurl);
-                                    synchronized (this) {
-                                        this.notifyAll();
-                                    }
                                 }
                             } else {
-                                if (DB.getNumOfCrawledPages() + DB.getSeedSize() >= mongoDB.MAX_PAGES_NUM) return;
-                                System.out.println("Link was Crawled or gonna be Seeded So skip being Seeded Again : " + nextLink);
+                                if (DB.getNumOfCrawledPages() + DB.getSeedSize() >= mongoDB.MAX_PAGES_NUM) break;
+                                System.out.println(ID + "=>Link was Crawled or gonna be Seeded So skip being Seeded Again : " + nextLink);
                             }
                         }
                     }
                 }
             }
         }
-
-        while (DB.getSeedSize() != 0) {
-            org.bson.Document doc = DB.popSeed();
-            DB.addToCrawledPages(doc);
+        done = true;
+        synchronized (this) {
+            while (DB.getSeedSize() != 0) {
+                org.bson.Document doc = DB.popSeed();
+                DB.addToCrawledPages(doc);
+            }
         }
     }
 
     private Document request(org.bson.Document doc) {
         try {
+            if (DB.getNumOfCrawledPages() + DB.getSeedSize() >= mongoDB.MAX_PAGES_NUM) return null;
             String url = doc.getString("URL");
-            if (url.contains("pinterest")){
+            if (url.contains("pinterest")) {
                 return null;
             }
             Connection connection = Jsoup.connect(url);
             Document document = connection.get();
             if (connection.response().statusCode() == 200) {
-                System.out.println("Bot with ID = " + ID + " Received webpage with url = " + url + " and the Title is : " + document.title());
+                System.out.println(ID + "=>Bot Received webpage with url = " + url + " and the Title is : " + document.title());
                 DB.addToCrawledPages(doc);
                 return document;
             }
@@ -98,11 +103,12 @@ public class WebCrawler implements Runnable {
         }
     }
 
-    public static boolean handleRobot(String useragent, String link) {
-        if (link.contains("pinterest")){
+    public static boolean handleRobot(String useragent, String link, int ID) {
+        if (link.contains("pinterest")) {
             return false;
         }
         try {
+            if (done) return false;
             URL url = new URL(link);
             String host = url.getHost();
             URL robotUrl = new URL("https://" + host + "/robots.txt");
@@ -126,7 +132,7 @@ public class WebCrawler implements Runnable {
                     if (line.startsWith("Disallow: ")) {
                         String path = line.substring(10);
                         if (link.contains(path)) {
-                            System.out.println("Robot.txt Blocked : " + link);
+                            System.out.println(ID + " => Robot.txt Blocked : " + link);
                             return false;
                         }
                     }
@@ -134,16 +140,17 @@ public class WebCrawler implements Runnable {
             }
             robotReader.close();
         } catch (Exception e) {
-            System.out.println("Robot.txt not found : "+link);
+            System.out.println(ID + "=> Robot.txt not found : " + link);
         }
         return true;
     }
 
     static public Document getDocument(String url) {
-        if (url.contains("pinterest")){
+        if (url.contains("pinterest")) {
             return null;
         }
         try {
+            if (done) return null;
             Connection connection = Jsoup.connect(url);
             Document document = connection.get();
             if (connection.response().statusCode() == 200) {

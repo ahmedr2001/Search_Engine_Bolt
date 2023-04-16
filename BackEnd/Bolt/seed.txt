@@ -1,9 +1,8 @@
-https://www.beinsports.com/ar/
 https://www.bbc.com/news
-https://www.gsmarena.com/
+https://www.gsmarena.com
 https://en.wikipedia.org/wiki/Main_Page
-https://www.allrecipes.com/
-https://www.gamespot.com/
-https://www.pcgamer.com/uk/
-https://www.geeksforgeeks.org/
-https://stackoverflow.com/
+https://www.allrecipes.com
+https://www.gamespot.com
+https://www.pcgamer.com/uk
+https://www.geeksforgeeks.org
+https://stackoverflow.com
