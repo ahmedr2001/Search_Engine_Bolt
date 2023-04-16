@@ -49,6 +49,15 @@
       <recent name="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/DB" />
     </key>
   </component>
+  <component name="RunManager">
+    <configuration name="Indexer" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="Indexer.MainIndexer" />
+      <module name="DB" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="TaskManager">
     <servers />
   </component>

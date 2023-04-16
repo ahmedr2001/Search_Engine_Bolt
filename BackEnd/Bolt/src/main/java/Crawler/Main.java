@@ -1,6 +1,7 @@
 package Crawler;
 
 import DB.mongoDB;
+import Indexer.MainIndexer;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -21,6 +22,7 @@ public class Main {
         }
         cin.close();
 
+
         ArrayList<WebCrawler> bots = new ArrayList<>();
 
         for (int i = 1; i <= numOfThreads; i++) {
@@ -34,6 +36,9 @@ public class Main {
                 e.printStackTrace();
             }
         }
+        Indexer.MainIndexer MainIndexer = new Indexer.MainIndexer();
+        MainIndexer.runMainIndexer(DB);
+
 
         System.out.println("Crawler Mission Done");
     }

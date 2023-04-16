@@ -15,7 +15,7 @@ import java.util.Scanner;
 
 public class mongoDB {
 
-    public static int MAX_PAGES_NUM = 6000;
+    public static int MAX_PAGES_NUM = 6;
     private static MongoClient client;
     private static MongoDatabase DB;
     MongoCollection<Document> seedCollection;
@@ -29,6 +29,7 @@ public class mongoDB {
 
     public mongoDB(String DB_Name) {
 
+
         if (client == null) {
 //            ConnectionString connectionString = new ConnectionString("mongodb+srv://ahmedr2001:eng3469635@javasearchengine.8xarqeo.mongodb.net/?retryWrites=true&w=majority");
             ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017");
@@ -36,6 +37,8 @@ public class mongoDB {
             DB = client.getDatabase(DB_Name);
             seedCollection = DB.getCollection("Seed");
             crawlerCollection = DB.getCollection("CrawledPages");
+            System.out.println(getNumOfCrawledPages());
+            System.out.println(getSeedSize());
             crawlerCollection.drop();
             seedCollection.drop();
         } else {
@@ -126,7 +129,9 @@ public class mongoDB {
 
         return IndexedPages.find(new Document("url", url)).iterator().hasNext();
     }
-
+    public FindIterable<Document> getCrawlerCollection(){
+        return crawlerCollection.find(new org.bson.Document());
+    }
 
 
     public static void List_All(MongoCollection collection) {
@@ -149,5 +154,6 @@ public class mongoDB {
             System.out.println(cursor.next());
         }
     }
+
 
 }
