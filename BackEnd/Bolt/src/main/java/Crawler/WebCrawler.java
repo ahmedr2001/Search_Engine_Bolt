@@ -33,7 +33,7 @@ public class WebCrawler implements Runnable {
     public void run() {
         try {
             crawl();
-        } catch (NoSuchAlgorithmException ignored) {
+        } catch (Exception ignored) {
         }
     }
 
@@ -82,6 +82,9 @@ public class WebCrawler implements Runnable {
     private Document request(org.bson.Document doc) {
         try {
             String url = doc.getString("URL");
+            if (url.contains("pinterest")){
+                return null;
+            }
             Connection connection = Jsoup.connect(url);
             Document document = connection.get();
             if (connection.response().statusCode() == 200) {
@@ -90,12 +93,15 @@ public class WebCrawler implements Runnable {
                 return document;
             }
             return null;
-        } catch (IOException | IllegalArgumentException e) {
+        } catch (Exception e) {
             return null;
         }
     }
 
     public static boolean handleRobot(String useragent, String link) {
+        if (link.contains("pinterest")){
+            return false;
+        }
         try {
             URL url = new URL(link);
             String host = url.getHost();
@@ -134,6 +140,9 @@ public class WebCrawler implements Runnable {
     }
 
     static public Document getDocument(String url) {
+        if (url.contains("pinterest")){
+            return null;
+        }
         try {
             Connection connection = Jsoup.connect(url);
             Document document = connection.get();
@@ -141,7 +150,7 @@ public class WebCrawler implements Runnable {
                 return document;
             }
             return null;
-        } catch (IOException | IllegalArgumentException e) {
+        } catch (Exception e) {
             return null;
         }
     }
