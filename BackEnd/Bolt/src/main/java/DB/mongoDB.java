@@ -10,8 +10,7 @@ import static com.mongodb.client.model.Filters.eq;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Iterator;
-import java.util.Scanner;
+import java.util.*;
 
 public class mongoDB {
 
@@ -150,4 +149,10 @@ public class mongoDB {
         }
     }
 
+    public Iterable<Document> getCrawlerCollection() {
+        List<Document> results = new ArrayList<>();
+        FindIterable<Document> iterable = crawlerCollection.find();
+        iterable.into(results);
+        return results;
+    }
 }

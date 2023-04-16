@@ -1,7 +1,6 @@
 package Crawler;
 
 import DB.mongoDB;
-import Indexer.MainIndexer;
 
 import java.util.ArrayList;
 import java.util.Scanner;
