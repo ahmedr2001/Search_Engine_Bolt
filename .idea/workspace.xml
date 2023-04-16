@@ -10,6 +10,13 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -25,8 +32,8 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "git-widget-placeholder": "main",
     "jdk.selected.JAVA_MODULE": "openjdk-19",
+    "last_opened_file_path": "/home/ahmedosama/IdeaProjects/Search_Engine_Bolt",
     "onboarding.tips.debug.path": "/home/ahmedosama/IdeaProjects/Search_Engine_Bolt/src/Main.java",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",

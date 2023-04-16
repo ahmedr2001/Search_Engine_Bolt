@@ -20,6 +20,12 @@ public class mongoDB {
     MongoCollection<Document> seedCollection;
     MongoCollection<Document> crawlerCollection;
 
+    // Indexing Collections
+    MongoCollection<Document> IndexedPages;
+    MongoCollection<Document> wordsCollection;
+
+
+
     public mongoDB(String DB_Name) {
 
         if (client == null) {
@@ -110,6 +116,15 @@ public class mongoDB {
             return crawlerCollection.countDocuments();
         }
     }
+
+    // Indexing Functions
+
+    public boolean isIndexed(String url) {
+
+        return IndexedPages.find(new Document("url", url)).iterator().hasNext();
+    }
+
+
 
     public static void List_All(MongoCollection collection) {
 //        Listing All Mongo Documents in Collection
