@@ -1,6 +1,7 @@
 package Crawler;
 
 import DB.mongoDB;
+import Indexer.MainIndexer;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -20,6 +21,7 @@ public class Main {
             numOfThreads = cin.nextInt();
         }
         cin.close();
+
 
         ArrayList<WebCrawler> bots = new ArrayList<>();
 
