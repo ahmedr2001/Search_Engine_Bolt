@@ -36,10 +36,6 @@ public class Main {
                 e.printStackTrace();
             }
         }
-        Indexer.MainIndexer MainIndexer = new Indexer.MainIndexer();
-        MainIndexer.runMainIndexer(DB);
-
-
         System.out.println("Crawler Mission Done");
     }
 }

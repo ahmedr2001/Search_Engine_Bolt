@@ -5,8 +5,13 @@ import java.util.Iterator;
 
 public class MainIndexer {
 
+    public static mongoDB DB ;
+    public static void main(String[] args){
+        DB  = new mongoDB("Bolt");
+        runMainIndexer(DB);
+    }
 
-    public void runMainIndexer(mongoDB DB){
+    public static void runMainIndexer(mongoDB DB){
         int cnt=  0;
         Iterator<Document> CrawledPagesCollection = DB.getCrawlerCollection().iterator();
         System.out.println(DB.getNumOfCrawledPages());
