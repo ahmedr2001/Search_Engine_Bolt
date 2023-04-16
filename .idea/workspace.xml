@@ -33,13 +33,22 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "jdk.selected.JAVA_MODULE": "openjdk-19",
-    "last_opened_file_path": "/home/ahmedosama/IdeaProjects/Search_Engine_Bolt",
+    "last_opened_file_path": "/home/ahmedosama/IdeaProjects/Search_Engine_Bolt/BackEnd/Bolt/src/main/java/Indexer",
     "onboarding.tips.debug.path": "/home/ahmedosama/IdeaProjects/Search_Engine_Bolt/src/Main.java",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/Indexer" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/BackEnd/Bolt/src" />
+      <recent name="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/DB" />
+    </key>
+  </component>
   <component name="TaskManager">
     <servers />
   </component>

@@ -51,7 +51,7 @@ public class mongoDB {
         }
         if (seedCollection.countDocuments() == 0) {
             try {
-                File file = new File("seed.txt");
+                File file = new File("seed.txt").getAbsoluteFile();
                 Scanner cin = new Scanner(file);
                 while (cin.hasNextLine()) {
                     String url = cin.nextLine();
