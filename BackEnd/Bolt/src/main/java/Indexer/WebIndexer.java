@@ -32,7 +32,12 @@ public class WebIndexer {
         // 4 - Removing redundant words (Stop Words)
         StopWordsRemover stopWordsRemover = new StopWordsRemover();
         words = stopWordsRemover.runStopWordsRemover(words);
-        for(String word : words) System.out.println("Word: " + word);
+//        for(String word : words) System.out.println("Word: " + word);
+        Stemmer stemmer = new Stemmer();
+        List<String> stemWords = stemmer.runStemmer(words);
+        for (int i = 0; i < stemWords.size(); i++) {
+            System.out.printf("Word: %s, Stem Word: %s\n", words.get(i), stemWords.get(i));
+        }
     }
 
 
