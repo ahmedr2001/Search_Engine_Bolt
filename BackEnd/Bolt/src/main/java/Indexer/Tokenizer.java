@@ -9,6 +9,7 @@ public class Tokenizer {
         sentence = sentence.toLowerCase();
         List<String> words = List.of(sentence.split(" "));
         words = new ArrayList<>(words);
+
         return words;
     }
 }
