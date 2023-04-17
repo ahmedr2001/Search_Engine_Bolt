@@ -33,18 +33,11 @@ public class WebIndexer {
             System.out.println("Page already indexed");
             return;
         }
-        System.out.println("Index this page");
+//        System.out.println("Index this page");
         // 1 - Checking if the page has been indexed before
-//        if (DB.isIndexed(url)) {
-//            System.out.println("This page has been indexed before");
-//            return;
-//        } else {
-//            System.out.println("New page is being indexed ");
-//        }
         // 2 - Cleaning
         Cleaner cleaner = new Cleaner() ;
         body = cleaner.runCleaner(body);
-        System.out.println("After Cleaning");
         // 3 -  Tokenization
         Tokenizer tokenizer = new Tokenizer();
         List<String> words = tokenizer.runTokenizer(body);
@@ -71,14 +64,14 @@ public class WebIndexer {
         }
 
         for (String word : Words_TF.keySet()) {
-            double TF = Words_TF.get(word).getInteger("TF") / (double) totalWords;
+            double TF = Words_TF.get(word).getInteger("TF") / (double) totalWords; // Normalized TF
 
             Document doc = new Document();
             doc.append("url", url);
             doc.append("_id", id);
             doc.append("TF", TF);
 
-            if (TF < 0.5) {
+            if (TF < 0.5) { // Avoiding spamming
                 if (index.containsKey(word)) {
                     index.get(word).add(doc);
                 } else {

@@ -1,9 +1,9 @@
 https://www.bbc.com/news
 https://www.gsmarena.com
 https://en.wikipedia.org/wiki/Main_Page
-https://www.allrecipes.com
+https://www.github.com
 https://www.gamespot.com
-https://www.pcgamer.com/uk
-https://www.geeksforgeeks.org
+https://www.reddit.com/
+https://www.amazon.com/
 https://stackoverflow.com
 https://www.tutorialspoint.com

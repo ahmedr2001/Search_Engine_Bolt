@@ -5,6 +5,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.ConnectionString;
 import com.mongodb.client.*;
 import org.bson.Document;
+
 import static com.mongodb.client.model.Filters.eq;
 
 import java.io.File;
@@ -168,5 +169,18 @@ public class mongoDB {
     public void addIndexedPage(String url, Integer wordCount) {
         Document doc = new Document("url", url).append("wordCount", wordCount);
         IndexedPages.insertOne(doc);
+    }
+    public Iterable<Document> getPagesWithWord(String searchWord){
+        List<Document> results = new ArrayList<>() ;
+        FindIterable<Document> iterable = wordsCollection.find(new Document("word",searchWord));
+        Document pages = wordsCollection.find(new Document("word",searchWord)).first();
+        if(pages != null) {
+            System.out.println(pages.get("IDF"));
+        }
+        // { IDF ,  Array of pages }
+        System.out.println(iterable);
+        iterable.into(results);
+
+        return  results;
     }
 }
