@@ -24,7 +24,6 @@ public class WebIndexer {
         Cleaner cleaner = new Cleaner() ;
         body = cleaner.runCleaner(body);
         System.out.println("After Cleaning");
-//        System.out.println(body);
         // 3 -  Tokenization
         Tokenizer tokenizer = new Tokenizer();
         List<String> words = tokenizer.runTokenizer(body);
