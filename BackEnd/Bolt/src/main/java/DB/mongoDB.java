@@ -63,7 +63,7 @@ public class mongoDB {
                     }
                 }
                 cin.close();
-            } catch (FileNotFoundException | NoSuchAlgorithmException e) {
+            } catch (Exception e) {
                 System.out.println("Reading seed file failed :" + e);
             }
         } else {

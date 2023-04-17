@@ -20,8 +20,9 @@ public class MainIndexer {
             Document d = CrawledPagesCollection.next();
             String page = d.getString("BODY");
             String url = d.getString("URL");
+            Object id = d.get("_id");
             System.out.printf("index page: %d url:%s \n", cnt++, url);
-            webIndexer.startIndexer(page, url);
+            webIndexer.startIndexer(page, url, id);
         }
     }
 
