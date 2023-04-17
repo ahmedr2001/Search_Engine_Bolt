@@ -8,14 +8,24 @@ import java.util.List;
 
 
 public class WebIndexer {
+    mongoDB DB ;
+    HashMap<String, Integer> indexedPages; //
+    HashMap<String, List<Document>> index; // (Inverted File ) This stores for each word the documents that it was present in
 
     public WebIndexer() {
         indexedPages = new HashMap<String, Integer>();
         index = new HashMap<String, List<Document>>();
     }
-    mongoDB DB ;
-    HashMap<String, Integer> indexedPages; //
-    HashMap<String, List<Document>> index; // (Inverted File ) This stores for each word the documents that it was present in
+
+    public void updateLinkDB() {
+        for (String word : index.keySet()) {
+            DB.addWord(word, index.get(word));
+        }
+
+        for (String url : indexedPages.keySet()) {
+            DB.addIndexedPage(url, indexedPages.get(url));
+        }
+    }
 
     public void startIndexer(String body , String url, Object id){
         // 0 - Connecting to Database

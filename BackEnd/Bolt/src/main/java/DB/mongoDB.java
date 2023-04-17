@@ -35,6 +35,7 @@ public class mongoDB {
             DB = client.getDatabase(DB_Name);
             seedCollection = DB.getCollection("Seed");
             crawlerCollection = DB.getCollection("CrawledPages");
+            wordsCollection = DB.getCollection("WordsCollection");
 //            crawlerCollection.drop();
 //            seedCollection.drop();
         } else {
@@ -154,5 +155,17 @@ public class mongoDB {
         FindIterable<Document> iterable = crawlerCollection.find();
         iterable.into(results);
         return results;
+    }
+
+    public void addWord(String word, List<Document> wordPages) {
+        Document doc = new Document("word", word)
+                .append("IDF", Math.log(crawlerCollection.countDocuments() / (double)wordPages.size()))
+                .append("pages", wordPages);
+        wordsCollection.insertOne(doc);
+    }
+
+    public void addIndexedPage(String url, Integer wordCount) {
+        Document doc = new Document("url", url).append("wordCount", wordCount);
+        IndexedPages.insertOne(doc);
     }
 }
