@@ -8,13 +8,14 @@ import java.util.List;
 
 
 public class WebIndexer {
-    mongoDB DB ;
+    mongoDB DB;
     HashMap<String, Integer> indexedPages; //
     HashMap<String, List<Document>> index; // (Inverted File ) This stores for each word the documents that it was present in
 
-    public WebIndexer() {
+    public WebIndexer(mongoDB db) {
         indexedPages = new HashMap<String, Integer>();
         index = new HashMap<String, List<Document>>();
+        DB = db;
     }
 
     public void updateLinkDB() {
@@ -28,8 +29,11 @@ public class WebIndexer {
     }
 
     public void startIndexer(String body , String url, Object id){
-        // 0 - Connecting to Database
-        DB = new mongoDB("Bolt");
+        if (DB.isIndexed(url)) {
+            System.out.println("Page already indexed");
+            return;
+        }
+        System.out.println("Index this page");
         // 1 - Checking if the page has been indexed before
 //        if (DB.isIndexed(url)) {
 //            System.out.println("This page has been indexed before");
@@ -51,9 +55,9 @@ public class WebIndexer {
 //        for(String word : words) System.out.println("Word: " + word);
         Stemmer stemmer = new Stemmer();
         List<String> stemWords = stemmer.runStemmer(words);
-        for (int i = 0; i < stemWords.size(); i++) {
-            System.out.printf("Word: %s, Stem Word: %s\n", words.get(i), stemWords.get(i));
-        }
+//        for (int i = 0; i < stemWords.size(); i++) {
+//            System.out.printf("Word: %s, Stem Word: %s\n", words.get(i), stemWords.get(i));
+//        }
         int totalWords = stemWords.size();
         HashMap<String, Document> Words_TF = new HashMap<String, Document>();
         for (String stemWord : stemWords) {

@@ -17,7 +17,7 @@ public class StopWordsRemover {
             while (scanner.hasNextLine()) {
                 String word = scanner.nextLine();
                 StopWords.add(word);
-                System.out.println("Stop Word: "+ word);
+//                System.out.println("Stop Word: "+ word);
             }
         }catch (FileNotFoundException e) {
             throw new RuntimeException(e);

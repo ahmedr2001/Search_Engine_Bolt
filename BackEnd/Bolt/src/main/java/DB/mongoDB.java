@@ -36,6 +36,7 @@ public class mongoDB {
             seedCollection = DB.getCollection("Seed");
             crawlerCollection = DB.getCollection("CrawledPages");
             wordsCollection = DB.getCollection("WordsCollection");
+            IndexedPages = DB.getCollection("IndexedPages");
 //            crawlerCollection.drop();
 //            seedCollection.drop();
         } else {

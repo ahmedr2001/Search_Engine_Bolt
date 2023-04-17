@@ -15,7 +15,7 @@ public class MainIndexer {
         int cnt=  0;
         Iterator<Document> CrawledPagesCollection = DB.getCrawlerCollection().iterator();
         System.out.println(DB.getNumOfCrawledPages());
-        WebIndexer webIndexer = new WebIndexer();
+        WebIndexer webIndexer = new WebIndexer(DB);
         while (CrawledPagesCollection.hasNext()){
             Document d = CrawledPagesCollection.next();
             String page = d.getString("BODY");
@@ -24,6 +24,7 @@ public class MainIndexer {
             System.out.printf("index page: %d url:%s \n", cnt++, url);
             webIndexer.startIndexer(page, url, id);
         }
+        webIndexer.updateLinkDB();
     }
 
 }
