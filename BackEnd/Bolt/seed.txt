@@ -6,3 +6,4 @@ https://www.gamespot.com
 https://www.pcgamer.com/uk
 https://www.geeksforgeeks.org
 https://stackoverflow.com
+https://www.tutorialspoint.com
