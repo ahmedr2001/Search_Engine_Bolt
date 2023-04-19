@@ -1,5 +1,6 @@
 package Indexer;
 import DB.mongoDB;
+import Ranker.MainRanker;
 import org.bson.Document;
 import java.util.Iterator;
 
@@ -29,6 +30,7 @@ public class MainIndexer {
             }
         }
         webIndexer.updateLinkDB();
+
     }
 
 }

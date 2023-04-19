@@ -1,15 +1,10 @@
 package Ranker;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import DB.mongoDB;
 import org.bson.Document;
-
-import javax.print.Doc;
-
+import DataStructures.Sorting;
 
 public class MainRanker {
 
@@ -18,16 +13,20 @@ public class MainRanker {
     HashMap<String , Double> Page_Score;
     private HashMap<String, Integer> numberOfWordsOnEachPage;
     static mongoDB DB ;
-    public static void main(String [] args){
+    public void main(String[] args){
         DB = new mongoDB("Bolt");
+        runRanker(DB);
     }
-    public List<String> runRanker(List<Document> search_Words){
-        RelatedDocuments = search_Words ;
+    public List<String> runRanker(mongoDB DB){
+//        RelatedDocuments = search_Words ;
+        RelatedDocuments = DB.getWordDocuments("cancel");
+        System.out.println(RelatedDocuments);
         Ranked_Result = new ArrayList<>();
         Page_Score = new HashMap<>();
         numberOfWordsOnEachPage = new HashMap<>();
         Calculate_Rank();
         Rank_Urls();
+        for(String url : Ranked_Result) System.out.println(url);
         return Ranked_Result ;
     }
     void Calculate_Rank(){
@@ -54,8 +53,7 @@ public class MainRanker {
         }
     }
     void Rank_Urls(){
-        for (String url : Page_Score.keySet()) {
-            Ranked_Result.add(url);
-        }
+        Ranked_Result = Sorting.sortByValue(Page_Score);
     }
+
 }
