@@ -13,6 +13,7 @@ public class MainIndexer {
 
     public static void runMainIndexer(mongoDB DB){
         int cnt=  0;
+        int batchSize = 1000;
         Iterator<Document> CrawledPagesCollection = DB.getCrawlerCollection().iterator();
         System.out.println(DB.getNumOfCrawledPages());
         WebIndexer webIndexer = new WebIndexer(DB);
@@ -23,6 +24,9 @@ public class MainIndexer {
             Object id = d.get("_id");
             System.out.printf("index page: %d url:%s \n", cnt++, url);
             webIndexer.startIndexer(page, url, id);
+            if (cnt % batchSize == 0) {
+                webIndexer.updateLinkDB();
+            }
         }
         webIndexer.updateLinkDB();
     }

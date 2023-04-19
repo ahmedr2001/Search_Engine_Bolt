@@ -159,6 +159,26 @@ public class mongoDB {
         return results;
     }
 
+    public List<Document> getWordDocuments(String search_word) {
+        List<Document> results = new ArrayList<>();
+
+        //1.Create a query document
+        Document query = new Document();
+        query.append("word", search_word);
+
+        //2. create cursor to resulted documents
+        try(MongoCursor<Document> cursor = wordsCollection.find(query).iterator() ) {
+            //3. iterate through it
+            while (cursor.hasNext()) {
+                results.add(cursor.next()); // 4. add results
+            }
+        }
+
+        return results;
+    }
+
+
+
     public void addWord(String word, List<Document> wordPages) {
         Document doc = new Document("word", word)
                 .append("IDF", Math.log(crawlerCollection.countDocuments() / (double)wordPages.size()))
@@ -183,4 +203,6 @@ public class mongoDB {
 
         return  results;
     }
+
+
 }
