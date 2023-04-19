@@ -54,6 +54,11 @@ public class MainRanker {
     }
     void Rank_Urls(){
         Ranked_Result = Sorting.sortByValue(Page_Score);
+        // Testing
+//        for(String url : Ranked_Result ) {
+//            System.out.println(url + "    :") ;
+//            System.out.println(Page_Score.get(url));
+//        }
     }
 
 }
