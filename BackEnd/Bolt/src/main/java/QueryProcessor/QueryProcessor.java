@@ -11,14 +11,12 @@ import java.util.stream.Collectors;
 public class QueryProcessor {
     private String query;
     private mongoDB DB;
-    private PorterStemmer porterStemmer;
-    private List<String> stemWords;
 
     public static void main(String[] args){
 
         Scanner scanner = new Scanner(System.in);
         String query = scanner.nextLine();
-        System.out.println(query);
+
         QueryProcessor queryProcessor = new QueryProcessor(query);
 
         queryProcessor.process();
@@ -27,7 +25,6 @@ public class QueryProcessor {
     public QueryProcessor(String query) {
         this.query = query;
         this.DB  = new mongoDB("Bolt");
-        this.porterStemmer = new PorterStemmer();
     }
 
     public  void process() {
