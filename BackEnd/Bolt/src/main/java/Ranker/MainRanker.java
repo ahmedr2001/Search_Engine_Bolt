@@ -13,14 +13,18 @@ public class MainRanker {
     HashMap<String , Double> Page_Score;
     private HashMap<String, Integer> numberOfWordsOnEachPage;
     static mongoDB DB ;
+
+    MainRanker(List<Document> QueryResult){
+        RelatedDocuments = QueryResult ;
+    }
+
     public void main(String[] args){
         DB = new mongoDB("Bolt");
         runRanker(DB);
     }
     public List<String> runRanker(mongoDB DB){
-//        RelatedDocuments = search_Words ;
-        RelatedDocuments = DB.getWordDocuments("cancel");
-        System.out.println(RelatedDocuments);
+        // Testing purpose --> Uncomment for testing
+//        RelatedDocuments = DB.getWordDocuments("cancel");
         Ranked_Result = new ArrayList<>();
         Page_Score = new HashMap<>();
         numberOfWordsOnEachPage = new HashMap<>();
