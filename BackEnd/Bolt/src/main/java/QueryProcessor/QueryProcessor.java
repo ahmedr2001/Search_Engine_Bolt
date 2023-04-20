@@ -40,18 +40,14 @@ public class QueryProcessor {
         query = query.replaceAll("[^a-zA-Z1-9]", " ");  //1.remove single characters and numbers
 
         words = tokenizer.runTokenizer(query);                          //2.Convert words to list + toLowerCase
-
-
         words = synonymization.runSynonymization(words);                //3.Replace words with its steam synonyms
         words = stopWordsRemover.runStopWordsRemover(words);            //4.Remove Stop Words
-
         words = words.stream().distinct()                               //5.Remove Duplicates
                 .collect(Collectors.toList());
 
         //===== processing section ===== //
 
         //===== Get Documents into results ===== //
-        //System.out.println(words);
         for(String word: words) {
             results.addAll(DB.getWordDocuments(word));
         }

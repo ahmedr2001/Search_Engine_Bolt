@@ -17,7 +17,7 @@ public class Main {
 
         QueryProcessor queryProcessor = new QueryProcessor(query);
         List<Document> RelatedDocuments = queryProcessor.process();
-        
+
         MainRanker mainRanker = new MainRanker(RelatedDocuments);
         mainRanker.runRanker(DB);
     }

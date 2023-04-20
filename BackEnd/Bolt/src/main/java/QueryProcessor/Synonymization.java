@@ -85,6 +85,7 @@ public class Synonymization {
         if(pos == null)
             return null;
         List<String> stems = stemmer.findStems(word, pos); // Find the stems of the word (if any)
+        stems.add(word);
         return stems;
     }
     public List<String> getStemsOfWords(List<String> words) {
@@ -93,6 +94,7 @@ public class Synonymization {
             List<String> stem = getStemsOfWord(word);
             if(stem != null)
                 stemmedWords.addAll(stem);
+            else stemmedWords.add(word);
         }
         return stemmedWords;
     }
