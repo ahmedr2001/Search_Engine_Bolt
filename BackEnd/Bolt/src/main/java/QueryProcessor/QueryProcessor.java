@@ -4,6 +4,8 @@ import Indexer.Stemmer;
 import Indexer.StopWordsRemover;
 import Indexer.Tokenizer;
 import org.bson.Document;
+
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,26 +15,18 @@ public class QueryProcessor {
     private String query;
     private final mongoDB DB;
 
-    public static void main(String[] args){
 
-        Scanner scanner = new Scanner(System.in);
-        String query = scanner.nextLine();
-
-        QueryProcessor queryProcessor = new QueryProcessor(query);
-
-        queryProcessor.process();
-
-    }
     public QueryProcessor(String query) {
         this.query = query;
         this.DB  = new mongoDB("Bolt");
     }
 
-    public  void process() {
+    public  List<Document> process() throws IOException {
         //======= Variables Section ========//
         Tokenizer tokenizer = new Tokenizer();
         StopWordsRemover stopWordsRemover = new StopWordsRemover();
-        Stemmer stemmer = new Stemmer();
+        Synonymization synonymization = new Synonymization();
+
 
         List<String> words;
         List<String> phrases;
@@ -46,22 +40,18 @@ public class QueryProcessor {
         query = query.replaceAll("[^a-zA-Z1-9]", " ");  //1.remove single characters and numbers
 
         words = tokenizer.runTokenizer(query);                          //2.Convert words to list + toLowerCase
-        words = words.stream().distinct()                               //3.Remove Duplicates
+
+
+        words = synonymization.runSynonymization(words);                //3.Replace words with its steam synonyms
+        words = stopWordsRemover.runStopWordsRemover(words);            //4.Remove Stop Words
+
+        words = words.stream().distinct()                               //5.Remove Duplicates
                 .collect(Collectors.toList());
 
-        words = stopWordsRemover.runStopWordsRemover(words);            //4.Remove Stop Words
-        words = stemmer.runStemmer(words);                              //5.Replace words with its steam
-
-//        for (String word : words) {
-//            //Set<String> synonyms =  getSynonyms(word);
-//            if (synonyms != null && !synonyms.isEmpty()) {
-//                synonymWords.addAll(synonyms);
-//            }
-//        }
         //===== processing section ===== //
 
-
         //===== Get Documents into results ===== //
+        //System.out.println(words);
         for(String word: words) {
             results.addAll(DB.getWordDocuments(word));
         }
@@ -71,7 +61,7 @@ public class QueryProcessor {
 //        for (Document result : results) {
 //            System.out.println(result.toJson());
 //        }
-
+        return  results;
     }
 
     public List<String> extractPhrases() {

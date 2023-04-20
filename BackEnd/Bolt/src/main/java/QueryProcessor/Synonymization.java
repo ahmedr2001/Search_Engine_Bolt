@@ -1,7 +1,6 @@
 package QueryProcessor;
 
 
-import Indexer.Stemmer;
 import edu.mit.jwi.IDictionary;
 import edu.mit.jwi.item.*;
 import edu.mit.jwi.morph.WordnetStemmer;
@@ -12,38 +11,39 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-public class Synonymizer {
+public class Synonymization {
+    public IDictionary dict;
+    public WordnetStemmer stemmer;
 
-    public static void main(String args[]) throws IOException {
+    public Synonymization() throws IOException {
+        String path = "C:\\Program Files (x86)\\WordNet\\2.1\\dict";
+        URL url = new URL("file", null, path);
+        this.dict = new edu.mit.jwi.Dictionary(url);
+        dict.open();
+
+        stemmer =  new WordnetStemmer(dict);
+    }
+    public static void main(String args[])throws IOException  {
+        Synonymization synonymization = new Synonymization();
         List<String> words = new ArrayList<>();
-        words.add("running");
+        words.add("java");
         words.add("synonym");
 
-        Synonymizer synonymizer = new Synonymizer();
-        List<String> newArr =  synonymizer.runSynonymizer(words);
-        System.out.println(newArr);
+        //==== test stemmer
+        List<String> stems = synonymization.getStemsOfWords(words);
+        List<String> syn = synonymization.runSynonymization(words);
+        List<String> stemsSyn = synonymization.getStemsOfWords(syn);
 
-        Stemmer stemmer = new Stemmer();
-        List<String> newArrS  = stemmer.runStemmer(words);
-        System.out.println(newArrS);
+        System.out.println(words);
+        System.out.println(stems);
+
+        System.out.println(syn);
+        System.out.println(stemsSyn);
     }
 
     //get words after processing [lowerCase - remove stop words ] => [synonums + stemmaing]
-    public List<String> runSynonymizer(List<String> words) throws IOException {
+    public List<String> runSynonymization(List<String> words) throws IOException {
         List<String> synonymWords = new ArrayList<>();
-        // ======= Initializers
-
-        // 1. the WordNet dictionary
-        String path = "C:\\Program Files (x86)\\WordNet\\2.1\\dict";
-        URL url = new URL("file", null, path);
-        IDictionary dict = new edu.mit.jwi.Dictionary(url);
-        dict.open();
-
-        // 2. Initialize the WordNet stemmer
-        WordnetStemmer stemmer = new WordnetStemmer(dict);
-
-
-
 
         for (String word : words) { // Loop through the input words and find synonyms for each one
 
@@ -72,9 +72,29 @@ public class Synonymizer {
                 synonymWords.add(word);
                 synonymWords.addAll(synonyms);
             }
+            else {
+                synonymWords.add(word);
+            }
         }
 
-        return synonymWords;
+        return getStemsOfWords(synonymWords);
+    }
+
+    private List<String> getStemsOfWord(String word) {
+        POS pos = getPartOfSpeech(word, dict);
+        if(pos == null)
+            return null;
+        List<String> stems = stemmer.findStems(word, pos); // Find the stems of the word (if any)
+        return stems;
+    }
+    public List<String> getStemsOfWords(List<String> words) {
+        List<String> stemmedWords = new ArrayList<String>();
+        for(String word: words) {
+            List<String> stem = getStemsOfWord(word);
+            if(stem != null)
+                stemmedWords.addAll(stem);
+        }
+        return stemmedWords;
     }
 
 

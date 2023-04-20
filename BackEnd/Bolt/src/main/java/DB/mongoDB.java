@@ -29,7 +29,7 @@ public class mongoDB {
 
     public mongoDB(String DB_Name) {
 
-        if (client == null) {
+        //if (client == null) {
 //            ConnectionString connectionString = new ConnectionString("mongodb+srv://ahmedr2001:eng3469635@javasearchengine.8xarqeo.mongodb.net/?retryWrites=true&w=majority");
             ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017");
             client = MongoClients.create(connectionString);
@@ -40,9 +40,9 @@ public class mongoDB {
             IndexedPages = DB.getCollection("IndexedPages");
 //            crawlerCollection.drop();
 //            seedCollection.drop();
-        } else {
-            System.out.println("Already connected to the client");
-        }
+        //} else {
+          //  System.out.println("Already connected to the client");
+        //}
     }
 
     public void initializeSeed() {

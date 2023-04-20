@@ -14,7 +14,7 @@ public class MainRanker {
     private HashMap<String, Integer> numberOfWordsOnEachPage;
     static mongoDB DB ;
 
-    MainRanker(List<Document> QueryResult){
+    public MainRanker(List<Document> QueryResult){
         RelatedDocuments = QueryResult ;
     }
 
