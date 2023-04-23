@@ -5,7 +5,11 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.ConnectionString;
 import com.mongodb.client.*;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
+import javax.print.Doc;
+
+import static com.mongodb.client.model.Aggregates.set;
 import static com.mongodb.client.model.Filters.eq;
 
 import java.io.File;
@@ -152,9 +156,9 @@ public class mongoDB {
         }
     }
 
-    public Iterable<Document> getCrawlerCollection() {
+    public Iterable<Document> getCrawlerCollection(int batchSize, int iteration) {
         List<Document> results = new ArrayList<>();
-        FindIterable<Document> iterable = crawlerCollection.find();
+        FindIterable<Document> iterable = crawlerCollection.find().skip(iteration * batchSize).limit(batchSize);
         iterable.into(results);
         return results;
     }
@@ -180,15 +184,34 @@ public class mongoDB {
 
 
     public void addWord(String word, List<Document> wordPages) {
-        Document doc = new Document("word", word)
-                .append("IDF", Math.log(crawlerCollection.countDocuments() / (double)wordPages.size()))
-                .append("pages", wordPages);
-        wordsCollection.insertOne(doc);
+        Document filter = new Document("word", word);
+        FindIterable<Document> fi = wordsCollection.find(filter);
+        Iterator<Document> it = fi.iterator();
+        Boolean wordExists = it.hasNext();
+        if (wordExists) {
+            wordsCollection.findOneAndUpdate(filter, new Document("$set", new Document("word", word)
+                    .append("IDF", Math.log(crawlerCollection.countDocuments() / (double)wordPages.size()))
+                    .append("pages", wordPages)));
+        } else {
+            Document doc = new Document("word", word)
+                    .append("IDF", Math.log(crawlerCollection.countDocuments() / (double)wordPages.size()))
+                    .append("pages", wordPages);
+            wordsCollection.insertOne(doc);
+        }
     }
 
     public void addIndexedPage(String url, Integer wordCount) {
-        Document doc = new Document("url", url).append("wordCount", wordCount);
-        IndexedPages.insertOne(doc);
+        Document filter = new Document("url", url);
+        FindIterable<Document> fi = IndexedPages.find(filter);
+        Iterator<Document> it = fi.iterator();
+        Boolean pageExists = it.hasNext();
+        if (pageExists) {
+            IndexedPages.findOneAndUpdate(filter, new Document("$set", new Document("url", url)
+                    .append("wordCount", wordCount)));
+        } else {
+            Document doc = new Document("url", url).append("wordCount", wordCount);
+            IndexedPages.insertOne(doc);
+        }
     }
     public Iterable<Document> getPagesWithWord(String searchWord){
         List<Document> results = new ArrayList<>() ;

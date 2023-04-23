@@ -9,8 +9,8 @@ import java.util.List;
 
 public class WebIndexer {
     mongoDB DB;
-    HashMap<String, Integer> indexedPages; //
-    HashMap<String, List<Document>> index; // (Inverted File ) This stores for each word the documents that it was present in
+    static HashMap<String, Integer> indexedPages; //
+    static HashMap<String, List<Document>> index; // (Inverted File ) This stores for each word the documents that it was present in
 
     public WebIndexer(mongoDB db) {
         indexedPages = new HashMap<String, Integer>();
@@ -18,11 +18,59 @@ public class WebIndexer {
         DB = db;
     }
 
-    public void updateLinkDB() {
-        for (String word : index.keySet()) {
-            DB.addWord(word, index.get(word));
-        }
+    public void updateWordDB() throws InterruptedException {
+        class UpdateWordDB implements Runnable {
 
+            List<Thread> thArr = new ArrayList<Thread>();
+            List<List<String>> keys = new ArrayList<List<String>>();
+            public UpdateWordDB() throws InterruptedException {
+                for (int i = 0; i < 1000; i++) {
+                    keys.add(new ArrayList<String>());
+                }
+                for (int i = 0; i < 1000; i++) {
+                    Thread th = new Thread(this);
+                    String I = Integer.toString(i, 10);
+                    th.setName(I);
+                    thArr.add(th);
+                }
+
+                int cnt = 0;
+                for (String word : index.keySet()) {
+                    int idx = cnt % 1000;
+                    keys.get(idx).add(word);
+                    cnt++;
+                }
+
+                for (Thread th : thArr) {
+                    th.start();
+                }
+
+                for (Thread th : thArr) {
+                    th.join();
+                }
+            }
+            public void run() {
+                try {
+                    Thread t = Thread.currentThread();
+                    String name = t.getName();
+                    int idx = Integer.parseInt(name);
+//                    System.out.println(idx);
+                    for (String word : keys.get(idx)) {
+                        DB.addWord(word, index.get(word));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        UpdateWordDB uDB = new UpdateWordDB();
+        System.out.println(index.keySet().size());
+//        for (String word : index.keySet()) {
+//            DB.addWord(word, index.get(word));
+//        }
+
+    }
+    public void updateLinkDB(){
         for (String url : indexedPages.keySet()) {
             DB.addIndexedPage(url, indexedPages.get(url));
         }

@@ -3,19 +3,22 @@ import DB.mongoDB;
 import Ranker.MainRanker;
 import org.bson.Document;
 import java.util.Iterator;
+import java.util.concurrent.ForkJoinPool;
 
 public class MainIndexer {
 
     public static mongoDB DB ;
-    public static void main(String[] args){
+    public static void main(String[] args) throws InterruptedException {
         DB  = new mongoDB("Bolt");
         runMainIndexer(DB);
     }
 
-    public static void runMainIndexer(mongoDB DB){
+    public static void runMainIndexer(mongoDB DB) throws InterruptedException {
+        System.out.println(ForkJoinPool.commonPool());
         int cnt=  0;
-        int batchSize = 1000;
-        Iterator<Document> CrawledPagesCollection = DB.getCrawlerCollection().iterator();
+        int batchSize = 100;
+        int iteration = 0;
+        Iterator<Document> CrawledPagesCollection = DB.getCrawlerCollection(batchSize, iteration).iterator();
         System.out.println(DB.getNumOfCrawledPages());
         WebIndexer webIndexer = new WebIndexer(DB);
         while (CrawledPagesCollection.hasNext()){
@@ -26,11 +29,12 @@ public class MainIndexer {
             System.out.printf("index page: %d url:%s \n", cnt++, url);
             webIndexer.startIndexer(page, url, id);
             if (cnt % batchSize == 0) {
-                webIndexer.updateLinkDB();
+                iteration++;
+                CrawledPagesCollection = DB.getCrawlerCollection(batchSize, iteration).iterator();
             }
         }
         webIndexer.updateLinkDB();
-
+        webIndexer.updateWordDB();
     }
 
 }
