@@ -16,7 +16,7 @@ public class Synonymization {
     public WordnetStemmer stemmer;
 
     public Synonymization() throws IOException {
-        String path = "C:\\Program Files (x86)\\WordNet\\2.1\\dict";
+        String path = "./dict";
         URL url = new URL("file", null, path);
         this.dict = new edu.mit.jwi.Dictionary(url);
         dict.open();

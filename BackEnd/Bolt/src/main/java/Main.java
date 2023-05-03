@@ -15,10 +15,10 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         String query = scanner.nextLine();
 
-        QueryProcessor queryProcessor = new QueryProcessor(query);
-        List<Document> RelatedDocuments = queryProcessor.process();
+        //QueryProcessor queryProcessor = new QueryProcessor(query);
+        //List<Document> RelatedDocuments = queryProcessor.process();
 
-        MainRanker mainRanker = new MainRanker(RelatedDocuments);
-        mainRanker.runRanker(DB);
+        //MainRanker mainRanker = new MainRanker(RelatedDocuments);
+        //mainRanker.runRanker(DB);
     }
 }

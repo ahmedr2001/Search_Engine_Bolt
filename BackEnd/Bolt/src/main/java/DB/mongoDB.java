@@ -180,6 +180,19 @@ public class mongoDB {
 
         return results;
     }
+    public String getUrlBody(String url) {
+        String result = null;
+
+        //1.Create a query document
+        Document query = new Document("URL", url);
+
+        //2. create cursor to resulted documents
+        Document res_doc = crawlerCollection.find(query).first();
+        if(res_doc != null)
+            result = res_doc.getString("BODY");
+
+        return result;
+    }
 
 
 

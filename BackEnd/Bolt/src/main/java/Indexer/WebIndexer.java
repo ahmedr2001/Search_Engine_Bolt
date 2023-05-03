@@ -8,6 +8,7 @@ import java.util.List;
 
 
 public class WebIndexer {
+    static final int TH_SZ = 1000;
     mongoDB DB;
     static HashMap<String, Integer> indexedPages; //
     static HashMap<String, List<Document>> index; // (Inverted File ) This stores for each word the documents that it was present in
@@ -24,10 +25,10 @@ public class WebIndexer {
             List<Thread> thArr = new ArrayList<Thread>();
             List<List<String>> keys = new ArrayList<List<String>>();
             public UpdateWordDB() throws InterruptedException {
-                for (int i = 0; i < 1000; i++) {
+                for (int i = 0; i < TH_SZ; i++) {
                     keys.add(new ArrayList<String>());
                 }
-                for (int i = 0; i < 1000; i++) {
+                for (int i = 0; i < TH_SZ; i++) {
                     Thread th = new Thread(this);
                     String I = Integer.toString(i, 10);
                     th.setName(I);
@@ -36,7 +37,7 @@ public class WebIndexer {
 
                 int cnt = 0;
                 for (String word : index.keySet()) {
-                    int idx = cnt % 1000;
+                    int idx = cnt % TH_SZ;
                     keys.get(idx).add(word);
                     cnt++;
                 }
