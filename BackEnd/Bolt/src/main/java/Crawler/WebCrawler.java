@@ -60,7 +60,7 @@ public class WebCrawler implements Runnable {
 
                         Document jdoc = getDocument(nextLink);
                         if (jdoc != null) {
-                            org.bson.Document newurl = new org.bson.Document("URL", nextLink).append("KEY", toHexString(getSHA(jdoc.body().toString()))).append("BODY", jdoc.body().toString());
+                            org.bson.Document newurl = new org.bson.Document("URL", nextLink).append("KEY", toHexString(getSHA(jdoc.body().toString()))).append("BODY", jdoc.text()).append("HTML", jdoc.body().toString());
                             if (!DB.isCrawled(newurl) && !DB.isSeeded(newurl)) {
                                 if (handleRobot("*", nextLink, ID)) {
                                     DB.pushSeed(newurl);

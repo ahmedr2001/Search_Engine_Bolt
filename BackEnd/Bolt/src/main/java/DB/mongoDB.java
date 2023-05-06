@@ -19,7 +19,7 @@ import java.util.*;
 
 public class mongoDB {
 
-    public static int MAX_PAGES_NUM = 6000;
+    public static int MAX_PAGES_NUM = 100;
     private static MongoClient client;
     private static MongoDatabase DB;
     MongoCollection<Document> seedCollection;
@@ -64,7 +64,7 @@ public class mongoDB {
                     if (WebCrawler.handleRobot("*",url,-1)){
                         org.jsoup.nodes.Document jdoc =WebCrawler.getDocument(url);
                         if (jdoc != null){
-                            Document doc = new Document("URL", url).append("KEY", WebCrawler.toHexString(WebCrawler.getSHA(jdoc.body().toString()))).append("BODY",jdoc.body().toString());
+                            Document doc = new Document("URL", url).append("KEY", WebCrawler.toHexString(WebCrawler.getSHA(jdoc.body().toString()))).append("BODY", jdoc.text()).append("HTML", jdoc.body().toString());
                             seedCollection.insertOne(doc);
                         }
                     }
