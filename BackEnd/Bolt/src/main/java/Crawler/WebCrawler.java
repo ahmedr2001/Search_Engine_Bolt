@@ -101,6 +101,16 @@ public class WebCrawler implements Runnable {
             if (url.contains("pinterest")) {
                 return null;
             }
+            if (url.contains("?")) {
+                int index = url.indexOf("?");
+                url = url.substring(0, index);
+            }
+            if (url.contains("#")) {
+                url = url.substring(0, url.indexOf("#") - 1);
+            }
+            if (url.endsWith("/")) {
+                url = url.substring(0, url.length() - 1);
+            }
             Connection connection = Jsoup.connect(url);
             Document document = connection.get();
             if (connection.response().statusCode() == 200) {
@@ -165,7 +175,7 @@ public class WebCrawler implements Runnable {
             if (done) return null;
             if (url.contains("?")) {
                 int index = url.indexOf("?");
-                url = url.substring(0, index);
+                url = url.substring(0, index - 1);
             }
             if (url.contains("#")) {
                 url = url.substring(0, url.indexOf("#") - 1);
