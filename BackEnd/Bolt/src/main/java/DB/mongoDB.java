@@ -19,7 +19,7 @@ import java.util.*;
 
 public class mongoDB {
 
-    public static int MAX_PAGES_NUM = 100;
+    public static int MAX_PAGES_NUM = 6000;
     private static MongoClient client;
     private static MongoDatabase DB;
     MongoCollection<Document> seedCollection;
@@ -129,8 +129,9 @@ public class mongoDB {
     // Indexing Functions
 
     public boolean isIndexed(String url) {
-
-        return IndexedPages.find(new Document("url", url)).iterator().hasNext();
+        synchronized (this) {
+            return IndexedPages.find(new Document("url", url)).iterator().hasNext();
+        }
     }
 
 

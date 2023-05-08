@@ -6,6 +6,7 @@
       <list>
         <option value="$PROJECT_DIR$/BackEnd/DB/pom.xml" />
         <option value="$PROJECT_DIR$/BackEnd/Bolt/pom.xml" />
+        <option value="$PROJECT_DIR$/BackEnd/Spring Boot Application/pom.xml" />
       </list>
     </option>
   </component>

@@ -82,6 +82,7 @@ public class WebIndexer {
             System.out.println("Page already indexed");
             return;
         }
+        DB.addIndexedPage(url, indexedPages.get(url));
 //        System.out.println("Index this page");
         // 1 - Checking if the page has been indexed before
         // 2 - Cleaning
