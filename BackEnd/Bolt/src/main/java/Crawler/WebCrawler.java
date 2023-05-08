@@ -51,6 +51,10 @@ public class WebCrawler implements Runnable {
                     for (Element link : document.select("a[href]")) {
                         if (DB.getNumOfCrawledPages() + DB.getSeedSize() >= mongoDB.MAX_PAGES_NUM) break;
                         String nextLink = link.absUrl("href");
+                        if (nextLink.contains("?")) {
+                            int index = nextLink.indexOf("?");
+                            nextLink = nextLink.substring(0,index);
+                        }
                         if (nextLink.contains("#")) {
                             nextLink = nextLink.substring(0, nextLink.indexOf("#") - 1);
                         }
