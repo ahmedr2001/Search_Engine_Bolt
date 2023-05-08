@@ -1,6 +1,8 @@
 package Indexer;
 import DB.mongoDB;
 import org.bson.Document;
+import org.jsoup.Jsoup;
+
 import java.util.Iterator;
 import java.util.concurrent.ForkJoinPool;
 
@@ -32,7 +34,6 @@ public class MainIndexer {
                 CrawledPagesCollection = DB.getCrawlerCollection(batchSize, iteration).iterator();
             }
         }
-//        webIndexer.updateLinkDB();
         webIndexer.updateWordDB();
     }
 
