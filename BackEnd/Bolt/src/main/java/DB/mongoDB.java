@@ -89,7 +89,7 @@ public class mongoDB {
 
     public boolean isCrawled(Document doc) {
         synchronized (this) {
-            return crawlerCollection.find(eq("KEY",doc.get("KEY"))).cursor().hasNext();
+            return crawlerCollection.find(eq("KEY",doc.get("KEY"))).cursor().hasNext() || crawlerCollection.find(eq("URL",doc.get("URL"))).cursor().hasNext();
         }
     }
 
@@ -110,7 +110,7 @@ public class mongoDB {
 
     public boolean isSeeded(Document doc) {
         synchronized (this) {
-            return seedCollection.find(eq("KEY",doc.get("KEY"))).cursor().hasNext();
+            return seedCollection.find(eq("KEY",doc.get("KEY"))).cursor().hasNext() || seedCollection.find(eq("URL",doc.get("URL"))).cursor().hasNext();
         }
     }
 
