@@ -1,6 +1,6 @@
 # Search_Engine_Bolt
 
-/// All of this is unused due to docker xD! Jump to the docker section 
+/// NO Docker xD! skip the docker section 
 -------------------------------------------------------------------------------------------------------
 To install MongoDB: 
   - Ubuntu: 
