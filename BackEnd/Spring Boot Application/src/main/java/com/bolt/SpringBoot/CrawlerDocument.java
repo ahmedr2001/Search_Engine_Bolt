@@ -17,5 +17,5 @@ public class CrawlerDocument {
     private String URL;
     private String KEY;
     private String BODY;
-    private String HTML;
+    private String TITLE;
 }

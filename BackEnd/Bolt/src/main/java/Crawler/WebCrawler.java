@@ -60,7 +60,7 @@ public class WebCrawler implements Runnable {
 
                         Document jdoc = getDocument(nextLink);
                         if (jdoc != null) {
-                            org.bson.Document newurl = new org.bson.Document("URL", nextLink).append("KEY", toHexString(getSHA(jdoc.body().toString()))).append("BODY", jdoc.text()).append("HTML", jdoc.body().toString());
+                            org.bson.Document newurl = new org.bson.Document("URL", nextLink).append("KEY", toHexString(getSHA(jdoc.body().toString()))).append("BODY", jdoc.body().toString()).append("TITLE",jdoc.title());
                             if (!DB.isCrawled(newurl) && !DB.isSeeded(newurl)) {
                                 if (handleRobot("*", nextLink, ID)) {
                                     DB.pushSeed(newurl);
@@ -93,9 +93,11 @@ public class WebCrawler implements Runnable {
             Connection connection = Jsoup.connect(url);
             Document document = connection.get();
             if (connection.response().statusCode() == 200) {
-                System.out.println(ID + "=>Bot Received webpage with url = " + url + " and the Title is : " + document.title());
-                DB.addToCrawledPages(doc);
-                return document;
+                if (!DB.isCrawled(doc) && !DB.isSeeded(doc)) {
+                    System.out.println(ID + "=>Bot Received webpage with url = " + url + " and the Title is : " + document.title());
+                    DB.addToCrawledPages(doc);
+                    return document;
+                }
             }
             return null;
         } catch (Exception e) {

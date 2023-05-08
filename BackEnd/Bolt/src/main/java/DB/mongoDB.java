@@ -64,7 +64,7 @@ public class mongoDB {
                     if (WebCrawler.handleRobot("*",url,-1)){
                         org.jsoup.nodes.Document jdoc =WebCrawler.getDocument(url);
                         if (jdoc != null){
-                            Document doc = new Document("URL", url).append("KEY", WebCrawler.toHexString(WebCrawler.getSHA(jdoc.body().toString()))).append("BODY", jdoc.text()).append("HTML", jdoc.body().toString());
+                            Document doc = new Document("URL", url).append("KEY", WebCrawler.toHexString(WebCrawler.getSHA(jdoc.body().toString()))).append("BODY", jdoc.body().toString()).append("TITLE",jdoc.title());
                             seedCollection.insertOne(doc);
                         }
                     }
