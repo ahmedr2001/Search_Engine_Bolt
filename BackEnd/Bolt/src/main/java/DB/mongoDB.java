@@ -82,7 +82,9 @@ public class mongoDB {
         synchronized (this) {
             if (doc == null) return;
             if (getNumOfCrawledPages() + getSeedSize() < mongoDB.MAX_PAGES_NUM) {
-                crawlerCollection.insertOne(doc);
+                if (!isCrawled(doc) && !isSeeded(doc)){
+                    crawlerCollection.insertOne(doc);
+                }
             }
         }
     }

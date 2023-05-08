@@ -80,9 +80,12 @@ public class WebCrawler implements Runnable {
         }
         done = true;
         synchronized (this) {
-            while (DB.getSeedSize() != 0) {
+            while (DB.getNumOfCrawledPages() != mongoDB.MAX_PAGES_NUM) {
                 org.bson.Document doc = DB.popSeed();
                 DB.addToCrawledPages(doc);
+                if (DB.getSeedSize() == 0){
+                    break;
+                }
             }
         }
     }
