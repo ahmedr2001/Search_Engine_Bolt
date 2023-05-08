@@ -16,7 +16,8 @@ public class Synonymization {
     public WordnetStemmer stemmer;
 
     public Synonymization() throws IOException {
-        String absolutePath = "/home/ahmedosamahelmy/IdeaProjects/Search_Engine_Bolt/BackEnd/Spring Boot Application/";
+//        String absolutePath = "/home/ahmedosamahelmy/IdeaProjects/Search_Engine_Bolt/BackEnd/Spring Boot Application/";
+        String absolutePath ="./";
         String path = absolutePath+"dict";
         URL url = new URL("file", null, path);
         this.dict = new edu.mit.jwi.Dictionary(url);

@@ -175,7 +175,7 @@ public class WebCrawler implements Runnable {
             if (done) return null;
             if (url.contains("?")) {
                 int index = url.indexOf("?");
-                url = url.substring(0, index - 1);
+                url = url.substring(0, index);
             }
             if (url.contains("#")) {
                 url = url.substring(0, url.indexOf("#") - 1);
