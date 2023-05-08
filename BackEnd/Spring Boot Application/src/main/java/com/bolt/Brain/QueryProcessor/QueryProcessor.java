@@ -37,6 +37,7 @@ public class QueryProcessor {
     public List<WordsDocument> run(String query) throws IOException {
         //======= Variables Section ========//
         List<String> phrases = extractPhrases(query);        //0. get Phrases
+        //==== For Testing Purpose ====== //
 //        for (String word : words){
 //            System.out.println(word);
 //        }
@@ -47,12 +48,13 @@ public class QueryProcessor {
         List<WordsDocument> results = new ArrayList<>();
         System.out.println(words);
 
-        if (phrases.isEmpty()) return results;
         //===== Get Documents into results ===== //
         for (String word : words) {
             results.addAll(wordsService.findWords(word));
         }
-//        System.out.println(results);
+        // ==== Handel phrases ==== //
+        if (phrases.isEmpty()) return results;
+
         //===== Remove Urls That doesn't Contain the phrases ===== //
         int urls_cnt = 0;
         for (String phrase : phrases) {
