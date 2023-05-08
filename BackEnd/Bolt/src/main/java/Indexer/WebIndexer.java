@@ -1,20 +1,24 @@
 package Indexer;
 import DB.mongoDB;
 import org.bson.Document;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
+import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import javafx.util.Pair;
 
 
 public class WebIndexer {
-    static final int TH_SZ = 1000;
+    static final int TH_SZ = 100;
     mongoDB DB;
-    static HashMap<String, Integer> indexedPages; //
+    public HashMap<String, Integer> indexedPages; //
     static HashMap<String, List<Document>> index; // (Inverted File ) This stores for each word the documents that it was present in
 
     public WebIndexer(mongoDB db) {
-        indexedPages = new HashMap<String, Integer>();
         index = new HashMap<String, List<Document>>();
         DB = db;
     }
@@ -82,35 +86,44 @@ public class WebIndexer {
             System.out.println("Page already indexed");
             return;
         }
-        DB.addIndexedPage(url, indexedPages.get(url));
-//        System.out.println("Index this page");
-        // 1 - Checking if the page has been indexed before
-        // 2 - Cleaning
-        Cleaner cleaner = new Cleaner() ;
-        body = cleaner.runCleaner(body);
-        // 3 -  Tokenization
-        Tokenizer tokenizer = new Tokenizer();
-        List<String> words = tokenizer.runTokenizer(body);
+        indexedPages = new HashMap<String, Integer>();
+        org.jsoup.nodes.Document pageDoc = Jsoup.parse(body);
+        Elements allPageElems = pageDoc.getAllElements();
 
-        // 4 - Removing redundant words (Stop Words)
-        StopWordsRemover stopWordsRemover = new StopWordsRemover();
-        words = stopWordsRemover.runStopWordsRemover(words);
+        List<Pair<String, String>> allWords = new ArrayList<>();
+        for (Element elem : allPageElems) {
+            String elemName = elem.nodeName();
+            String elemText = elem.ownText();
+            Cleaner cleaner = new Cleaner() ;
+            String cleanElemText = cleaner.runCleaner(elemText);
+            // 3 -  Tokenization
+            Tokenizer tokenizer = new Tokenizer();
+            List<String> elemWords = tokenizer.runTokenizer(cleanElemText);
+
+            // 4 - Removing redundant words (Stop Words)
+            StopWordsRemover stopWordsRemover = new StopWordsRemover();
+            List<String> elemNoStopWords = stopWordsRemover.runStopWordsRemover(elemWords);
 //        for(String word : words) System.out.println("Word: " + word);
-        Stemmer stemmer = new Stemmer();
-        List<String> stemWords = stemmer.runStemmer(words);
-//        for (int i = 0; i < stemWords.size(); i++) {
-//            System.out.printf("Word: %s, Stem Word: %s\n", words.get(i), stemWords.get(i));
-//        }
-        int totalWords = stemWords.size();
+            Stemmer stemmer = new Stemmer();
+            /** stemWords is final set of words **/
+            List<String> finalElemWords = stemmer.runStemmer(elemNoStopWords);
+            for (String finalElemWord : finalElemWords) {
+                allWords.add(new Pair<>(elemName, finalElemWord));
+            }
+        }
+
+        int totalWords = allWords.size();
         HashMap<String, Document> Words_TF = new HashMap<String, Document>();
-        for (String stemWord : stemWords) {
+        for (Pair<String, String> tagWordPair : allWords) {
             Document doc = new Document();
-            if (Words_TF.containsKey(stemWord)) {
-                doc.append("TF", Words_TF.get(stemWord).getInteger("TF") + 1);
+            String tagName = tagWordPair.getKey();
+            String word = tagWordPair.getValue();
+            if (Words_TF.containsKey(word)) {
+                doc.append("TF", Words_TF.get(word).getInteger("TF") + 1);
             } else {
                 doc.append("TF", 1);
             }
-            Words_TF.put(stemWord, doc);
+            Words_TF.put(word, doc);
         }
 
         for (String word : Words_TF.keySet()) {
@@ -133,6 +146,7 @@ public class WebIndexer {
         }
 
         indexedPages.put(url, totalWords);
+        updateLinkDB();
     }
 
 
