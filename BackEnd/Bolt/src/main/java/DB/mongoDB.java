@@ -1,6 +1,7 @@
 package DB;
 
 import Crawler.WebCrawler;
+import Logging.*;
 import com.mongodb.BasicDBObject;
 import com.mongodb.ConnectionString;
 import com.mongodb.client.*;
@@ -50,6 +51,7 @@ public class mongoDB {
 
     public void initializeSeed() {
         if (crawlerCollection.countDocuments() >= MAX_PAGES_NUM) {
+            Logging.printColored("[Warn] ", Color.YELLOW);
             System.out.println("Crawling has reached its limit which is equal to " + MAX_PAGES_NUM + " ,System is rebooting");
             crawlerCollection.drop();
             seedCollection.drop();
@@ -70,9 +72,11 @@ public class mongoDB {
                 }
                 cin.close();
             } catch (Exception e) {
+                Logging.printColored("[Error] ", Color.RED);
                 System.out.println("Reading seed file failed :" + e);
             }
         } else {
+            Logging.printColored("[Warn] ", Color.YELLOW);
             System.out.println("Crawling hasn't reached its limit yet , so System is Continued");
         }
     }
@@ -82,6 +86,7 @@ public class mongoDB {
             if (doc == null) return;
             if (getNumOfCrawledPages() < mongoDB.MAX_PAGES_NUM) {
                 if (!isCrawled(doc)) {
+                    Logging.printColored("[Insertion] ", Color.GREEN);
                     System.out.println(ID + "=>Bot Received webpage with url = " + doc.get("URL") + " and the Title is : " + doc.get("TITLE"));
                     crawlerCollection.insertOne(doc);
                 }

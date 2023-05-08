@@ -1,6 +1,7 @@
 package Crawler;
 
 import DB.mongoDB;
+import Logging.*;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -28,6 +29,7 @@ public class WebCrawler implements Runnable {
     public WebCrawler(int num, mongoDB DB) {
         this.DB = DB;
         ID = num;
+        Logging.printColored("[Creation] ", Color.GREEN);
         System.out.println("WebCrawler Created with ID = " + ID);
         thread = new Thread(this);
         thread.start();
@@ -40,7 +42,6 @@ public class WebCrawler implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        System.out.println(ID + " finished");
     }
 
     private void crawl() throws NoSuchAlgorithmException {
@@ -75,7 +76,8 @@ public class WebCrawler implements Runnable {
                             } else {
                                 if (DB.getNumOfCrawledPages() + DB.getSeedSize() >= mongoDB.MAX_PAGES_NUM + THRESHOLD)
                                     break;
-                                System.out.println(ID + "=>Link was Crawled or gonna be Seeded So skip being Seeded Again : " + nextLink);
+                                Logging.printColored("[Skipped] ", Color.YELLOW);
+                                System.out.println(ID + " => Crawled or Seeded before: " + nextLink);
                             }
                         }
                     }
@@ -154,7 +156,8 @@ public class WebCrawler implements Runnable {
                     if (line.startsWith("Disallow: ")) {
                         String path = line.substring(10);
                         if (link.contains(path)) {
-                            System.out.println(ID + " => Robot.txt Blocked : " + link);
+                            Logging.printColored("[Blocked] ", Color.RED);
+                            System.out.println(ID + " => Robot.txt Blocked: " + link);
                             return false;
                         }
                     }
@@ -162,7 +165,8 @@ public class WebCrawler implements Runnable {
             }
             robotReader.close();
         } catch (Exception e) {
-            System.out.println(ID + "=> Robot.txt not found : " + link);
+            Logging.printColored("[Not Found] ", Color.YELLOW);
+            System.out.println(ID + "=> Robot.txt not found: " + link);
         }
         return true;
     }
