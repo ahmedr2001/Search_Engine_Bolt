@@ -1,4 +1,4 @@
-package com.bolt;
+package com.bolt.SpringBoot;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

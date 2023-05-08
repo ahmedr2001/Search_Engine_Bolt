@@ -1,10 +1,10 @@
-package DataStructures;
+package com.bolt.Brain.DataStructures;
 
 import java.util.*;
 
 public class Sorting {
 
-    public static List<String> sortByValue(java.util.HashMap<String, Double> hm)
+    public static List<String> sortByValue(HashMap<String, Double> hm)
     {
         // Create a list from elements of HashMap
         List<Map.Entry<String, Double> > list =

@@ -1,70 +1,75 @@
-package QueryProcessor;
-import DB.mongoDB;
-import Indexer.Stemmer;
-import Indexer.StopWordsRemover;
-import Indexer.Tokenizer;
-import org.bson.Document;
+package com.bolt.Brain.QueryProcessor;
+
+import com.bolt.Brain.Utils.Stemmer;
+import com.bolt.Brain.Utils.StopWordsRemover;
+import com.bolt.Brain.Utils.Synonymization;
+import com.bolt.Brain.Utils.Tokenizer;
+import com.bolt.SpringBoot.CrawlerService;
+import com.bolt.SpringBoot.Page;
+import com.bolt.SpringBoot.WordsDocument;
+import com.bolt.SpringBoot.WordsService;
+
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class QueryProcessor {
-    private String query;
-    private final mongoDB DB;
     private final Tokenizer tokenizer;
     private final Stemmer stemmer;
     private final StopWordsRemover stopWordsRemover;
     private final Synonymization synonymization;
-    public static void main(String [] args) throws IOException {
-        QueryProcessor queryProcessor = new QueryProcessor("\"java\"");
-        queryProcessor.run();
-//        s.replaceAll(" ")
-//        List<String> phrases = new ArrayList<>();
-//        Pattern pattern = Pattern.compile("\"([^\"]*)\"");
-//        Matcher matcher = pattern.matcher(query);
-    }
-    public QueryProcessor(String query) throws IOException {
-        this.query = query;
-        this.DB  = new mongoDB("Bolt");
+    private CrawlerService crawlerService;
+    private WordsService wordsService;
+
+    public QueryProcessor(CrawlerService crawlerService,WordsService wordsService) throws IOException {
         tokenizer = new Tokenizer();
         stopWordsRemover = new StopWordsRemover();
         synonymization = new Synonymization();
         stemmer = new Stemmer();
-
+        this.crawlerService=crawlerService;
+        this.wordsService=wordsService;
     }
 
-    public  List<Document> run() throws IOException {
+    public List<WordsDocument> run(String query) throws IOException {
         //======= Variables Section ========//
-        List<String> phrases = extractPhrases();        //0. get Phrases
-        List<String> words  = process(query);           //1. process query and return all words after processing
-        List<Document> results = new ArrayList<>();
+        List<String> phrases = extractPhrases(query);        //0. get Phrases
+//        for (String word : words){
+//            System.out.println(word);
+//        }
+//        if (phrases.isEmpty()){
+//            System.out.println("empty");
+//        }
+        List<String> words = process(query);           //1. process query and return all words after processing
+        List<WordsDocument> results = new ArrayList<>();
         System.out.println(words);
 
-        if(phrases.isEmpty()) return results;
+        if (phrases.isEmpty()) return results;
         //===== Get Documents into results ===== //
-        for(String word: words) {
-            results.addAll(DB.getWordDocuments(word));
+        for (String word : words) {
+            results.addAll(wordsService.findWords(word));
         }
-        //System.out.println(results);
+//        System.out.println(results);
         //===== Remove Urls That doesn't Contain the phrases ===== //
         int urls_cnt = 0;
-        for(String phrase : phrases) {
-            for(Document res : results) {
+        for (String phrase : phrases) {
+            for (WordsDocument res : results) {
                 @SuppressWarnings("unchecked")
-                List<Document> urls = (List<Document>) res.get("pages");   //get key pages that contain all urls
+                List<Page> urls = res.getPages();   //get key pages that contain all urls
                 // === loop through urls and remove it if not contain phrase
-                Iterator<Document> iterator = urls.iterator();
+                Iterator<Page> iterator = urls.iterator();
                 while (iterator.hasNext()) {
-                    String url = iterator.next().getString("url");
-                    String url_body = DB.getUrlBody(url);
+                    String url = iterator.next().getUrl();
+                    String url_body = crawlerService.getUrlBody(url);
                     if (url_body == null || !url_body.contains(phrase)) {
                         System.out.println("remove: " + url);
                         iterator.remove();
                     }
                 }
-                if(urls.isEmpty()) return null;
+                if (urls.isEmpty()) return null;
                 urls_cnt += urls.size();
             }
         }
@@ -75,10 +80,10 @@ public class QueryProcessor {
 //        for (Document result : results) {
 //            System.out.println(result.toJson());
 //        }
-        return  results;
+        return results;
     }
 
-    public List<String> extractPhrases() {
+    public List<String> extractPhrases(String query) {
         List<String> phrases = new ArrayList<>();
         Pattern pattern = Pattern.compile("\"([^\"]*)\"");
         Matcher matcher = pattern.matcher(query);
@@ -106,7 +111,6 @@ public class QueryProcessor {
                 .collect(Collectors.toList());
         return words;
     }
-
 
 
 }

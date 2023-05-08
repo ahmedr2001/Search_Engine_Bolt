@@ -1,4 +1,4 @@
-package QueryProcessor;
+package com.bolt.Brain.Utils;
 
 
 import edu.mit.jwi.IDictionary;
