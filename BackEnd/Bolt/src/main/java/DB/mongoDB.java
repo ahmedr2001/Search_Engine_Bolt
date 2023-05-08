@@ -129,8 +129,9 @@ public class mongoDB {
     // Indexing Functions
 
     public boolean isIndexed(String url) {
-
-        return IndexedPages.find(new Document("url", url)).iterator().hasNext();
+        synchronized (this) {
+            return IndexedPages.find(new Document("url", url)).iterator().hasNext();
+        }
     }
 
 
