@@ -16,7 +16,8 @@ public class Synonymization {
     public WordnetStemmer stemmer;
 
     public Synonymization() throws IOException {
-        String path = "./dict";
+        String absolutePath = "/home/ahmedosamahelmy/IdeaProjects/Search_Engine_Bolt/BackEnd/Spring Boot Application/";
+        String path = absolutePath+"dict";
         URL url = new URL("file", null, path);
         this.dict = new edu.mit.jwi.Dictionary(url);
         dict.open();
@@ -103,7 +104,6 @@ public class Synonymization {
     private static POS getPartOfSpeech(String word, IDictionary dict) {
         // Find the part of speech for the word
         WordnetStemmer stemmer = new WordnetStemmer(dict);
-
         List<String> stems = stemmer.findStems(word, null);
         if (!stems.isEmpty()) {
             String stem = stems.get(0);

@@ -32,7 +32,7 @@ public class MainIndexer {
                 CrawledPagesCollection = DB.getCrawlerCollection(batchSize, iteration).iterator();
             }
         }
-        webIndexer.updateLinkDB();
+//        webIndexer.updateLinkDB();
         webIndexer.updateWordDB();
     }
 
