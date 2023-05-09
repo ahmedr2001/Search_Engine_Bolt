@@ -90,7 +90,7 @@ public class WebIndexer {
         org.jsoup.nodes.Document pageDoc = Jsoup.parse(body);
         Elements allPageElems = pageDoc.getAllElements();
 
-        List<Pair<String, String>> allWords = new ArrayList<>();
+        List<Pair<Pair<String, String>, String>> allWords = new ArrayList<>();
         for (Element elem : allPageElems) {
             String elemName = elem.nodeName();
             String elemText = elem.ownText();
@@ -108,31 +108,39 @@ public class WebIndexer {
             /** stemWords is final set of words **/
             List<String> finalElemWords = stemmer.runStemmer(elemNoStopWords);
             for (String finalElemWord : finalElemWords) {
-                allWords.add(new Pair<>(elemName, finalElemWord));
+                allWords.add(new Pair<>(new Pair<>(elemName, finalElemWord), elemText));
             }
         }
 
         int totalWords = allWords.size();
-        HashMap<String, Document> Words_TF = new HashMap<String, Document>();
-        for (Pair<String, String> tagWordPair : allWords) {
+        HashMap<String, Document> wordDocMap = new HashMap<String, Document>();
+        for (Pair<Pair<String, String>, String> tagWordPair : allWords) {
+            String tag = tagWordPair.getKey().getKey();
+            String word = tagWordPair.getKey().getValue();
+            String snippet = tagWordPair.getValue();
+
             Document doc = new Document();
-            String tagName = tagWordPair.getKey();
-            String word = tagWordPair.getValue();
-            if (Words_TF.containsKey(word)) {
-                doc.append("TF", Words_TF.get(word).getInteger("TF") + 1);
+            doc.append("tag", tag);
+            doc.append("snippet", snippet);
+            if (wordDocMap.containsKey(word)) {
+                doc.append("TF", wordDocMap.get(word).getInteger("TF") + 1);
             } else {
                 doc.append("TF", 1);
             }
-            Words_TF.put(word, doc);
+            wordDocMap.put(word, doc);
         }
 
-        for (String word : Words_TF.keySet()) {
-            double TF = Words_TF.get(word).getInteger("TF") / (double) totalWords; // Normalized TF
+        for (String word : wordDocMap.keySet()) {
+            double TF = wordDocMap.get(word).getInteger("TF") / (double) totalWords; // Normalized TF
+            String tag = wordDocMap.get(word).getString("tag");
+            String snippet = wordDocMap.get(word).getString("snippet");
 
             Document doc = new Document();
             doc.append("url", url);
             doc.append("_id", id);
             doc.append("TF", TF);
+            doc.append("tag", tag);
+            doc.append("snippet", snippet);
 
             if (TF < 0.5) { // Avoiding spamming
                 if (index.containsKey(word)) {

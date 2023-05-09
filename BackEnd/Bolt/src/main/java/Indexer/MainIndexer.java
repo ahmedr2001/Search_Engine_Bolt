@@ -8,7 +8,7 @@ import java.util.concurrent.ForkJoinPool;
 
 public class MainIndexer {
 
-    public static mongoDB DB ;
+    public static mongoDB DB;
     public static void main(String[] args) throws InterruptedException {
         DB  = new mongoDB("Bolt");
         runMainIndexer(DB);
