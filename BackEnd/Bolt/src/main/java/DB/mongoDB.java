@@ -20,16 +20,15 @@ import java.util.*;
 
 public class mongoDB {
 
-    public static int MAX_PAGES_NUM = 200;
+    public static int MAX_PAGES_NUM = 100;
     private static MongoClient client;
     private static MongoDatabase DB;
     MongoCollection<Document> seedCollection;
     MongoCollection<Document> crawlerCollection;
-
-    // Indexing Collections
-    MongoCollection<Document> IndexedPages;
     MongoCollection<Document> wordsCollection;
 
+    MongoCollection<Document> paragraphsCollection;
+    MongoCollection<Document> urlsCollection;
 
     public mongoDB(String DB_Name) {
 
@@ -41,7 +40,8 @@ public class mongoDB {
         seedCollection = DB.getCollection("Seed");
         crawlerCollection = DB.getCollection("CrawledPages");
         wordsCollection = DB.getCollection("WordsCollection");
-        IndexedPages = DB.getCollection("IndexedPages");
+        paragraphsCollection = DB.getCollection("ParagraphsCollection");
+        urlsCollection = DB.getCollection("URLsCollection");
 //            crawlerCollection.drop();
 //            seedCollection.drop();
         //} else {
@@ -133,10 +133,13 @@ public class mongoDB {
 
     // Indexing Functions
 
-    public boolean isIndexed(String url) {
-        return IndexedPages.find(new Document("url", url)).iterator().hasNext();
+    public boolean isUrlIndexed(String url) {
+        return urlsCollection.find(new Document("url", url)).iterator().hasNext();
     }
 
+    public boolean isParagraphIndexed(Integer paragraphId) {
+        return paragraphsCollection.find(new Document("_id", paragraphId)).iterator().hasNext();
+    }
 
     public static void List_All(MongoCollection collection) {
 //        Listing All Mongo Documents in Collection
@@ -199,7 +202,7 @@ public class mongoDB {
     }
 
 
-    public void addWord(String word, List<Document> wordPages) {
+    public void addIndexedWord(String word, List<Document> wordPages) {
         Document filter = new Document("word", word);
         FindIterable<Document> fi = wordsCollection.find(filter);
         Iterator<Document> it = fi.iterator();
@@ -216,17 +219,24 @@ public class mongoDB {
         }
     }
 
-    public void addIndexedPage(String url, Integer wordCount) {
-        Document filter = new Document("url", url);
-        FindIterable<Document> fi = IndexedPages.find(filter);
-        Iterator<Document> it = fi.iterator();
-        Boolean pageExists = it.hasNext();
-        if (pageExists) {
-            IndexedPages.findOneAndUpdate(filter, new Document("$set", new Document("url", url)
-                    .append("wordCount", wordCount)));
-        } else {
-            Document doc = new Document("url", url).append("wordCount", wordCount);
-            IndexedPages.insertOne(doc);
+    public void addIndexedUrl(Integer _id, String url, String title) {
+        Boolean pageExists = isUrlIndexed(url);
+        if (!pageExists) {
+            Document doc = new Document("_id", _id)
+                    .append("url", url)
+                    .append("title", title);
+            urlsCollection.insertOne(doc);
+        }
+    }
+
+    public void addIndexedParagraph(String paragraph, Integer paragraphId) {
+        Boolean paragraphExists = isParagraphIndexed(paragraphId);
+        if (!paragraphExists) {
+            Document paragraphDoc = new Document();
+            paragraphDoc.append("_id", paragraphId)
+                    .append("paragraph", paragraph);
+
+            paragraphsCollection.insertOne(paragraphDoc);
         }
     }
 
