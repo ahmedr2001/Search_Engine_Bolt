@@ -5,18 +5,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
+@Document(collection = "ParagraphsCollection")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Page {
+public class ParagraphDocument {
     @Id
     private int id;
-    private Double TF;
-    private List<String> tagTypes;
-    private List<String> tagIndexes;
-    private List<String> paragraphIndexes;
-    private List<String> wordIndexes;
+    private String paragraph;
 }

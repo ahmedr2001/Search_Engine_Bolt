@@ -25,6 +25,7 @@ public class WordsService {
         System.out.println(q);
 
         List<WordsDocument> finalResults = new ArrayList<>();
+
         finalResults = Stream.concat(repository.findByWord(q).stream(), finalResults.stream()).toList();
 
         String[] ar = q.split(" ");
