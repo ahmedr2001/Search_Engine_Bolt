@@ -5,22 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3105906b-9e79-457b-a768-4fd4e62bab06" name="Changes" comment="spring boot init">
-      <change afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/ParagraphDocument.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/ParagraphRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/UrlDocument.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/UrlRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/UrlsService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/DataStructures/Pair.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BackEnd/Bolt/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Bolt/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/QueryProcessor/PhraseSearching.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/QueryProcessor/QueryProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/QueryProcessor/QueryProcessor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/Ranker/MainRanker.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/Ranker/MainRanker.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/Utils/Synonymization.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/Utils/Synonymization.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/Page.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/Page.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/WordsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/WordsController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/WordsRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/WordsRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/WordsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/WordsService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -171,6 +159,15 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-core" />
+    <option featureType="dependencySupport" implementationName="java:org.openjfx:javafx-base" />
+    <option featureType="dependencySupport" implementationName="java:org.seleniumhq.selenium:selenium-java" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.data:spring-data-commons" />
+    <option featureType="com.intellij.configurationType" implementationName="SpringBootApplicationConfigurationType" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-webmvc" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
