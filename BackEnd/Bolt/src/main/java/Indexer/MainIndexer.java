@@ -1,13 +1,14 @@
 package Indexer;
 import DB.mongoDB;
-import Ranker.MainRanker;
 import org.bson.Document;
+import org.jsoup.Jsoup;
+
 import java.util.Iterator;
 import java.util.concurrent.ForkJoinPool;
 
 public class MainIndexer {
 
-    public static mongoDB DB ;
+    public static mongoDB DB;
     public static void main(String[] args) throws InterruptedException {
         DB  = new mongoDB("Bolt");
         runMainIndexer(DB);
@@ -23,18 +24,18 @@ public class MainIndexer {
         WebIndexer webIndexer = new WebIndexer(DB);
         while (CrawledPagesCollection.hasNext()){
             Document d = CrawledPagesCollection.next();
+            String title = d.getString("TITLE");
             String page = d.getString("BODY");
             String url = d.getString("URL");
-            Object id = d.get("_id");
+            Integer _id = cnt;
+            webIndexer.startIndexer(page, title, url, _id);
             System.out.printf("index page: %d url:%s \n", cnt++, url);
-            webIndexer.startIndexer(page, url, id);
             if (cnt % batchSize == 0) {
                 iteration++;
                 CrawledPagesCollection = DB.getCrawlerCollection(batchSize, iteration).iterator();
             }
         }
-        webIndexer.updateLinkDB();
-        webIndexer.updateWordDB();
+        webIndexer.updateWordsCollection();
     }
 
 }

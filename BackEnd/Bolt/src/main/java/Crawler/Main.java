@@ -1,6 +1,7 @@
 package Crawler;
 
 import DB.mongoDB;
+import Logging.*;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -10,7 +11,7 @@ public class Main {
 
         mongoDB DB = new mongoDB("Bolt");
         DB.initializeSeed();
-
+        Logging.printColored("[Start] ", Color.WHITE);
         System.out.println("Crawler mission begins!");
 
         Scanner cin = new Scanner(System.in);
@@ -27,7 +28,7 @@ public class Main {
         for (int i = 1; i <= numOfThreads; i++) {
             bots.add(new WebCrawler(i, DB));
         }
-
+        Logging.printColored("", Color.WHITE);
         for (WebCrawler crawler : bots) {
             try {
                 String num = crawler.getThread().getName();

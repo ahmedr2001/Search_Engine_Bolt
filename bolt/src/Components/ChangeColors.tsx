@@ -7,7 +7,7 @@ import { IMappedTheme } from "../themes/utils";
 export default function ChangeColors() {
 	const themes = [dark, blue, light];
 	return (
-		<div className={`flex  gap-0`}>
+		<div className={`flex  gap-0 flex-row-reverse`}>
 			{themes.map((item, i) => (
 				<ChangeColorBtn key={i} theme={item} />
 			))}

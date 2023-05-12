@@ -1,6 +1,7 @@
 package Crawler;
 
 import DB.mongoDB;
+import Logging.*;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -23,9 +24,12 @@ public class WebCrawler implements Runnable {
     private final Thread thread;
     private final int ID;
 
+    private final int THRESHOLD = 100;
+
     public WebCrawler(int num, mongoDB DB) {
         this.DB = DB;
         ID = num;
+        Logging.printColored("[Creation] ", Color.GREEN);
         System.out.println("WebCrawler Created with ID = " + ID);
         thread = new Thread(this);
         thread.start();
@@ -38,19 +42,23 @@ public class WebCrawler implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        System.out.println(ID + " finished");
     }
 
     private void crawl() throws NoSuchAlgorithmException {
-        while (DB.getNumOfCrawledPages() + DB.getSeedSize() < mongoDB.MAX_PAGES_NUM) {
+        while (DB.getNumOfCrawledPages() + DB.getSeedSize() < mongoDB.MAX_PAGES_NUM + THRESHOLD) {
+            if (DB.getNumOfCrawledPages() == mongoDB.MAX_PAGES_NUM) return;
             org.bson.Document doc = DB.popSeed();
             if (doc != null) {
                 Document document = request(doc);
                 if (document != null) {
-                    if (DB.getNumOfCrawledPages() + DB.getSeedSize() >= mongoDB.MAX_PAGES_NUM) break;
+                    if (DB.getNumOfCrawledPages() + DB.getSeedSize() >= mongoDB.MAX_PAGES_NUM + THRESHOLD) break;
                     for (Element link : document.select("a[href]")) {
-                        if (DB.getNumOfCrawledPages() + DB.getSeedSize() >= mongoDB.MAX_PAGES_NUM) break;
+                        if (DB.getNumOfCrawledPages() + DB.getSeedSize() >= mongoDB.MAX_PAGES_NUM + THRESHOLD) break;
                         String nextLink = link.absUrl("href");
+                        if (nextLink.contains("?")) {
+                            int index = nextLink.indexOf("?");
+                            nextLink = nextLink.substring(0, index);
+                        }
                         if (nextLink.contains("#")) {
                             nextLink = nextLink.substring(0, nextLink.indexOf("#") - 1);
                         }
@@ -60,14 +68,16 @@ public class WebCrawler implements Runnable {
 
                         Document jdoc = getDocument(nextLink);
                         if (jdoc != null) {
-                            org.bson.Document newurl = new org.bson.Document("URL", nextLink).append("KEY", toHexString(getSHA(jdoc.body().toString()))).append("BODY", jdoc.text()).append("HTML", jdoc.body().toString());
+                            org.bson.Document newurl = new org.bson.Document("URL", nextLink).append("KEY", toHexString(getSHA(jdoc.body().toString()))).append("BODY", jdoc.body().toString()).append("TITLE", jdoc.title());
                             if (!DB.isCrawled(newurl) && !DB.isSeeded(newurl)) {
                                 if (handleRobot("*", nextLink, ID)) {
                                     DB.pushSeed(newurl);
                                 }
                             } else {
-                                if (DB.getNumOfCrawledPages() + DB.getSeedSize() >= mongoDB.MAX_PAGES_NUM) break;
-                                System.out.println(ID + "=>Link was Crawled or gonna be Seeded So skip being Seeded Again : " + nextLink);
+                                if (DB.getNumOfCrawledPages() + DB.getSeedSize() >= mongoDB.MAX_PAGES_NUM + THRESHOLD)
+                                    break;
+                                Logging.printColored("[Skipped] ", Color.YELLOW);
+                                System.out.println(ID + " => Crawled or Seeded before: " + nextLink);
                             }
                         }
                     }
@@ -76,26 +86,40 @@ public class WebCrawler implements Runnable {
         }
         done = true;
         synchronized (this) {
-            while (DB.getSeedSize() != 0) {
+            while (DB.getNumOfCrawledPages() < mongoDB.MAX_PAGES_NUM) {
                 org.bson.Document doc = DB.popSeed();
-                DB.addToCrawledPages(doc);
+                DB.addToCrawledPages(doc, ID);
+                if (DB.getSeedSize() == 0) {
+                    return;
+                }
             }
         }
     }
 
     private Document request(org.bson.Document doc) {
         try {
-            if (DB.getNumOfCrawledPages() + DB.getSeedSize() >= mongoDB.MAX_PAGES_NUM) return null;
+            if (DB.getNumOfCrawledPages() + DB.getSeedSize() >= mongoDB.MAX_PAGES_NUM + THRESHOLD) return null;
             String url = doc.getString("URL");
             if (url.contains("pinterest")) {
                 return null;
             }
+            if (url.contains("?")) {
+                int index = url.indexOf("?");
+                url = url.substring(0, index);
+            }
+            if (url.contains("#")) {
+                url = url.substring(0, url.indexOf("#") - 1);
+            }
+            if (url.endsWith("/")) {
+                url = url.substring(0, url.length() - 1);
+            }
             Connection connection = Jsoup.connect(url);
             Document document = connection.get();
             if (connection.response().statusCode() == 200) {
-                System.out.println(ID + "=>Bot Received webpage with url = " + url + " and the Title is : " + document.title());
-                DB.addToCrawledPages(doc);
-                return document;
+                if (!DB.isCrawled(doc) && !DB.isSeeded(doc)) {
+                    DB.addToCrawledPages(doc, ID);
+                    return document;
+                }
             }
             return null;
         } catch (Exception e) {
@@ -132,7 +156,8 @@ public class WebCrawler implements Runnable {
                     if (line.startsWith("Disallow: ")) {
                         String path = line.substring(10);
                         if (link.contains(path)) {
-                            System.out.println(ID + " => Robot.txt Blocked : " + link);
+                            Logging.printColored("[Blocked] ", Color.RED);
+                            System.out.println(ID + " => Robot.txt Blocked: " + link);
                             return false;
                         }
                     }
@@ -140,7 +165,8 @@ public class WebCrawler implements Runnable {
             }
             robotReader.close();
         } catch (Exception e) {
-            System.out.println(ID + "=> Robot.txt not found : " + link);
+            Logging.printColored("[Not Found] ", Color.YELLOW);
+            System.out.println(ID + "=> Robot.txt not found: " + link);
         }
         return true;
     }
@@ -151,6 +177,16 @@ public class WebCrawler implements Runnable {
         }
         try {
             if (done) return null;
+            if (url.contains("?")) {
+                int index = url.indexOf("?");
+                url = url.substring(0, index);
+            }
+            if (url.contains("#")) {
+                url = url.substring(0, url.indexOf("#") - 1);
+            }
+            if (url.endsWith("/")) {
+                url = url.substring(0, url.length() - 1);
+            }
             Connection connection = Jsoup.connect(url);
             Document document = connection.get();
             if (connection.response().statusCode() == 200) {

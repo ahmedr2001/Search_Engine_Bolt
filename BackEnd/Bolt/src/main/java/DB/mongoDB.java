@@ -1,6 +1,7 @@
 package DB;
 
 import Crawler.WebCrawler;
+import Logging.*;
 import com.mongodb.BasicDBObject;
 import com.mongodb.ConnectionString;
 import com.mongodb.client.*;
@@ -24,33 +25,33 @@ public class mongoDB {
     private static MongoDatabase DB;
     MongoCollection<Document> seedCollection;
     MongoCollection<Document> crawlerCollection;
-
-    // Indexing Collections
-    MongoCollection<Document> IndexedPages;
     MongoCollection<Document> wordsCollection;
 
-
+    MongoCollection<Document> paragraphsCollection;
+    MongoCollection<Document> urlsCollection;
 
     public mongoDB(String DB_Name) {
 
         //if (client == null) {
 //            ConnectionString connectionString = new ConnectionString("mongodb+srv://ahmedr2001:eng3469635@javasearchengine.8xarqeo.mongodb.net/?retryWrites=true&w=majority");
-            ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017");
-            client = MongoClients.create(connectionString);
-            DB = client.getDatabase(DB_Name);
-            seedCollection = DB.getCollection("Seed");
-            crawlerCollection = DB.getCollection("CrawledPages");
-            wordsCollection = DB.getCollection("WordsCollection");
-            IndexedPages = DB.getCollection("IndexedPages");
+        ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017");
+        client = MongoClients.create(connectionString);
+        DB = client.getDatabase(DB_Name);
+        seedCollection = DB.getCollection("Seed");
+        crawlerCollection = DB.getCollection("CrawledPages");
+        wordsCollection = DB.getCollection("WordsCollection");
+        paragraphsCollection = DB.getCollection("ParagraphsCollection");
+        urlsCollection = DB.getCollection("URLsCollection");
 //            crawlerCollection.drop();
 //            seedCollection.drop();
         //} else {
-          //  System.out.println("Already connected to the client");
+        //  System.out.println("Already connected to the client");
         //}
     }
 
     public void initializeSeed() {
         if (crawlerCollection.countDocuments() >= MAX_PAGES_NUM) {
+            Logging.printColored("[Warn] ", Color.YELLOW);
             System.out.println("Crawling has reached its limit which is equal to " + MAX_PAGES_NUM + " ,System is rebooting");
             crawlerCollection.drop();
             seedCollection.drop();
@@ -61,44 +62,48 @@ public class mongoDB {
                 Scanner cin = new Scanner(file);
                 while (cin.hasNextLine()) {
                     String url = cin.nextLine();
-                    if (WebCrawler.handleRobot("*",url,-1)){
-                        org.jsoup.nodes.Document jdoc =WebCrawler.getDocument(url);
-                        if (jdoc != null){
-                            Document doc = new Document("URL", url).append("KEY", WebCrawler.toHexString(WebCrawler.getSHA(jdoc.body().toString()))).append("BODY", jdoc.text()).append("HTML", jdoc.body().toString());
+                    if (WebCrawler.handleRobot("*", url, -1)) {
+                        org.jsoup.nodes.Document jdoc = WebCrawler.getDocument(url);
+                        if (jdoc != null) {
+                            Document doc = new Document("URL", url).append("KEY", WebCrawler.toHexString(WebCrawler.getSHA(jdoc.body().toString()))).append("BODY", jdoc.body().toString()).append("TITLE", jdoc.title());
                             seedCollection.insertOne(doc);
                         }
                     }
                 }
                 cin.close();
             } catch (Exception e) {
+                Logging.printColored("[Error] ", Color.RED);
                 System.out.println("Reading seed file failed :" + e);
             }
         } else {
+            Logging.printColored("[Warn] ", Color.YELLOW);
             System.out.println("Crawling hasn't reached its limit yet , so System is Continued");
         }
     }
 
-    public void addToCrawledPages(Document doc) {
+    public void addToCrawledPages(Document doc,int ID) {
         synchronized (this) {
             if (doc == null) return;
-            if (getNumOfCrawledPages() + getSeedSize() < mongoDB.MAX_PAGES_NUM) {
-                crawlerCollection.insertOne(doc);
+            if (getNumOfCrawledPages() < mongoDB.MAX_PAGES_NUM) {
+                if (!isCrawled(doc)) {
+                    Logging.printColored("[Insertion] ", Color.GREEN);
+                    System.out.println(ID + "=>Bot Received webpage with url = " + doc.get("URL") + " and the Title is : " + doc.get("TITLE"));
+                    crawlerCollection.insertOne(doc);
+                }
             }
         }
     }
 
     public boolean isCrawled(Document doc) {
         synchronized (this) {
-            return crawlerCollection.find(eq("KEY",doc.get("KEY"))).cursor().hasNext();
+            return crawlerCollection.find(eq("KEY", doc.get("KEY"))).cursor().hasNext() || crawlerCollection.find(eq("URL", doc.get("URL"))).cursor().hasNext();
         }
     }
 
     public void pushSeed(Document doc) {
         synchronized (this) {
             if (doc == null) return;
-            if (getNumOfCrawledPages() + getSeedSize() < mongoDB.MAX_PAGES_NUM) {
-                seedCollection.insertOne(doc);
-            }
+            seedCollection.insertOne(doc);
         }
     }
 
@@ -110,7 +115,7 @@ public class mongoDB {
 
     public boolean isSeeded(Document doc) {
         synchronized (this) {
-            return seedCollection.find(eq("KEY",doc.get("KEY"))).cursor().hasNext();
+            return seedCollection.find(eq("KEY", doc.get("KEY"))).cursor().hasNext() || seedCollection.find(eq("URL", doc.get("URL"))).cursor().hasNext();
         }
     }
 
@@ -128,12 +133,13 @@ public class mongoDB {
 
     // Indexing Functions
 
-    public boolean isIndexed(String url) {
-
-        return IndexedPages.find(new Document("url", url)).iterator().hasNext();
+    public boolean isUrlIndexed(String url) {
+        return urlsCollection.find(new Document("url", url)).iterator().hasNext();
     }
 
-
+    public boolean isParagraphIndexed(Integer paragraphId) {
+        return paragraphsCollection.find(new Document("_id", paragraphId)).iterator().hasNext();
+    }
 
     public static void List_All(MongoCollection collection) {
 //        Listing All Mongo Documents in Collection
@@ -171,7 +177,7 @@ public class mongoDB {
         query.append("word", search_word);
 
         //2. create cursor to resulted documents
-        try(MongoCursor<Document> cursor = wordsCollection.find(query).iterator() ) {
+        try (MongoCursor<Document> cursor = wordsCollection.find(query).iterator()) {
             //3. iterate through it
             while (cursor.hasNext()) {
                 results.add(cursor.next()); // 4. add results
@@ -180,6 +186,7 @@ public class mongoDB {
 
         return results;
     }
+
     public String getUrlBody(String url) {
         String result = null;
 
@@ -188,56 +195,63 @@ public class mongoDB {
 
         //2. create cursor to resulted documents
         Document res_doc = crawlerCollection.find(query).first();
-        if(res_doc != null)
+        if (res_doc != null)
             result = res_doc.getString("BODY");
 
         return result;
     }
 
 
-
-    public void addWord(String word, List<Document> wordPages) {
+    public void addIndexedWord(String word, List<Document> wordPages) {
         Document filter = new Document("word", word);
         FindIterable<Document> fi = wordsCollection.find(filter);
         Iterator<Document> it = fi.iterator();
         Boolean wordExists = it.hasNext();
         if (wordExists) {
             wordsCollection.findOneAndUpdate(filter, new Document("$set", new Document("word", word)
-                    .append("IDF", Math.log(crawlerCollection.countDocuments() / (double)wordPages.size()))
+                    .append("IDF", Math.log(crawlerCollection.countDocuments() / (double) wordPages.size()))
                     .append("pages", wordPages)));
         } else {
             Document doc = new Document("word", word)
-                    .append("IDF", Math.log(crawlerCollection.countDocuments() / (double)wordPages.size()))
+                    .append("IDF", Math.log(crawlerCollection.countDocuments() / (double) wordPages.size()))
                     .append("pages", wordPages);
             wordsCollection.insertOne(doc);
         }
     }
 
-    public void addIndexedPage(String url, Integer wordCount) {
-        Document filter = new Document("url", url);
-        FindIterable<Document> fi = IndexedPages.find(filter);
-        Iterator<Document> it = fi.iterator();
-        Boolean pageExists = it.hasNext();
-        if (pageExists) {
-            IndexedPages.findOneAndUpdate(filter, new Document("$set", new Document("url", url)
-                    .append("wordCount", wordCount)));
-        } else {
-            Document doc = new Document("url", url).append("wordCount", wordCount);
-            IndexedPages.insertOne(doc);
+    public void addIndexedUrl(Integer _id, String url, String title) {
+        Boolean pageExists = isUrlIndexed(url);
+        if (!pageExists) {
+            Document doc = new Document("_id", _id)
+                    .append("url", url)
+                    .append("title", title);
+            urlsCollection.insertOne(doc);
         }
     }
-    public Iterable<Document> getPagesWithWord(String searchWord){
-        List<Document> results = new ArrayList<>() ;
-        FindIterable<Document> iterable = wordsCollection.find(new Document("word",searchWord));
-        Document pages = wordsCollection.find(new Document("word",searchWord)).first();
-        if(pages != null) {
+
+    public void addIndexedParagraph(String paragraph, Integer paragraphId) {
+        Boolean paragraphExists = isParagraphIndexed(paragraphId);
+        if (!paragraphExists) {
+            Document paragraphDoc = new Document();
+            paragraphDoc.append("_id", paragraphId)
+                    .append("paragraph", paragraph);
+
+            paragraphsCollection.insertOne(paragraphDoc);
+        }
+    }
+
+    public Iterable<Document> getPagesWithWord(String searchWord) {
+        List<Document> results = new ArrayList<>();
+        FindIterable<Document> iterable = wordsCollection.find(new Document("word", searchWord));
+        Document pages = wordsCollection.find(new Document("word", searchWord)).first();
+        if (pages != null) {
             System.out.println(pages.get("IDF"));
         }
         // { IDF ,  Array of pages }
         System.out.println(iterable);
         iterable.into(results);
 
-        return  results;
+        return results;
     }
 
 
