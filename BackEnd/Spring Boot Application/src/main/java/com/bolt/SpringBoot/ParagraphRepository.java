@@ -8,7 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface ParagraphRepository extends MongoRepository<ParagraphDocument, ObjectId> {
-    Optional<ParagraphDocument> findById(ObjectId id);
-
+    ParagraphDocument findParagraphById(Integer id);
 
 }
