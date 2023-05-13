@@ -33,7 +33,6 @@ public class WordsService {
                 finalResults = Stream.concat(repository.findByWord(s).stream(), finalResults.stream()).toList();
             }
         }
-
         return finalResults;
     }
 }

@@ -49,6 +49,7 @@ public class MainRanker {
     }
 
     void calculate_TF_IDF(WordsDocument word_doc) {
+        System.out.println(word_doc);
         double idf = (Double) word_doc.getIDF();
         ArrayList<Page> pages = (ArrayList<Page>) word_doc.getPages();
         Iterator<Page> pages_iterable = pages.iterator();

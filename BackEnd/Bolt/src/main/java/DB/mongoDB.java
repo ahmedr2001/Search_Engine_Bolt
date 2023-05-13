@@ -231,7 +231,7 @@ public class mongoDB {
     public void addPageRank(String url , double page_rank){
         Document filter = new Document("url", url);
         urlsCollection.findOneAndUpdate(filter, new Document("$set", new Document("url", url)
-                .append("page_rank", page_rank)));
+                .append("rank", page_rank)));
     }
 
     public void addIndexedParagraph(String paragraph, Integer paragraphId) {
