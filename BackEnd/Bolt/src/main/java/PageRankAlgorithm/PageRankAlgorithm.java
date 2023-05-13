@@ -1,4 +1,4 @@
-package Crawler;
+package PageRankAlgorithm;
 
 import DB.mongoDB;
 import org.bson.Document;
@@ -23,8 +23,8 @@ public class PageRankAlgorithm {
     HashMap<String , Integer> URL_ID ;
     List<Document> crawledPagesLightVersion ; // Without the body
     List< HashSet<Integer>> adjList ; // Hashset to maintain uniqueness
-    PageRankAlgorithm(mongoDB DB){
-        this.DB = DB ;
+    PageRankAlgorithm(){
+        DB  = new mongoDB("Bolt");
         URL_ID = new HashMap<>();
         crawledPagesLightVersion = new ArrayList<>() ;
         int batchSize = 100 ;   Document page;
@@ -82,6 +82,9 @@ public class PageRankAlgorithm {
             System.out.printf(" Page Rank of " + k + " is :\t" + page_rank[k] + "\n");
         }
 
+    }
+    public static void main(String [] args){
+        PageRankAlgorithm pageRankAlgorithm = new PageRankAlgorithm();
     }
     public void init(){
         adjList=new ArrayList<>() ;

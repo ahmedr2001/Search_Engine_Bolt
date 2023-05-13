@@ -56,7 +56,7 @@ public class MainRanker {
             Page page = pages_iterable.next();
             double tf = (Double) page.getTF();
             String url = (String) urlsService.findUrl(page.getId())  ;
-//            double rank = urlsService.
+            double rank = urlsService.findRank(url);
             double TF_IDF = idf * tf;
             if (Page_Score.get(url) == null) {
                 Page_Score.put(url, TF_IDF);

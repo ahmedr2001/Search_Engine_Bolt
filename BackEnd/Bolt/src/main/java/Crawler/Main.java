@@ -38,7 +38,5 @@ public class Main {
             }
         }
         System.out.println("Crawler Mission Done");
-//        PageRankAlgorithm pageRankAlgorithm = new PageRankAlgorithm(DB);
-
     }
 }
