@@ -107,7 +107,7 @@ public class QueryProcessor {
         for(Integer wordIndex: resultsPerWord.keySet()) {               // 1. loop on index of wrd in phrase
             for (WordsDocument wDoc : resultsPerWord.get(wordIndex)) {  // 2. loop result of each on word
                 for (Page pg : wDoc.getPages()) {                       // 3. loop on urls Content Details
-                    Integer urlIndex = pg.getId();
+                    Integer urlIndex = pg.getUrlId();
                     List<Integer> paragraphIndex = pg.getParagraphIndexes();
                     List<Integer> wordIndexInP = pg.getWordIndexes();
                     for(int i = 0;i < paragraphIndex.size();i++) {      // 4. loop on details of each exist word in doc

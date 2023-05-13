@@ -74,7 +74,7 @@ public class PageRankAlgorithm {
         }
         // Add the Damping Factor to PageRank
         for (k = 0; k <cnt; k++) {
-            page_rank[k] = (1 - DampingFactor) + DampingFactor * page_rank[k];
+//            page_rank[k] = (1 - DampingFactor) + DampingFactor * page_rank[k];
             DB.addPageRank(crawledPagesLightVersion.get(k).getString("URL") , page_rank[k]);
         }
         System.out.printf("\n Final Page Rank : \n");

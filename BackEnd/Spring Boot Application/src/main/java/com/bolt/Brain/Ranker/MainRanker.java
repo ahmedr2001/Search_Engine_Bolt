@@ -54,15 +54,17 @@ public class MainRanker {
         Iterator<Page> pages_iterable = pages.iterator();
         while (pages_iterable.hasNext()) {
             Page page = pages_iterable.next();
+            System.out.println(page);
             double tf = (Double) page.getTF();
-            String url = (String) urlsService.findUrl(page.getId())  ;
+            String url = (String) urlsService.findUrl(page.getUrlId())  ;
+            if(url == null) continue;
             double rank = urlsService.findRank(url);
             double TF_IDF = idf * tf;
             if (Page_Score.get(url) == null) {
-                Page_Score.put(url, TF_IDF);
+                Page_Score.put(url, TF_IDF+rank);
                 numberOfWordsOnEachPage.put(url, 1);
             } else {
-                Page_Score.put(url, Page_Score.get(url) + TF_IDF);
+                Page_Score.put(url, Page_Score.get(url) + TF_IDF+rank);
                 numberOfWordsOnEachPage.put(url, numberOfWordsOnEachPage.get(url) + 1);
             }
         }
