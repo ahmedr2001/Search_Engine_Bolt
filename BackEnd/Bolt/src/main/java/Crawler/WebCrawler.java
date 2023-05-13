@@ -101,7 +101,7 @@ public class WebCrawler implements Runnable {
         }
     }
 
-    private Document request(org.bson.Document doc) {
+    public  Document request(org.bson.Document doc) {
         try {
             if (DB.getNumOfCrawledPages() + DB.getSeedSize() >= mongoDB.MAX_PAGES_NUM + THRESHOLD) return null;
             String url = doc.getString("URL");
