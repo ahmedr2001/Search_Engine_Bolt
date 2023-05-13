@@ -25,14 +25,18 @@ public class WordsController {
     @Autowired
     private UrlsService urlsService;
 
+    @Autowired
+    private ParagraphService paragraphService;
+
     @GetMapping("/all")
     public ResponseEntity<List<WordsDocument>> allWords() {
         return new ResponseEntity<List<WordsDocument>>(wordsService.allWords(), HttpStatus.OK);
     }
 
     @GetMapping
+
     public ResponseEntity<List<String>> search(@RequestParam String q) throws IOException {
-        QueryProcessor queryProcessor = new QueryProcessor(crawlerService, wordsService);
+        QueryProcessor queryProcessor = new QueryProcessor(crawlerService, wordsService, paragraphService);
         List<WordsDocument> RelatedDocuments = queryProcessor.run(q);
         MainRanker mainRanker = new MainRanker(RelatedDocuments, urlsService );
         List<String>list = mainRanker.runRanker();
