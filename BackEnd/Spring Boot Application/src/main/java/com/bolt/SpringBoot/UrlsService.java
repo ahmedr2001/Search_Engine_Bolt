@@ -27,4 +27,8 @@ public class UrlsService {
     public String findUrl(int id) {
         return repository.findUrlById(id);
     }
+
+    public Double findRank(String url) {
+        return repository.findByUrl(url).getRank();
+    }
 }
