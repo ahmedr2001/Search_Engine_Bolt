@@ -33,6 +33,10 @@ public class WordsController {
         return new ResponseEntity<List<WordsDocument>>(wordsService.allWords(), HttpStatus.OK);
     }
 
+    @GetMapping("/p")
+    public ResponseEntity<List<String>> getParagraph(@RequestParam String[] pids) {
+        return new ResponseEntity<List<String>>(paragraphService.getParagraphs(pids), HttpStatus.OK);
+    }
     @GetMapping
 
     public ResponseEntity<List<String>> search(@RequestParam String q) throws IOException {
