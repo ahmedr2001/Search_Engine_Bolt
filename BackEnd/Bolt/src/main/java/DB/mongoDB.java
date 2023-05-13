@@ -21,6 +21,7 @@ import java.util.*;
 public class mongoDB {
 
     public static int MAX_PAGES_NUM = 6000;
+    public static int idx = 0 ;
     private static MongoClient client;
     private static MongoDatabase DB;
     MongoCollection<Document> seedCollection;
@@ -71,7 +72,7 @@ public class mongoDB {
                             }
                             String body =jdoc.body().toString();
                             Document doc = new Document("URL", url).append("KEY", WebCrawler.toHexString(WebCrawler.getSHA(jdoc.body().toString()))).append("BODY", body).append("TITLE", title);
-                            seedCollection.insertOne(doc);
+                            pushSeed(doc); // Reusable code
                         }
                     }
                 }
@@ -108,6 +109,7 @@ public class mongoDB {
     public void pushSeed(Document doc) {
         synchronized (this) {
             if (doc == null) return;
+            doc.append("ID" , idx++) ; // This will be used for Page Rank Algorithm
             seedCollection.insertOne(doc);
         }
     }
