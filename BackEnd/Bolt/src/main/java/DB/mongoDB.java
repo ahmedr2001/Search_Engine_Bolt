@@ -20,7 +20,7 @@ import java.util.*;
 
 public class mongoDB {
 
-    public static int MAX_PAGES_NUM = 6000;
+    public static int MAX_PAGES_NUM = 200;
     public static int idx = 0 ;
     private static MongoClient client;
     private static MongoDatabase DB;
@@ -66,13 +66,8 @@ public class mongoDB {
                     if (WebCrawler.handleRobot("*", url, -1)) {
                         org.jsoup.nodes.Document jdoc = WebCrawler.getDocument(url);
                         if (jdoc != null) {
-                            String title =jdoc.title();
-                            if (title.equals("")){
-                                title=url;
-                            }
-                            String body =jdoc.body().toString();
-                            Document doc = new Document("URL", url).append("KEY", WebCrawler.toHexString(WebCrawler.getSHA(jdoc.body().toString()))).append("BODY", body).append("TITLE", title);
-                            pushSeed(doc); // Reusable code
+                            Document doc = new Document("URL", url).append("KEY", WebCrawler.toHexString(WebCrawler.getSHA(jdoc.body().toString()))).append("BODY", jdoc.body().toString()).append("TITLE", jdoc.title());
+                            seedCollection.insertOne(doc);
                         }
                     }
                 }
@@ -109,7 +104,6 @@ public class mongoDB {
     public void pushSeed(Document doc) {
         synchronized (this) {
             if (doc == null) return;
-            doc.append("ID" , idx++) ; // This will be used for Page Rank Algorithm
             seedCollection.insertOne(doc);
         }
     }
