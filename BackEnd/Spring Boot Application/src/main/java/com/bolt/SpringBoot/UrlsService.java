@@ -33,7 +33,7 @@ public class UrlsService {
 
     public Double findRank(String url) {
         if (repository.findByUrl(url).isPresent()){
-            return repository.findByUrl(url).get().getPage_rank();
+            return repository.findByUrl(url).get().getRank();
         }
         return null;
     }

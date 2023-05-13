@@ -38,7 +38,7 @@ public class MainRanker {
         numberOfWordsOnEachPage = new HashMap<>();
         Calculate_Rank();
         Rank_Urls();
-        for (String url : Ranked_Result) System.out.println(url);
+//        for (String url : Ranked_Result) System.out.println(url);
         return Ranked_Result;
     }
 
@@ -49,13 +49,11 @@ public class MainRanker {
     }
 
     void calculate_TF_IDF(WordsDocument word_doc) {
-        System.out.println(word_doc);
         double idf = (Double) word_doc.getIDF();
         ArrayList<Page> pages = (ArrayList<Page>) word_doc.getPages();
         Iterator<Page> pages_iterable = pages.iterator();
         while (pages_iterable.hasNext()) {
             Page page = pages_iterable.next();
-            System.out.println(page);
             double tf = (Double) page.getTF();
             String url = (String) urlsService.findUrl(page.getUrlId())  ;
             if(url == null) continue;

@@ -16,5 +16,5 @@ public class UrlDocument {
     private int _id;
     private String url;
     private String title;
-    private Double page_rank;
+    private Double rank;
 }

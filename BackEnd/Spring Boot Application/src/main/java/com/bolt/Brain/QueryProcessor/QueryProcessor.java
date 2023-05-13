@@ -44,7 +44,7 @@ public class QueryProcessor {
 
         List<String> words = process(query);                //1. process query and return all words after processing
         List<WordsDocument> results = getWordsResult(words);
-        System.out.println(words);
+//        System.out.println(words);
 
 
 
