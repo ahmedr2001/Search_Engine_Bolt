@@ -1,4 +1,4 @@
-package Crawler;
+package PageRankAlgorithm;
 
 import DB.mongoDB;
 import org.bson.Document;
@@ -23,13 +23,13 @@ public class PageRankAlgorithm {
     HashMap<String , Integer> URL_ID ;
     List<Document> crawledPagesLightVersion ; // Without the body
     List< HashSet<Integer>> adjList ; // Hashset to maintain uniqueness
-    PageRankAlgorithm(mongoDB DB){
-        this.DB = DB ;
+    PageRankAlgorithm(){
+        DB  = new mongoDB("Bolt");
         URL_ID = new HashMap<>();
         crawledPagesLightVersion = new ArrayList<>() ;
         int batchSize = 100 ;   Document page;
         // Adding all the pages without the body to avoid heap problems
-        for(int iteration = 0 ; iteration <=MAX_PAGES_NUM/batchSize ; iteration++ ){
+        for(int iteration = 0 ; iteration <MAX_PAGES_NUM/batchSize ; iteration++ ){
             crawledPages = DB.getCrawlerCollection(batchSize,iteration) ;
             Iterator it = crawledPages.iterator();
             while (it.hasNext()){
@@ -72,7 +72,19 @@ public class PageRankAlgorithm {
             for (k = 1; k < cnt; k++)
                 System.out.printf(" Page Rank of " + k + " is :\t" + page_rank[k] + "\n");
         }
+        // Add the Damping Factor to PageRank
+        for (k = 0; k <cnt; k++) {
+//            page_rank[k] = (1 - DampingFactor) + DampingFactor * page_rank[k];
+            DB.addPageRank(crawledPagesLightVersion.get(k).getString("URL") , page_rank[k]);
+        }
+        System.out.printf("\n Final Page Rank : \n");
+        for (k = 0; k < cnt; k++) {
+            System.out.printf(" Page Rank of " + k + " is :\t" + page_rank[k] + "\n");
+        }
 
+    }
+    public static void main(String [] args){
+        PageRankAlgorithm pageRankAlgorithm = new PageRankAlgorithm();
     }
     public void init(){
         adjList=new ArrayList<>() ;
@@ -92,22 +104,13 @@ public class PageRankAlgorithm {
             if(URL_ID.get(child_url) == null) continue; // If it's not in our crawled pages we don't care
             adjList.get(idx).add(URL_ID.get(child_url));  // It means there is edge from parent to child
         }
-        OutgoingLinks.add(adjList.get(idx).size());
-        for (Integer child : adjList.get(idx))
-            System.out.print(child+" ");
-        System.out.println();
+        OutgoingLinks.add(adjList.get(idx).size()+1);
+        System.out.println(adjList.get(idx).size());
     }
     public org.jsoup.select.Elements getChildren(String url) {
-        try {
-            Connection connection = Jsoup.connect(url);
-            org.jsoup.nodes.Document document = connection.get();
-            if (connection.response().statusCode() == 200) {
-                return document.select("a[href]");
-            }
-        } catch (IOException e) {
-
-        }
-        return new Elements(); // Returning an empty List to avoid NULL problem
+            String body = DB.getUrlBody(url) ;
+            org.jsoup.nodes.Document doc = Jsoup.parse(body);
+            return doc.select("a[href]");
     }
 
 }

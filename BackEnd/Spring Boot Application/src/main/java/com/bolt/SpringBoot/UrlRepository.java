@@ -8,7 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface UrlRepository extends MongoRepository<UrlDocument, Integer> {
-    Optional<UrlDocument> findById(int id);
-
-    String findUrlById(int id);
+    Optional<UrlDocument> findByUrl(String url);
 }

@@ -19,9 +19,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 public class mongoDB {
-
-    public static int MAX_PAGES_NUM = 200;
-    public static int idx = 0 ;
+    public static int MAX_PAGES_NUM = 100;
     private static MongoClient client;
     private static MongoDatabase DB;
     MongoCollection<Document> seedCollection;
@@ -87,6 +85,7 @@ public class mongoDB {
             if (doc == null) return;
             if (getNumOfCrawledPages() < mongoDB.MAX_PAGES_NUM) {
                 if (!isCrawled(doc)) {
+                    doc.append("_id", crawlerCollection.countDocuments() + 1);
                     Logging.printColored("[Insertion] ", Color.GREEN);
                     System.out.println(ID + "=>Bot Received webpage with url = " + doc.get("URL") + " and the Title is : " + doc.get("TITLE"));
                     crawlerCollection.insertOne(doc);
@@ -228,6 +227,11 @@ public class mongoDB {
                     .append("title", title);
             urlsCollection.insertOne(doc);
         }
+    }
+    public void addPageRank(String url , double page_rank){
+        Document filter = new Document("url", url);
+        urlsCollection.findOneAndUpdate(filter, new Document("$set", new Document("url", url)
+                .append("rank", page_rank)));
     }
 
     public void addIndexedParagraph(String paragraph, Integer paragraphId) {

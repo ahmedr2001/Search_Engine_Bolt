@@ -96,6 +96,7 @@ public class QueryProcessor {
     private List<WordsDocument> getPhraseResult(String phrase) throws IOException {
         List<String> phraseWordsStemming = process(phrase);
         List<String> phraseWords = basicProcess(phrase);
+
         Pattern phrasePattern = regexPatternPhrase(phraseWords);
 
         List<WordsDocument> results = getWordsResult(phraseWordsStemming);
@@ -117,6 +118,7 @@ public class QueryProcessor {
 
                     } else {
                         System.out.println("play : \t" +paragraph);
+
                     }
                 }
             }

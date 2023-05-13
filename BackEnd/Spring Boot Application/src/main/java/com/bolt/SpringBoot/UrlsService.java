@@ -25,6 +25,16 @@ public class UrlsService {
 
 
     public String findUrl(int id) {
-        return repository.findUrlById(id);
+        if (repository.findById(id).isPresent()){
+            return repository.findById(id).get().getUrl();
+        }
+        return null;
+    }
+
+    public Double findRank(String url) {
+        if (repository.findByUrl(url).isPresent()){
+            return repository.findByUrl(url).get().getPage_rank();
+        }
+        return null;
     }
 }

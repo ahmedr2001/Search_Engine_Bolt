@@ -15,6 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 public class ParagraphDocument {
     @Id
-    private int id;
+    private int _id;
     private String paragraph;
 }
