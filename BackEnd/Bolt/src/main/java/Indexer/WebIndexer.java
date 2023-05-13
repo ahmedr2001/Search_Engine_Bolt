@@ -98,7 +98,8 @@ public class WebIndexer {
         org.jsoup.nodes.Document pageDoc = Jsoup.parse(body);
         Elements allPageElems = pageDoc.getAllElements();
         List<Document> allWords = new ArrayList<>();
-        int localElemNameIndex, localElemTextIndex;
+        int localElemNameIndex, localElemTextIndex = 0;
+        String paragraph = "";
         for (Element elem : allPageElems) {
             String elemName = elem.nodeName();
             if (elemName.equals("a")) {
@@ -111,10 +112,17 @@ public class WebIndexer {
             synchronized (this) {
                 elemNameIndex++;
                 localElemNameIndex = elemNameIndex;
-                elemTextIndex++;
-                localElemTextIndex = elemTextIndex;
             }
-            updateParagraphsCollection(elemText, localElemTextIndex);
+            paragraph += elemText;
+            paragraph += " ";
+            if (paragraph.length() >= 200) {
+                synchronized (this) {
+                    elemTextIndex++;
+                    localElemTextIndex = elemTextIndex;
+                }
+                updateParagraphsCollection(paragraph, localElemTextIndex);
+                paragraph = "";
+            }
             Cleaner cleaner = new Cleaner() ;
             String cleanElemText = cleaner.runCleaner(elemText);
             // 3 -  Tokenization
@@ -149,6 +157,14 @@ public class WebIndexer {
 
                 allWords.add(allWordDoc);
             }
+        }
+        if (paragraph.length() > 0) {
+            synchronized (this) {
+                elemTextIndex++;
+                localElemTextIndex = elemTextIndex;
+            }
+            updateParagraphsCollection(paragraph, localElemTextIndex);
+            paragraph = "";
         }
 
         int totalWords = allWords.size();
