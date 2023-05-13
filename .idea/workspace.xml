@@ -5,8 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3105906b-9e79-457b-a768-4fd4e62bab06" name="Changes" comment="spring boot init">
+      <change afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/DataStructures/UrlParagraphContent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/DataStructures/UrlParapraphContentDict.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/ParagraphService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/QueryProcessor/QueryProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/QueryProcessor/QueryProcessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/ParagraphRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/ParagraphRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/WordsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/WordsController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,6 +21,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="module-info" />
         <option value="Class" />
       </list>
     </option>
@@ -182,19 +188,9 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/WordsService.java</url>
-          <line>28</line>
-          <option name="timeStamp" value="13" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/WordsController.java</url>
-          <line>34</line>
-          <option name="timeStamp" value="15" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/WordsController.java</url>
-          <line>36</line>
-          <option name="timeStamp" value="16" />
+          <url>file://$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/QueryProcessor/QueryProcessor.java</url>
+          <line>102</line>
+          <option name="timeStamp" value="28" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

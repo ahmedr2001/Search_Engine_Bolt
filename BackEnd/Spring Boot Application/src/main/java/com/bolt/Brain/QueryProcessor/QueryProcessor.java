@@ -1,18 +1,13 @@
 package com.bolt.Brain.QueryProcessor;
 
-import com.bolt.Brain.DataStructures.Pair;
+import com.bolt.Brain.DataStructures.UrlParapraphContentDict;
 import com.bolt.Brain.Utils.Stemmer;
 import com.bolt.Brain.Utils.StopWordsRemover;
 import com.bolt.Brain.Utils.Tokenizer;
-import com.bolt.SpringBoot.CrawlerService;
-import com.bolt.SpringBoot.Page;
-import com.bolt.SpringBoot.WordsDocument;
-import com.bolt.SpringBoot.WordsService;
-import lombok.val;
+import com.bolt.SpringBoot.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -27,60 +22,32 @@ public class QueryProcessor {
     private CrawlerService crawlerService;
     private WordsService wordsService;
 
-    public  class UrlParagraphContent {
-        public Integer wordIndex;
-        public Integer wordIndexPhrase;
-
-        Page refPage;
+    private ParagraphService paragraphService;
 
 
-        Integer paragraphIndexArr; //
 
-        public UrlParagraphContent(Integer wordIndex, Integer wordIndexPhrase, Page refPage, Integer paragraphIndexArr) {
-            this.wordIndex = wordIndex;
-            this.wordIndexPhrase = wordIndexPhrase;
-            this.refPage = refPage;
-            this.paragraphIndexArr = paragraphIndexArr;
-        }
 
-        public  void remove() {
-            int indexToRemove = paragraphIndexArr;
-            refPage.getParagraphIndexes().remove(indexToRemove);
-            refPage.getWordIndexes().remove(indexToRemove);
-            refPage.getTagIndexes().remove(indexToRemove);
-            refPage.getTagTypes().remove(indexToRemove);
-        }
-    }
 
-    public  class UrlParagraphContentSorter {
-
-        public static void sortByWordIndex(List<UrlParagraphContent> list) {
-            Comparator<UrlParagraphContent> comparator = Comparator.comparingInt(o -> o.wordIndex);
-            list.sort(comparator);
-        }
-
-    }
-
-    public QueryProcessor(CrawlerService crawlerService,WordsService wordsService)  {
+    public QueryProcessor(CrawlerService crawlerService,WordsService wordsService, ParagraphService paragraphService)  {
         tokenizer = new Tokenizer();
         stopWordsRemover = new StopWordsRemover();
-//        synonymization = new Synonymization();
         stemmer = new Stemmer();
-        this.crawlerService=crawlerService;
-        this.wordsService=wordsService;
+        this.crawlerService = crawlerService;
+        this.wordsService = wordsService;
+        this.paragraphService = paragraphService;
     }
 
     public List<WordsDocument> run(String query) throws IOException {
         //======= Variables Section ========//
         List<String> phrases = extractPhrases(query);        //0. get Phrases
 
-        List<String> words = process(query);                //1. process query and return all words after processing
-        List<WordsDocument> results = getWordsResult(words);
-        System.out.println(words);
+        //List<String> words = process(query);                //1. process query and return all words after processing
+        //List<WordsDocument> results = getWordsResult(words);
+//        System.out.println(words);
+        //getPhraseResult(query);
 
 
-
-        return results;
+        return getPhraseResult(query);
     }
 
     public List<String> extractPhrases(String query) {
@@ -126,69 +93,48 @@ public class QueryProcessor {
         return results;
     }
 
-    private List<WordsDocument> getPhraseResult(String phrase) {
+    private List<WordsDocument> getPhraseResult(String phrase) throws IOException {
+        List<String> phraseWordsStemming = process(phrase);
         List<String> phraseWords = basicProcess(phrase);
-        HashMap<Integer, List<WordsDocument>> resultsPerWord = getWordsHashResult(phraseWords);
-        List<WordsDocument> results = new ArrayList<>();
-        // create dict of words of [same paragraph & same url]
-        // dict key is word index inside paragraph
-        // dict val is word index inside phrase
-        HashMap<Pair<Integer,Integer>, List<UrlParagraphContent>> urlParapraphContentDict = new HashMap<>();
+        Pattern phrasePattern = regexPatternPhrase(phraseWords);
 
-        //creating urlParapraphContentDict
-        for(Integer wordIndex: resultsPerWord.keySet()) {               // 1. loop on index of wrd in phrase
-            for (WordsDocument wDoc : resultsPerWord.get(wordIndex)) {  // 2. loop result of each on word
-                for (Page pg : wDoc.getPages()) {                       // 3. loop on urls Content Details
-                    Integer urlIndex = pg.getId();
-                    List<Integer> paragraphIndex = pg.getParagraphIndexes();
-                    List<Integer> wordIndexInP = pg.getWordIndexes();
-                    for(int i = 0;i < paragraphIndex.size();i++) {      // 4. loop on details of each exist word in doc
+        List<WordsDocument> results = getWordsResult(phraseWordsStemming);
 
-                        Pair<Integer, Integer> key = new Pair<>(urlIndex, paragraphIndex.get(i));
-                        List<UrlParagraphContent> val;
-                        // if exist get it -> else create new List
-                        if(urlParapraphContentDict.containsKey(key)) {
-                            val = urlParapraphContentDict.get(key);
-                        } else val = new ArrayList<>();
-                        // add the content
-                        val.add(new UrlParagraphContent(wordIndexInP.get(i),wordIndex, pg, i));
-                        // add it to dict
-                        urlParapraphContentDict.put(key, val);
+        for(WordsDocument wDoc: results) {
+            for(Page pg : wDoc.getPages()) {
+                List<Integer> paragraphIndexes = pg.getParagraphIndexes();
+                for(int i = 0;i < paragraphIndexes.size();i++ ) {
+                    Integer paragraphId = paragraphIndexes.get(i) - 1;
+                    String paragraph = paragraphService.findParagraph(paragraphId).getParagraph();
+                    if(! wordsExistInParagraph(phrasePattern, paragraph)) {
+                        //TODO: remove it
+                        pg.getTagIndexes().remove(i);
+                        pg.getParagraphIndexes().remove(i);
+                        pg.getWordIndexes().remove(i);
+                        pg.getTagTypes().remove(i);
+                        i--; // to calibrate loop
+                        System.out.println("remove : \t" + paragraph);
+
+                    } else {
+                        System.out.println("play : \t" +paragraph);
                     }
                 }
-
             }
-        }
-
-        //filtering urlParapraphContentDict
-        for(List<UrlParagraphContent> urlParagraphContents : urlParapraphContentDict.values()) {
-            // sort it by wordIndexInParagraph
-            UrlParagraphContentSorter.sortByWordIndex(urlParagraphContents);
-
-            // loop on them and make it sure it's 0 .... 1 .... 2 ..etc.. n
-            int shouldWordIndex = 0;
-            for(UrlParagraphContent content: urlParagraphContents) {
-                    if(content.wordIndexPhrase == shouldWordIndex)
-                        shouldWordIndex++;
-                    if(shouldWordIndex == phraseWords.size()) break; // success stop lopping
-            }
-            //fail should remove it
-            if(shouldWordIndex != phraseWords.size()) {
-                break;
-            }
-
         }
         return results;
     }
 
-    private HashMap<Integer, List<WordsDocument>> getWordsHashResult(List<String> phraseWords) {
-        HashMap<Integer, List<WordsDocument>> results = new  HashMap<Integer, List<WordsDocument>>();
 
-        //===== Get Documents into results ===== //
-        for(int i = 0;i < phraseWords.size();i++) {
-            results.put(i, wordsService.findWords(phraseWords.get(i)));
-        }
-        return results;
+
+    private Pattern regexPatternPhrase(List<String> words) {
+        String regex = ".*" + String.join(".*", words) + ".*";
+        return Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
     }
+
+    private boolean wordsExistInParagraph(Pattern pattern, String paragraph) {
+        Matcher matcher = pattern.matcher(paragraph);
+        return  matcher.matches();
+    }
+
 
 }
