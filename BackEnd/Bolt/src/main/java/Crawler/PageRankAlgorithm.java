@@ -12,6 +12,7 @@ import static DB.mongoDB.MAX_PAGES_NUM;
 public class PageRankAlgorithm {
     double OutgoingLinks = 0;
     double DampingFactor = 0.85;
+    double InitialPageRank;
     Iterable<Document> crawledPages ;
     List<Document> crawledPagesLightVersion ; // Without the body
     PageRankAlgorithm(mongoDB DB){
