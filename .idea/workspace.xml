@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
+<<<<<<< HEAD
     <list default="true" id="3105906b-9e79-457b-a768-4fd4e62bab06" name="Changes" comment="spring boot init" />
+=======
+    <list default="true" id="3105906b-9e79-457b-a768-4fd4e62bab06" name="Changes" comment="spring boot init">
+      <change afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/DataStructures/Pair.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/QueryProcessor/QueryProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/QueryProcessor/QueryProcessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/Page.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/Page.java" afterDir="false" />
+    </list>
+>>>>>>> ee84ca76dc319291667c83e84582ef060c7b7871
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -50,7 +59,11 @@
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;jdk.selected.JAVA_MODULE&quot;: &quot;openjdk-19&quot;,
+<<<<<<< HEAD
     &quot;last_opened_file_path&quot;: &quot;/home/ahmedosamahelmy/IdeaProjects/Search_Engine_Bolt/BackEnd/Bolt/edu.mit.jwi_2.4.0.jar&quot;,
+=======
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/ASUS/Documents/GitHub/Search_Engine_Bolt/BackEnd/Spring Boot Application&quot;,
+>>>>>>> ee84ca76dc319291667c83e84582ef060c7b7871
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
@@ -59,6 +72,10 @@
     &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+<<<<<<< HEAD
+=======
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+>>>>>>> ee84ca76dc319291667c83e84582ef060c7b7871
     &quot;spring.configuration.checksum&quot;: &quot;a6fe881cecd3fb7660083aea35cce430&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
@@ -73,8 +90,15 @@
       <recent name="$PROJECT_DIR$/BackEnd/Bolt/src" />
       <recent name="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/DB" />
     </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.bolt.SpringBoot" />
+    </key>
   </component>
+<<<<<<< HEAD
   <component name="RunManager" selected="Application.Main">
+=======
+  <component name="RunManager" selected="Application.Root">
+>>>>>>> ee84ca76dc319291667c83e84582ef060c7b7871
     <configuration name="Indexer" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="Indexer.MainIndexer" />
       <module name="DB" />
@@ -108,12 +132,21 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+<<<<<<< HEAD
     <configuration name="PageRankAlgorithm" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.bolt.Brain.Ranker.PageRankAlgorithm" />
       <module name="bolt" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="com.bolt.Brain.Ranker.*" />
+=======
+    <configuration name="Root" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.bolt.SpringBoot.Root" />
+      <module name="bolt" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.bolt.SpringBoot.*" />
+>>>>>>> ee84ca76dc319291667c83e84582ef060c7b7871
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -137,6 +170,7 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Root" />
         <item itemvalue="Application.Main" />
         <item itemvalue="Application.PageRankAlgorithm" />
         <item itemvalue="Application.MainRanker" />
@@ -160,6 +194,47 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-core" />
+    <option featureType="dependencySupport" implementationName="java:org.openjfx:javafx-base" />
+    <option featureType="dependencySupport" implementationName="java:org.seleniumhq.selenium:selenium-java" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.data:spring-data-commons" />
+    <option featureType="com.intellij.configurationType" implementationName="SpringBootApplicationConfigurationType" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-webmvc" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/WordsService.java</url>
+          <line>28</line>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/WordsController.java</url>
+          <line>34</line>
+          <option name="timeStamp" value="15" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/WordsController.java</url>
+          <line>36</line>
+          <option name="timeStamp" value="16" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -24,7 +24,7 @@ public class WebCrawler implements Runnable {
     private final Thread thread;
     private final int ID;
 
-    private final int THRESHOLD = 100;
+    private final int THRESHOLD = 1000;
 
     public WebCrawler(int num, mongoDB DB) {
         this.DB = DB;
@@ -68,7 +68,12 @@ public class WebCrawler implements Runnable {
 
                         Document jdoc = getDocument(nextLink);
                         if (jdoc != null) {
-                            org.bson.Document newurl = new org.bson.Document("URL", nextLink).append("KEY", toHexString(getSHA(jdoc.body().toString()))).append("BODY", jdoc.body().toString()).append("TITLE", jdoc.title());
+                            String title =jdoc.title();
+                            if (title.equals("")){
+                                title=nextLink;
+                            }
+                            String body =jdoc.body().toString();
+                            org.bson.Document newurl = new org.bson.Document("URL", nextLink).append("KEY", WebCrawler.toHexString(WebCrawler.getSHA(jdoc.body().toString()))).append("BODY", body).append("TITLE", title);
                             if (!DB.isCrawled(newurl) && !DB.isSeeded(newurl)) {
                                 if (handleRobot("*", nextLink, ID)) {
                                     DB.pushSeed(newurl);

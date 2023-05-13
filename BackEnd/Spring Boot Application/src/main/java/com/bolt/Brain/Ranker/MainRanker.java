@@ -2,6 +2,8 @@ package com.bolt.Brain.Ranker;
 
 import com.bolt.Brain.DataStructures.Sorting;
 import com.bolt.SpringBoot.Page;
+import com.bolt.SpringBoot.UrlDocument;
+import com.bolt.SpringBoot.UrlsService;
 import com.bolt.SpringBoot.WordsDocument;
 
 import java.util.ArrayList;
@@ -14,10 +16,13 @@ public class MainRanker {
     List<WordsDocument> RelatedDocuments;
     List<String> Ranked_Result;
     HashMap<String, Double> Page_Score;
+
+    UrlsService urlsService;
     private HashMap<String, Integer> numberOfWordsOnEachPage;
 
-    public MainRanker(List<WordsDocument> QueryResult) {
+    public MainRanker(List<WordsDocument> QueryResult, UrlsService urlsService) {
         RelatedDocuments = QueryResult;
+        this.urlsService = urlsService;
     }
 
     public void main(String[] args) {
@@ -50,7 +55,7 @@ public class MainRanker {
         while (pages_iterable.hasNext()) {
             Page page = pages_iterable.next();
             double tf = (Double) page.getTF();
-            String url = (String) page.getUrl();
+            String url = (String) urlsService.findUrl(page.getId())  ;
             double TF_IDF = idf * tf;
             if (Page_Score.get(url) == null) {
                 Page_Score.put(url, TF_IDF);

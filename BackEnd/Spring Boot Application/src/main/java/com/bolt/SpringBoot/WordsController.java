@@ -22,18 +22,21 @@ public class WordsController {
     @Autowired
     private CrawlerService crawlerService;
 
+    @Autowired
+    private UrlsService urlsService;
+
     @GetMapping("/all")
     public ResponseEntity<List<WordsDocument>> allWords() {
         return new ResponseEntity<List<WordsDocument>>(wordsService.allWords(), HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<List<String>> search(@RequestParam String q) throws IOException {
+    public ResponseEntity<List<WordsDocument>> search(@RequestParam String q) throws IOException {
         QueryProcessor queryProcessor = new QueryProcessor(crawlerService, wordsService);
         List<WordsDocument> RelatedDocuments = queryProcessor.run(q);
-        MainRanker mainRanker = new MainRanker(RelatedDocuments);
+        MainRanker mainRanker = new MainRanker(RelatedDocuments, urlsService );
         List<String>list = mainRanker.runRanker();
-        return new ResponseEntity<List<String>>(list, HttpStatus.OK);
+        return new ResponseEntity<List<WordsDocument>>(RelatedDocuments, HttpStatus.OK);
 //        return new ResponseEntity<List<WordsDocument>>(service.findWords(q), HttpStatus.OK);
     }
 }

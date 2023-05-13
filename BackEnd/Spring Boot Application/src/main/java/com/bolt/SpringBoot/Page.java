@@ -6,12 +6,17 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Page {
     @Id
-    private ObjectId id;
-    private String url;
+    private int id;
     private Double TF;
+    private List<String> tagTypes;
+    private List<Integer> tagIndexes;
+    private List<Integer> paragraphIndexes;
+    private List<Integer> wordIndexes;
 }

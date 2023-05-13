@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface WordsRepository extends MongoRepository<WordsDocument, ObjectId> {
     List<WordsDocument> findByWord(String word);
+
+
 }
