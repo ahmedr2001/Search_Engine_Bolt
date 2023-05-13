@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3105906b-9e79-457b-a768-4fd4e62bab06" name="Changes" comment="spring boot init" />
+    <list default="true" id="3105906b-9e79-457b-a768-4fd4e62bab06" name="Changes" comment="spring boot init">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/QueryProcessor/QueryProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/QueryProcessor/QueryProcessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/ParagraphDocument.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/ParagraphDocument.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -133,6 +137,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Application.Indexer" />
+      <item itemvalue="Application.Main" />
+      <item itemvalue="Application.Root" />
+      <item itemvalue="Application.MainRanker" />
+      <item itemvalue="Spring Boot.Root" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.Root" />
@@ -175,17 +186,6 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/QueryProcessor/QueryProcessor.java</url>
-          <line>102</line>
-          <option name="timeStamp" value="28" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -7,9 +7,7 @@ import com.bolt.Brain.Utils.Tokenizer;
 import com.bolt.SpringBoot.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -18,7 +16,7 @@ public class QueryProcessor {
     private final Tokenizer tokenizer;
     private final Stemmer stemmer;
     private final StopWordsRemover stopWordsRemover;
-//    private final Synonymization synonymization;
+    //    private final Synonymization synonymization;
     private CrawlerService crawlerService;
     private WordsService wordsService;
 
@@ -98,16 +96,23 @@ public class QueryProcessor {
         List<String> phraseWords = basicProcess(phrase);
 
         Pattern phrasePattern = regexPatternPhrase(phraseWords);
-
+        //get phrase results as normal
         List<WordsDocument> results = getWordsResult(phraseWordsStemming);
+        // store processed paragraphs index so not process again
+        HashSet<Integer> pargraphIndexsStore = new HashSet<>();
 
-        for(WordsDocument wDoc: results) {
-            for(Page pg : wDoc.getPages()) {
+        for(WordsDocument wDoc: results) {                                  //1. loop on word search results
+            for(Page pg : wDoc.getPages()) {                                //2. loop on urls
                 List<Integer> paragraphIndexes = pg.getParagraphIndexes();
-                for(int i = 0;i < paragraphIndexes.size();i++ ) {
-                    Integer paragraphId = paragraphIndexes.get(i) - 1;
+                for(int i = 0;i < paragraphIndexes.size();i++ ) {           //3. loop on p in url
+                    Integer paragraphId = paragraphIndexes.get(i) ;
+                    //3.1 if it already processed skip
+                    if(pargraphIndexsStore.contains(paragraphId)) continue;
+                    else pargraphIndexsStore.add(paragraphId);
+
                     String paragraph = paragraphService.findParagraph(paragraphId).getParagraph();
-                    if(! wordsExistInParagraph(phrasePattern, paragraph)) {
+
+                    if(! wordsExistInParagraph(phrasePattern, paragraph)) {           // check pattern matcher
                         //TODO: remove it
                         pg.getTagIndexes().remove(i);
                         pg.getParagraphIndexes().remove(i);
@@ -117,7 +122,7 @@ public class QueryProcessor {
                         System.out.println("remove : \t" + paragraph);
 
                     } else {
-                        System.out.println("play : \t" +paragraph);
+                        System.out.println("play : \t" +paragraph + " " + paragraphId);
 
                     }
                 }
@@ -129,7 +134,7 @@ public class QueryProcessor {
 
 
     private Pattern regexPatternPhrase(List<String> words) {
-        String regex = ".*" + String.join(".*", words) + ".*";
+        String regex = "." + String.join(".", words) + ".*";
         return Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
     }
 
