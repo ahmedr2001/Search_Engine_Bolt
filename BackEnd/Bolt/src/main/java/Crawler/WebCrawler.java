@@ -24,7 +24,7 @@ public class WebCrawler implements Runnable {
     private final Thread thread;
     private final int ID;
 
-    private final int THRESHOLD = 1000;
+    private final int THRESHOLD = mongoDB.MAX_PAGES_NUM /6;
 
     public WebCrawler(int num, mongoDB DB) {
         this.DB = DB;
