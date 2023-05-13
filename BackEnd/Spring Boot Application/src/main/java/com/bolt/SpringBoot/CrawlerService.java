@@ -19,4 +19,7 @@ public class CrawlerService {
         }
         return result;
     }
+    public List<CrawlerDocument> getCrawledPages(){
+        return repository.findAll() ;
+    }
 }

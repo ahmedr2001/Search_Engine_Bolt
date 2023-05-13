@@ -5,8 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3105906b-9e79-457b-a768-4fd4e62bab06" name="Changes" comment="spring boot init">
-      <change afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/Ranker/PageRankAlgorithm.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/Crawler/PageRankAlgorithm.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BackEnd/Bolt/seed.txt" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Bolt/seed.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/Crawler/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/Crawler/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/DB/mongoDB.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/DB/mongoDB.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/Ranker/PageRankAlgorithm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/Utils/Synonymization.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/Utils/Synonymization.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/CrawlerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/CrawlerService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/seed.txt" beforeDir="false" afterPath="$PROJECT_DIR$/seed.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,7 +84,7 @@
       <recent name="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/DB" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Indexer">
+  <component name="RunManager" selected="Application.Main">
     <configuration name="Indexer" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="Indexer.MainIndexer" />
       <module name="DB" />
@@ -111,6 +118,19 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="PageRankAlgorithm" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.bolt.Brain.Ranker.PageRankAlgorithm" />
+      <module name="bolt" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.bolt.Brain.Ranker.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Root" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="bolt" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.bolt.SpringBoot.Root" />
@@ -120,6 +140,7 @@
     </configuration>
     <list>
       <item itemvalue="Application.Indexer" />
+      <item itemvalue="Application.PageRankAlgorithm" />
       <item itemvalue="Application.Main" />
       <item itemvalue="Application.MainRanker" />
       <item itemvalue="Spring Boot.Root" />
@@ -127,6 +148,7 @@
     <recent_temporary>
       <list>
         <item itemvalue="Application.Main" />
+        <item itemvalue="Application.PageRankAlgorithm" />
         <item itemvalue="Application.MainRanker" />
       </list>
     </recent_temporary>
@@ -140,6 +162,9 @@
       <option name="presentableId" value="Default" />
       <updated>1681678269660</updated>
       <workItem from="1683558957214" duration="2760000" />
+      <workItem from="1683914614726" duration="1718000" />
+      <workItem from="1683961619619" duration="2470000" />
+      <workItem from="1683964504219" duration="1398000" />
     </task>
     <servers />
   </component>
