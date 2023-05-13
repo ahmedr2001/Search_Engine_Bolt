@@ -12,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Page {
-    @Id
     private int urlId;
     private Double TF;
     private List<String> tagTypes;
