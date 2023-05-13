@@ -1,7 +1,13 @@
 import React from "react";
 
-type Props = {};
+type Props = {
+	url: string;
+};
 
-export default function Result({}: Props) {
-	return <div>Result</div>;
+export default function Result({ url }: Props) {
+	return (
+		<a className=" underline" href={url}>
+			{url}
+		</a>
+	);
 }

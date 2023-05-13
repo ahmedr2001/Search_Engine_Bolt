@@ -37,15 +37,24 @@ public class QueryProcessor {
 
     public List<WordsDocument> run(String query) throws IOException {
         //======= Variables Section ========//
-        List<String> phrases = extractPhrases(query);        //0. get Phrases
+        List<String> phrases = extractPhrases(query);           //0. get Phrases
+        query = removePhraseFromQuery(query, phrases);
+        List<String> words = process(query);                    //1. process query and return all words after processing
 
-        //List<String> words = process(query);                //1. process query and return all words after processing
-        //List<WordsDocument> results = getWordsResult(words);
-//        System.out.println(words);
-        //getPhraseResult(query);
+        List<WordsDocument> results = getWordsResult(words);    //2. get normal query results
+        List<List<WordsDocument>> phrase_results = getPhraseResults(phrases);
 
+        if(results.size()  > 0 && phrase_results.size() > 0) {
+            //TODO: combine two lists and return it
+            results.addAll(phrase_results.stream().flatMap(Collection::stream).toList());
 
-        return getPhraseResult(query);
+        }
+        else if(phrase_results.size() > 0) {
+            //TODO: BONUS BUT now let combine results
+            return phrase_results.stream().flatMap(Collection::stream).collect(Collectors.toList());
+        }
+        // else
+        return results;
     }
 
     public List<String> extractPhrases(String query) {
@@ -57,11 +66,14 @@ public class QueryProcessor {
             phrases.add(matcher.group(1));
         }
 
+        return phrases;
+    }
+    private String removePhraseFromQuery(String query, List<String> phrases) {
         // This Code to remove phrase from query But I don't need it now
         for (String phrase : phrases) {
-            query = query.replaceAll("\"" + phrase + "\"", "").trim();
+            query = query.replace("\"" + phrase + "\"", "").trim();
         }
-        return phrases;
+        return query.replaceAll("\\s+", " ");
     }
 
 
@@ -91,6 +103,8 @@ public class QueryProcessor {
         return results;
     }
 
+
+    // get results for one phrase
     private List<WordsDocument> getPhraseResult(String phrase) throws IOException {
         List<String> phraseWordsStemming = process(phrase);
         List<String> phraseWords = basicProcess(phrase);
@@ -104,6 +118,7 @@ public class QueryProcessor {
         for(WordsDocument wDoc: results) {                                  //1. loop on word search results
             for(Page pg : wDoc.getPages()) {                                //2. loop on urls
                 List<Integer> paragraphIndexes = pg.getParagraphIndexes();
+                System.out.println("Before: " + paragraphIndexes.size());
                 for(int i = 0;i < paragraphIndexes.size();i++ ) {           //3. loop on p in url
                     Integer paragraphId = paragraphIndexes.get(i) ;
                     //3.1 if it already processed skip
@@ -126,15 +141,25 @@ public class QueryProcessor {
 
                     }
                 }
+                System.out.println("After: " + paragraphIndexes.size());
+
             }
         }
         return results;
     }
 
-
+    // loop on phrases and get all results
+    private List<List<WordsDocument>> getPhraseResults(List<String> phrases) throws IOException {
+        List<List<WordsDocument>> phrase_results = new ArrayList<>();
+        for(String phrase : phrases) {
+            List<WordsDocument> single_phrase_result = getPhraseResult(phrase);
+            phrase_results.add(single_phrase_result);
+        }
+        return phrase_results;
+    }
 
     private Pattern regexPatternPhrase(List<String> words) {
-        String regex = "." + String.join(".", words) + ".*";
+        String regex = ".*" + String.join(".*", words) + ".*";
         return Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
     }
 

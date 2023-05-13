@@ -7,6 +7,7 @@ import SearchHistory from "./Components/SearchHistory";
 import addSearchQueryToHistory from "./utils/addSearchQueryToHistory";
 import Logo from "./Components/Logo";
 import useSearchParamQuery from "./hooks/useSearchParamQuery";
+import ResultsList from "./Components/ResultsList";
 
 export default function App() {
 	const [query, isSeeingResults, setQuery] = useSearchParamQuery();
@@ -14,6 +15,8 @@ export default function App() {
 	const [isSearching, setIsSearching] = useState(false);
 	const [txt, setText] = useState("");
 	const [isFocused, setIsFocused] = useState(false);
+	const [isMouseInside, setIsMouseInside] = useState(false);
+
 	const inputRef = useRef<HTMLInputElement>(null);
 	useEffect(() => {
 		applyTheme(dark);
@@ -28,7 +31,7 @@ export default function App() {
 	return (
 		<div className={` mx-auto bg-primary w-full min-h-screen`}>
 			<div
-				className={`w-4/5 mx-auto py-5 flex transition-all ${
+				className={`w-4/5 mx-auto py-5 flex transition-all flex-wrap ${
 					isSeeingResults()
 						? "flex-row-reverse justify-between "
 						: "flex-col"
@@ -39,7 +42,7 @@ export default function App() {
 						isSeeingResults() ? "fles-row" : "flex-col py-32"
 					}`}>
 					<Logo />
-					<div className="flex flex-col w-full justify-between">
+					<div className="flex  relative flex-col w-full justify-between">
 						<Search
 							txt={txt}
 							setText={setText}
@@ -48,15 +51,18 @@ export default function App() {
 							setIsFocused={setIsFocused}
 							inputRef={inputRef}
 						/>
-						{(!isSeeingResults() || isFocused) && (
+						{/* TODO: fix it */}
+						{(isMouseInside || isFocused) && (
 							<SearchHistory
 								filter={txt}
 								setText={setText}
 								inputRef={inputRef}
+								setIsMouseInside={setIsMouseInside}
 							/>
 						)}
 					</div>
 				</div>
+				{isSeeingResults() && <ResultsList />}
 			</div>
 		</div>
 	);

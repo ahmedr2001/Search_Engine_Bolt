@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 public class UrlDocument {
     @Id
-    private int _id;
+    private int id;
     private String url;
     private String title;
     private Double rank;

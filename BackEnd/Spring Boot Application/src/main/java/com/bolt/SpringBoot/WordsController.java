@@ -2,17 +2,17 @@ package com.bolt.SpringBoot;
 
 import com.bolt.Brain.QueryProcessor.QueryProcessor;
 import com.bolt.Brain.Ranker.MainRanker;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@CrossOrigin(origins = "http://127.0.0.1:5173")
 @RestController
 @RequestMapping("/search")
 public class WordsController {
@@ -40,6 +40,9 @@ public class WordsController {
         List<WordsDocument> RelatedDocuments = queryProcessor.run(q);
         MainRanker mainRanker = new MainRanker(RelatedDocuments, urlsService );
         List<String>list = mainRanker.runRanker();
+        list = list.stream().distinct()                               //4.Remove Duplicates
+                .collect(Collectors.toList());
+
         return new ResponseEntity<List<String>>(list, HttpStatus.OK);
 //        return new ResponseEntity<List<WordsDocument>>(service.findWords(q), HttpStatus.OK);
     }
