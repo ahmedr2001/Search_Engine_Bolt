@@ -20,7 +20,11 @@ import java.util.*;
 
 public class mongoDB {
 
+<<<<<<< Updated upstream
     public static int MAX_PAGES_NUM = 200;
+=======
+    public static int MAX_PAGES_NUM = 100;
+>>>>>>> Stashed changes
     public static int idx = 0 ;
     private static MongoClient client;
     private static MongoDatabase DB;
@@ -87,6 +91,7 @@ public class mongoDB {
             if (doc == null) return;
             if (getNumOfCrawledPages() < mongoDB.MAX_PAGES_NUM) {
                 if (!isCrawled(doc)) {
+                    doc.append("_id", crawlerCollection.countDocuments() + 1);
                     Logging.printColored("[Insertion] ", Color.GREEN);
                     System.out.println(ID + "=>Bot Received webpage with url = " + doc.get("URL") + " and the Title is : " + doc.get("TITLE"));
                     crawlerCollection.insertOne(doc);
