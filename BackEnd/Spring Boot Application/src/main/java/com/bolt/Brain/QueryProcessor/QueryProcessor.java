@@ -12,6 +12,7 @@ import lombok.val;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -26,8 +27,39 @@ public class QueryProcessor {
     private CrawlerService crawlerService;
     private WordsService wordsService;
 
+    public  class UrlParagraphContent {
+        public Integer wordIndex;
+        public Integer wordIndexPhrase;
+
+        Page refPage;
 
 
+        Integer paragraphIndexArr; //
+
+        public UrlParagraphContent(Integer wordIndex, Integer wordIndexPhrase, Page refPage, Integer paragraphIndexArr) {
+            this.wordIndex = wordIndex;
+            this.wordIndexPhrase = wordIndexPhrase;
+            this.refPage = refPage;
+            this.paragraphIndexArr = paragraphIndexArr;
+        }
+
+        public  void remove() {
+            int indexToRemove = paragraphIndexArr;
+            refPage.getParagraphIndexes().remove(indexToRemove);
+            refPage.getWordIndexes().remove(indexToRemove);
+            refPage.getTagIndexes().remove(indexToRemove);
+            refPage.getTagTypes().remove(indexToRemove);
+        }
+    }
+
+    public  class UrlParagraphContentSorter {
+
+        public static void sortByWordIndex(List<UrlParagraphContent> list) {
+            Comparator<UrlParagraphContent> comparator = Comparator.comparingInt(o -> o.wordIndex);
+            list.sort(comparator);
+        }
+
+    }
 
     public QueryProcessor(CrawlerService crawlerService,WordsService wordsService)  {
         tokenizer = new Tokenizer();
@@ -101,9 +133,9 @@ public class QueryProcessor {
         // create dict of words of [same paragraph & same url]
         // dict key is word index inside paragraph
         // dict val is word index inside phrase
-        HashMap<Pair<Integer,Integer>, HashMap<Integer, Integer>> posIndexByWordIndexByUrlParagraphIndex = new HashMap<>();
+        HashMap<Pair<Integer,Integer>, List<UrlParagraphContent>> urlParapraphContentDict = new HashMap<>();
 
-        //creating posIndexByWordIndexByUrlParagraphIndex
+        //creating urlParapraphContentDict
         for(Integer wordIndex: resultsPerWord.keySet()) {               // 1. loop on index of wrd in phrase
             for (WordsDocument wDoc : resultsPerWord.get(wordIndex)) {  // 2. loop result of each on word
                 for (Page pg : wDoc.getPages()) {                       // 3. loop on urls Content Details
@@ -113,32 +145,37 @@ public class QueryProcessor {
                     for(int i = 0;i < paragraphIndex.size();i++) {      // 4. loop on details of each exist word in doc
 
                         Pair<Integer, Integer> key = new Pair<>(urlIndex, paragraphIndex.get(i));
-
-                        HashMap<Integer, Integer> val;
-                        if(posIndexByWordIndexByUrlParagraphIndex.containsKey(key)) {
-                            val = posIndexByWordIndexByUrlParagraphIndex.get(key);
-                        } else val = new HashMap<>();
-
-                        val.put(wordIndexInP.get(i), wordIndex);
-
-
-                        posIndexByWordIndexByUrlParagraphIndex.put(key, val);
+                        List<UrlParagraphContent> val;
+                        // if exist get it -> else create new List
+                        if(urlParapraphContentDict.containsKey(key)) {
+                            val = urlParapraphContentDict.get(key);
+                        } else val = new ArrayList<>();
+                        // add the content
+                        val.add(new UrlParagraphContent(wordIndexInP.get(i),wordIndex, pg, i));
+                        // add it to dict
+                        urlParapraphContentDict.put(key, val);
                     }
                 }
+
             }
         }
 
-        //filtering posIndexByWordIndexByUrlParagraphIndex
-        for(HashMap<Integer, Integer> dict: posIndexByWordIndexByUrlParagraphIndex.values()) {
+        //filtering urlParapraphContentDict
+        for(List<UrlParagraphContent> urlParagraphContents : urlParapraphContentDict.values()) {
+            // sort it by wordIndexInParagraph
+            UrlParagraphContentSorter.sortByWordIndex(urlParagraphContents);
+
+            // loop on them and make it sure it's 0 .... 1 .... 2 ..etc.. n
             int shouldWordIndex = 0;
-            for(Integer wordPIndex: dict.values()) {
-                    if(wordPIndex == shouldWordIndex)
+            for(UrlParagraphContent content: urlParagraphContents) {
+                    if(content.wordIndexPhrase == shouldWordIndex)
                         shouldWordIndex++;
                     if(shouldWordIndex == phraseWords.size()) break; // success stop lopping
-
             }
             //fail should remove it
-            //if(shouldWordIndex != phraseWords.size()) break; // success stop lopping
+            if(shouldWordIndex != phraseWords.size()) {
+                break;
+            }
 
         }
         return results;
