@@ -19,13 +19,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 public class mongoDB {
-
-<<<<<<< Updated upstream
-    public static int MAX_PAGES_NUM = 200;
-=======
     public static int MAX_PAGES_NUM = 100;
->>>>>>> Stashed changes
-    public static int idx = 0 ;
     private static MongoClient client;
     private static MongoDatabase DB;
     MongoCollection<Document> seedCollection;
