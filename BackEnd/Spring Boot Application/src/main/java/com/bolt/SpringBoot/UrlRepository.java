@@ -11,4 +11,5 @@ public interface UrlRepository extends MongoRepository<UrlDocument, Integer> {
     Optional<UrlDocument> findById(int id);
 
     String findUrlById(int id);
+
 }

@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 public class CrawlerDocument {
     @Id
-    private ObjectId id;
+    private Integer id;
     private String URL;
     private String KEY;
     private String BODY;
