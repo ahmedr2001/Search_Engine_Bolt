@@ -2,7 +2,9 @@ package com.bolt.SpringBoot;
 
 import com.bolt.Brain.QueryProcessor.QueryProcessor;
 import com.bolt.Brain.Ranker.MainRanker;
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.codec.StringDecoder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,12 +37,12 @@ public class WordsController {
 
     @GetMapping
 
-    public ResponseEntity<List<String>> search(@RequestParam String q) throws IOException {
+    public ResponseEntity<List<Document>> search(@RequestParam String q) throws IOException {
         QueryProcessor queryProcessor = new QueryProcessor(crawlerService, wordsService, paragraphService);
         List<WordsDocument> RelatedDocuments = queryProcessor.run(q);
         MainRanker mainRanker = new MainRanker(RelatedDocuments, urlsService );
-        List<String>list = mainRanker.runRanker();
-        return new ResponseEntity<List<String>>(list, HttpStatus.OK);
+        List<Document>list = mainRanker.runRanker();
+        return new ResponseEntity<List<Document>>(list, HttpStatus.OK);
 //        return new ResponseEntity<List<WordsDocument>>(service.findWords(q), HttpStatus.OK);
     }
 }

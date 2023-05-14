@@ -37,4 +37,10 @@ public class UrlsService {
         }
         return null;
     }
+    public String getTitle(String url){
+        if (repository.findByUrl(url).isPresent()){
+            return repository.findByUrl(url).get().getTitle();
+        }
+        return null;
+    }
 }

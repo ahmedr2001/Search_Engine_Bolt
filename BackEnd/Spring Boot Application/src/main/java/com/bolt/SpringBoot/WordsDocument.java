@@ -14,7 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WordsDocument {
-    @Id
     private ObjectId id;
     private String word;
     private Double IDF;
