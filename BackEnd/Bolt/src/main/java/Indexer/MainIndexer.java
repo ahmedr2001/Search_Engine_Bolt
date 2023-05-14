@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 
 public class MainIndexer {
-    static final int TH_SZ = 1;
+    static final int TH_SZ = 8;
     public static mongoDB DB;
     public static void main(String[] args) throws InterruptedException {
         DB  = new mongoDB("Bolt");
@@ -21,7 +21,7 @@ public class MainIndexer {
         System.out.println(DB.getNumOfCrawledPages());
         class RunMainIndexer implements Runnable {
             int cnt = 0;
-            int batchSize = 10;
+            int batchSize = 20;
             int iteration = -1;
             WebIndexer webIndexer = new WebIndexer(DB);
             List<Thread> thArr = new ArrayList<Thread>();

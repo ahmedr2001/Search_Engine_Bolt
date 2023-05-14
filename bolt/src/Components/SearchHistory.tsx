@@ -6,10 +6,16 @@ import useSearchParamQuery from "../hooks/useSearchParamQuery";
 type Props = {
 	filter: string;
 	setText: React.Dispatch<React.SetStateAction<string>>;
+	setIsMouseInside: React.Dispatch<React.SetStateAction<boolean>>;
 	inputRef: React.RefObject<HTMLInputElement>;
 };
 
-export default function SearchHistory({ filter, setText, inputRef }: Props) {
+export default function SearchHistory({
+	filter,
+	setText,
+	inputRef,
+	setIsMouseInside,
+}: Props) {
 	const [searchHistory, setSearchHistory] = useState(getSearchHistory());
 	const [query, isSeeingResults, setQuery] = useSearchParamQuery();
 	const sortedHistory = Object.entries(searchHistory)
@@ -19,9 +25,11 @@ export default function SearchHistory({ filter, setText, inputRef }: Props) {
 	if (sortedHistory.length != 0)
 		return (
 			<ul
-				className={`transition-all flex flex-col py-2 my-11 mx-auto border-2 rounded-lg border-primary bg-overlay text-stone-500 ${
+				className={` absolute left-0 right-0  transition-all flex flex-col py-2 top-20 mx-auto border-2 rounded-lg border-res-border bg-res-bg text-res-color ${
 					isSeeingResults() ? "w-10/12" : "w-6/12"
-				}`}>
+				}`}
+				onMouseEnter={() => setIsMouseInside(true)}
+				onMouseLeave={() => setIsMouseInside(false)}>
 				{sortedHistory
 					.filter((query) =>
 						query

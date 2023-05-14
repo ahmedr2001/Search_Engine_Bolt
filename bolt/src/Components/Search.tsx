@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import useSound from "use-sound";
 import { BsFillKeyboardFill } from "react-icons/bs";
 import bolt from "../assets/Vector.png";
 import keyPressSound from "../assets/keyPress.mp3";
 import Voice from "./Voice";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { useEffect, useRef } from "react";
 import useSearchParamQuery from "../hooks/useSearchParamQuery";
 
 type Props = {
@@ -54,6 +52,7 @@ export default function Search({
 					className=" w-full border-0 outline-none bg-transparent"
 					onChange={handelInputChange}
 					onFocus={() => setIsFocused(true)}
+					onBlur={() => setIsFocused(false)}
 					value={txt}
 				/>
 			</form>

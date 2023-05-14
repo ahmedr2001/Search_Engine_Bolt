@@ -3,6 +3,9 @@ type ITheme = {
 	secondary: string;
 	highlight: string;
 	overlay: string;
+	res_bg: string;
+	res_color: string;
+	res_border: string;
 };
 export type IMappedTheme = { [key: string]: string | null };
 ///////////////// End Types /////////
@@ -18,5 +21,8 @@ export const createTheme = (variables: ITheme): IMappedTheme => {
 		"--secondry": variables.secondary || "",
 		"--highlight": variables.highlight || "",
 		"--overlay": variables.overlay || "",
+		"--res-bg": variables.res_bg || "",
+		"--res-color": variables.res_color || "",
+		"--res-border": variables.res_border || "",
 	};
 };

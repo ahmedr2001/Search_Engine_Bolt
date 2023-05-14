@@ -11,6 +11,9 @@ module.exports = {
         "secondary": "var(--secondry)", //text
         "highlight": "var(--highlight)", //borders
         "overlay": "var(--overlay)", //second bg
+        "res-border": "var(--res-border)",
+        "res-color": "var(--res-color)",
+        "res-bg": "var(--res-bg)"
       }
       /* light: {
         'primary': '#F8F8F8',
