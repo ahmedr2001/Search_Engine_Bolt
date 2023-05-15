@@ -10,7 +10,7 @@ interface ErrorType {
 	code: number;
 }
 
-export default function ResultsList({}: Props) {
+export default function ResultsList() {
 	const [query, isSeeingResults, setQuery] = useSearchParamQuery();
 	const [isLoading, setIsLoading] = useState(false);
 	const [results, setResults] = useState<resultType[]>([]);
