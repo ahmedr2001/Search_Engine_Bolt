@@ -233,7 +233,7 @@ public class QueryProcessor {
         return  matcher.matches();
     }
 
-    private void removeParagraphData(Page pg, int i) {
+    private static void removeParagraphData(Page pg, int i) {
         if(pg.getTagIndexes()!=null) {
             pg.getTagIndexes().remove(i);
         }
