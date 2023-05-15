@@ -8,6 +8,7 @@ import org.jsoup.select.Elements;
 import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,7 +18,7 @@ import javax.print.Doc;
 
 
 public class WebIndexer {
-    static final int TH_SZ = 2;
+    static final int TH_SZ = 3;
     static int elemTextIndex = -1;
     mongoDB DB;
     private HashMap<String, Document> indexedUrls; //
@@ -35,6 +36,8 @@ public class WebIndexer {
 
             List<Thread> thArr = new ArrayList<Thread>();
             List<List<String>> keys = new ArrayList<List<String>>();
+            HashSet<String> all_words = new HashSet<>();
+            List<String> all_words_lists = new ArrayList<>();
             public UpdateWordsCollection() throws InterruptedException {
 //                System.out.printf("Unique words: %d\n",indexedWords.keySet().size());
                 for (int i = 0; i < TH_SZ; i++) {
@@ -46,14 +49,14 @@ public class WebIndexer {
                     th.setName(I);
                     thArr.add(th);
                 }
-
                 int cnt = 0;
                 for (String word : indexedWords.keySet()) {
                     int idx = cnt % TH_SZ;
-                    keys.get(idx).add(word);
+//                    keys.get(idx).add(word);
+                    all_words.add(word);
                     cnt++;
                 }
-
+                all_words_lists.addAll(all_words);
                 for (Thread th : thArr) {
                     th.start();
                 }
@@ -67,9 +70,17 @@ public class WebIndexer {
                     Thread t = Thread.currentThread();
                     String name = t.getName();
                     int idx = Integer.parseInt(name);
-//                    System.out.println(idx);
-                    for (String word : keys.get(idx)) {
-                        DB.addIndexedWord(word, indexedWords.get(word));
+                    System.out.println(idx);
+                    int total = all_words.size() ;
+                    int st = total/TH_SZ * (idx) ;
+                    int end = total/TH_SZ *(idx+1);
+                    System.out.println(st+ " " + end);
+//                    for (String word : keys.get(idx)) {
+//                        DB.addIndexedWord(word, indexedWords.get(word));
+//                    }
+                    for(int i = st; i<end;i++){
+                        String word = all_words_lists.get(i);
+                        DB.addIndexedWord(word,indexedWords.get(word));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

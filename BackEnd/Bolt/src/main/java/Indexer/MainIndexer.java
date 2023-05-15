@@ -21,7 +21,7 @@ public class MainIndexer {
 //        System.out.println(DB.getNumOfCrawledPages());
         class RunMainIndexer implements Runnable {
             int cnt = (int) DB.getNumberOfIndexedUrls();
-            int batchSize = 10;
+            int batchSize = 100;
             int iteration = cnt / batchSize - 1;
             List<Thread> thArr = new ArrayList<Thread>();
             public RunMainIndexer() throws InterruptedException {
