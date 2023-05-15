@@ -6,9 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="3105906b-9e79-457b-a768-4fd4e62bab06" name="Changes" comment="spring boot init">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/DB/mongoDB.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/DB/mongoDB.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/Indexer/MainIndexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/Indexer/MainIndexer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/Indexer/WebIndexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/Indexer/WebIndexer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/PageRankAlgorithm/PageRankAlgorithm.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Bolt/src/main/java/PageRankAlgorithm/PageRankAlgorithm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/QueryProcessor/QueryProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/QueryProcessor/QueryProcessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/Ranker/MainRanker.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/Ranker/MainRanker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/WordsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/WordsController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,32 +46,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;openjdk-19&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/ASUS/Documents/GitHub/Search_Engine_Bolt/BackEnd/Spring Boot Application&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;onboarding.tips.debug.path&quot;: &quot;/home/ahmedosama/IdeaProjects/Search_Engine_Bolt/src/Main.java&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;spring.configuration.checksum&quot;: &quot;a6fe881cecd3fb7660083aea35cce430&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "main",
+    "jdk.selected.JAVA_MODULE": "openjdk-19",
+    "last_opened_file_path": "C:/Users/ASUS/Documents/GitHub/Search_Engine_Bolt/BackEnd/Spring Boot Application",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "onboarding.tips.debug.path": "/home/ahmedosama/IdeaProjects/Search_Engine_Bolt/src/Main.java",
+    "project.structure.last.edited": "Libraries",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "spring.configuration.checksum": "a6fe881cecd3fb7660083aea35cce430",
+    "ts.external.directory.path": "/home/ahmedosamahelmy/.local/share/JetBrains/Toolbox/apps/IDEA-U/ch-0/231.8770.65/plugins/javascript-impl/jsLanguageServicesImpl/external",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -85,7 +87,7 @@
       <recent name="com.bolt.SpringBoot" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Indexer">
+  <component name="RunManager">
     <configuration name="Indexer" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="Indexer.MainIndexer" />
       <module name="DB" />
@@ -163,7 +165,7 @@
       <updated>1681678269660</updated>
       <workItem from="1683558957214" duration="2760000" />
       <workItem from="1684041663018" duration="1979000" />
-      <workItem from="1684164810000" duration="10651000" />
+      <workItem from="1684164810000" duration="19680000" />
     </task>
     <servers />
   </component>

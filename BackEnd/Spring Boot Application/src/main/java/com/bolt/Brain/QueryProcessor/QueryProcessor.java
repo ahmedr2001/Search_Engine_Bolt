@@ -22,7 +22,7 @@ public class QueryProcessor {
 
     private ParagraphService paragraphService;
 
-
+    List<String> originalWords ;
 
 
 
@@ -33,14 +33,17 @@ public class QueryProcessor {
         this.crawlerService = crawlerService;
         this.wordsService = wordsService;
         this.paragraphService = paragraphService;
+        originalWords = new ArrayList<>();
     }
 
+    public List<String> getOriginalWords(){
+        return originalWords;
+    }
     public List<WordsDocument> run(String query) throws IOException {
         //======= Variables Section ========//
         List<String> phrases = extractPhrases(query);           //0. get Phrases
         query = removePhraseFromQuery(query, phrases);
         List<String> words = process(query);                    //1. process query and return all words after processing
-
         List<WordsDocument> results = getWordsResult(words);    //2. get normal query results
         List<List<WordsDocument>> phrase_results = getPhraseResults(phrases);
 
@@ -101,6 +104,7 @@ public class QueryProcessor {
     private List<String> process(String query) throws IOException {
         List<String> words;
         words = basicProcess(query);                                    // [ convert it to words, remove stop words]
+        originalWords = words;
         words = stemmer.runStemmer(words);                              //3.return to it's base
         words = words.stream().distinct()                               //4.Remove Duplicates
                 .collect(Collectors.toList());
@@ -184,10 +188,18 @@ public class QueryProcessor {
     }
 
     private void removeParagraphData(Page pg, int i) {
-        pg.getTagIndexes().remove(i);
-        pg.getParagraphIndexes().remove(i);
-        pg.getWordIndexes().remove(i);
-        pg.getTagTypes().remove(i);
+        if(pg.getTagIndexes()!=null) {
+            pg.getTagIndexes().remove(i);
+        }
+        if(pg.getParagraphIndexes() != null) {
+            pg.getParagraphIndexes().remove(i);
+        }
+        if(pg.getWordIndexes() != null) {
+            pg.getWordIndexes().remove(i);
+        }
+        if(pg.getTagTypes() != null) {
+            pg.getTagTypes().remove(i);
+        }
     }
 
 

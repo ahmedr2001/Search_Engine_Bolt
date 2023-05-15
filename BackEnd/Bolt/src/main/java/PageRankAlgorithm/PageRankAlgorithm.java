@@ -57,7 +57,7 @@ public class PageRankAlgorithm {
         while (ITERATION_STEP-- >0) // Iterations
         {
             // Store the PageRank for All Nodes in Temporary Array
-            for ( k = 1; k < cnt; k++) {
+            for ( k = 0; k < cnt; k++) {
                 old_page_rank[k] = page_rank[k];
                 page_rank[k] = 0.0;
             }
@@ -68,7 +68,7 @@ public class PageRankAlgorithm {
                 }
             }
             System.out.printf("\n After " + ITERATION_STEP + "th Step \n");
-            for (k = 1; k < cnt; k++)
+            for (k = 0; k < cnt; k++)
                 System.out.printf(" Page Rank of " + k + " is :\t" + page_rank[k] + "\n");
         }
         // Add the Damping Factor to PageRank

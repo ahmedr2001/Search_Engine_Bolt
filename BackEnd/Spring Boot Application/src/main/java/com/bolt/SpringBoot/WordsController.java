@@ -44,7 +44,8 @@ public class WordsController {
     public ResponseEntity<List<Document>> search(@RequestParam String q) throws IOException {
         QueryProcessor queryProcessor = new QueryProcessor(crawlerService, wordsService, paragraphService);
         List<WordsDocument> RelatedDocuments = queryProcessor.run(q);
-        MainRanker mainRanker = new MainRanker(RelatedDocuments, urlsService );
+        List<String> originalWords = queryProcessor.getOriginalWords();
+        MainRanker mainRanker = new MainRanker(RelatedDocuments, urlsService , originalWords );
         List<Document>list = mainRanker.runRanker();
         return new ResponseEntity<List<Document>>(list, HttpStatus.OK);
 //        return new ResponseEntity<List<WordsDocument>>(service.findWords(q), HttpStatus.OK);
