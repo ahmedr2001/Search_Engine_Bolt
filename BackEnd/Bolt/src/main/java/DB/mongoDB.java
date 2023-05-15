@@ -61,12 +61,10 @@ public class mongoDB {
                 Scanner cin = new Scanner(file);
                 while (cin.hasNextLine()) {
                     String url = cin.nextLine();
-                    if (WebCrawler.handleRobot("*", url, -1)) {
-                        org.jsoup.nodes.Document jdoc = WebCrawler.getDocument(url);
-                        if (jdoc != null) {
-                            Document doc = new Document("URL", url).append("KEY", WebCrawler.toHexString(WebCrawler.getSHA(jdoc.body().toString()))).append("BODY", jdoc.body().toString()).append("TITLE", jdoc.title());
-                            seedCollection.insertOne(doc);
-                        }
+                    org.jsoup.nodes.Document jdoc = WebCrawler.getDocument(url);
+                    if (jdoc != null) {
+                        Document doc = new Document("URL", url).append("KEY", WebCrawler.toHexString(WebCrawler.getSHA(jdoc.body().toString()))).append("BODY", jdoc.body().toString()).append("TITLE", jdoc.title());
+                        seedCollection.insertOne(doc);
                     }
                 }
                 cin.close();
