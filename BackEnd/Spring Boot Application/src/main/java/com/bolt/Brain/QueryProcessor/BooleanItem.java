@@ -18,7 +18,6 @@ public abstract  class BooleanItem {
         this.processQueryUnit = processQueryUnit;
         this.content = content;
     }
-    abstract public void execute(List<BooleanItem> items, int index) throws IOException;
     public Pattern getPattern(List<String> words) {
         return  null;
     };
@@ -74,20 +73,16 @@ public abstract  class BooleanItem {
 
 
 
+    public void execute(List<BooleanItem> items, int index) throws IOException {
+        if(items.get(index) instanceof PhraseItem || items.get(index) instanceof WordItem )
+            this.executeOne(items, index);
+        else if (items.get(index - 1) instanceof PhraseItem && items.get(index + 1) instanceof PhraseItem)
+            this.executeOne(items, index);
+        else this.executeSets(items,index);
+    }
+    abstract public void executeOne(List<BooleanItem> items, int index) throws IOException;
+
     public void executeSets(List<BooleanItem> items, int index) throws IOException {
-       List<WordsDocument> res1 = items.get(index - 1).getResults();
-
-       items.get(index+1).execute(items, index + 1);
-       List<WordsDocument> res2 = items.get(index + 1).getResults();
-
-       HashSet<Integer> set1 = getParagraphIndexes(res1);
-       HashSet<Integer> set2 = getParagraphIndexes(res2);
-
-       set1.retainAll(set2);    //add
-
-        res1.addAll(res2);
-        setResults(res1, set1);
-
 
     }
 

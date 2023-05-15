@@ -13,7 +13,7 @@ public class NOTItem extends BooleanItem{
         super(processQueryUnit, content);
     }
     @Override
-    public void execute(List<BooleanItem> items, int index) throws IOException {
+    public void executeOne(List<BooleanItem> items, int index) throws IOException {
         List<String> phraseWordsStemming1 = processQueryUnit.process(items.get(index - 1).getContent());
         List<String> phraseWords1 = processQueryUnit.basicProcess(items.get(index - 1).getContent());
 
@@ -22,6 +22,8 @@ public class NOTItem extends BooleanItem{
 
         List<WordsDocument> basicRes = QueryProcessor.getWordsResult(phraseWordsStemming1);
         results = QueryProcessor.runPhraseSearching(basicRes, getPattern(phraseWords1, phraseWords2));
+        items.remove(index - 1);
+        items.remove(index);
     }
 
     @Override
@@ -35,7 +37,7 @@ public class NOTItem extends BooleanItem{
     public void executeSets(List<BooleanItem> items, int index) throws IOException {
         List<WordsDocument> res1 = items.get(index - 1).getResults();
 
-        items.get(index+1).execute(items, index + 1);
+        items.get(index+1).executeOne(items, index + 1);
         List<WordsDocument> res2 = items.get(index + 1).getResults();
 
         HashSet<Integer> set1 = getParagraphIndexes(res1);
@@ -46,6 +48,8 @@ public class NOTItem extends BooleanItem{
         res1.addAll(res2);
         setResults(res1, set1);
 
+        items.remove(index - 1);
+        items.remove(index);
     }
     static public boolean isNOT(List<String> tokens, int index) {
         return (

@@ -69,6 +69,7 @@ export default function ResultsList() {
 				const t1 = performance.now();
 				setRenderTime(t1 - t0);
 
+				console.log(data);
 				//const response_p = await fetch("");
 				setResults(data);
 			} catch (error) {

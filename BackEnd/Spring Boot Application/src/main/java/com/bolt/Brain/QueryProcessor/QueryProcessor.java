@@ -35,26 +35,40 @@ public class QueryProcessor {
 
         List<BooleanItem> items = extractBooleanItem(query);
 
+        // solve phrases of operands
+        for(int i = 0;i < items.size(); i++) {
+            if(!(items.get(i) instanceof WordItem || items.get(i) instanceof PhraseItem) ) {
+                items.get(i).executeOne(items, i);
+                i--;
+            }
+        }
+        //solve single phrases and words
+        for(int i = 0;i < items.size(); i++) {
+            if((items.get(i) instanceof WordItem || items.get(i) instanceof PhraseItem) )
+                items.get(i).executeOne(items, i);
+
+        }
+
         //======= Variables Section ========//
-        List<String> phrases = extractPhrases(query);           //0. get Phrases
-        query = removePhraseFromQuery(query, phrases);
-        List<String> words = processQueryUnit.process(query);                    //1. process query and return all words after processing
+        List<WordsDocument> results = new ArrayList<>();
 
-        List<WordsDocument> results = getWordsResult(words);    //2. get normal query results
-        List<List<WordsDocument>> phrase_results = getPhraseResults(phrases);
-
-
-
-        if(results.size()  > 0 && phrase_results.size() > 0) {
-            //TODO: combine two lists and return it
-            results.addAll(phrase_results.stream().flatMap(Collection::stream).toList());
-
+        for(BooleanItem item: items) {
+            results.addAll(item.getResults());
         }
-        else if(phrase_results.size() > 0) {
-            //TODO: BONUS BUT now let combine results
-            return phrase_results.stream().flatMap(Collection::stream).collect(Collectors.toList());
+
+        //======== testing ======
+        for(WordsDocument wDoc: results) {
+            for(Page url: wDoc.getPages()){
+                for(Integer pid : url.getParagraphIndexes()) {
+                    String paragraph = paragraphService.findParagraph(pid).getParagraph();
+                    System.out.println(paragraph);
+                    System.out.println();
+                    System.out.println();
+
+                }
+            }
         }
-        // else
+
         return results;
     }
 
@@ -114,7 +128,7 @@ public class QueryProcessor {
             else if(i > 0 && i < tokens_sz - 1 && ORItem.isOR(tokens,i))
                 items.add(new ORItem(processQueryUnit, "or"));
             else if(i > 0 && i < tokens_sz - 1 && NOTItem.isNOT(tokens,i))
-                items.add(new ANDItem(processQueryUnit, "and"));
+                items.add(new NOTItem(processQueryUnit, "not"));
             else items.add(new WordItem(processQueryUnit, tokens.get(i)));
         }
 //        for(BooleanItem itm: items) {
@@ -216,7 +230,6 @@ public class QueryProcessor {
     }
 
     public static void removeParagraphData(Page pg, int i) {
-        pg.getTagIndexes().remove(i);
         pg.getParagraphIndexes().remove(i);
         pg.getWordIndexes().remove(i);
         pg.getTagTypes().remove(i);

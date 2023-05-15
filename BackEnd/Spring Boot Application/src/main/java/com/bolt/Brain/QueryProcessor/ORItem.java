@@ -13,23 +13,27 @@ public class ORItem extends BooleanItem{
         super(processQueryUnit, content);
     }
     @Override
-    public void execute(List<BooleanItem> items, int index) throws IOException {
-        if(items.get(index - 1).getResults() == null) items.get(index-1).execute(items, index-1);
-        if(items.get(index + 1).getResults() == null) items.get(index+1).execute(items, index+1);
+    public void executeOne(List<BooleanItem> items, int index) throws IOException {
+        if(items.get(index - 1).getResults() == null) items.get(index-1).executeOne(items, index-1);
+        if(items.get(index + 1).getResults() == null) items.get(index+1).executeOne(items, index+1);
 
 
         results = items.get(index - 1).getResults();
         results.addAll(items.get(index - 1).getResults());
+
+        items.remove(index - 1);
+        items.remove(index);
     }
 
 
     public void executeSets(List<BooleanItem> items, int index) throws IOException {
         results = items.get(index - 1).getResults();
 
-        items.get(index+1).execute(items, index + 1);
+        items.get(index+1).executeOne(items, index + 1);
         results.addAll( items.get(index + 1).getResults() );
 
-
+        items.remove(index - 1);
+        items.remove(index);
 
     }
     static public boolean isOR(List<String> tokens, int index) {

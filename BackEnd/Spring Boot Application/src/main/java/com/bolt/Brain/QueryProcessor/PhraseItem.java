@@ -13,7 +13,7 @@ public class PhraseItem extends BooleanItem {
         super(processQueryUnit, content);
     }
     @Override
-    public void execute(List<BooleanItem> items, int index) throws IOException {
+    public void executeOne(List<BooleanItem> items, int index) throws IOException {
         List<String> phraseWordsStemming = processQueryUnit.process(content);
         List<String> phraseWords = processQueryUnit.basicProcess(content);
 

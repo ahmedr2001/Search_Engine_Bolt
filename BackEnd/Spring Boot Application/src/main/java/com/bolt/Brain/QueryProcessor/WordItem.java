@@ -10,7 +10,7 @@ public class WordItem extends BooleanItem {
         super(processQueryUnit, content);
     }
     @Override
-    public void execute(List<BooleanItem> items, int index) throws IOException {
+    public void executeOne(List<BooleanItem> items, int index) throws IOException {
         results = QueryProcessor.getWordResult(content);
     }
 }
