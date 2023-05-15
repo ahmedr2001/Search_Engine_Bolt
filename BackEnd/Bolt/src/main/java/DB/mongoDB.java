@@ -31,8 +31,9 @@ public class mongoDB {
 
     public mongoDB(String DB_Name) {
 
-        //if (client == null) {
-//            ConnectionString connectionString = new ConnectionString("mongodb+srv://ahmedr2001:eng3469635@javasearchengine.8xarqeo.mongodb.net/?retryWrites=true&w=majority");
+        // if (client == null) {
+        // ConnectionString connectionString = new
+        // ConnectionString("mongodb+srv://ahmedr2001:eng3469635@javasearchengine.8xarqeo.mongodb.net/?retryWrites=true&w=majority");
         ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017");
         client = MongoClients.create(connectionString);
         DB = client.getDatabase(DB_Name);
@@ -41,17 +42,18 @@ public class mongoDB {
         wordsCollection = DB.getCollection("WordsCollection");
         paragraphsCollection = DB.getCollection("ParagraphsCollection");
         urlsCollection = DB.getCollection("URLsCollection");
-//            crawlerCollection.drop();
-//            seedCollection.drop();
-        //} else {
-        //  System.out.println("Already connected to the client");
-        //}
+        // crawlerCollection.drop();
+        // seedCollection.drop();
+        // } else {
+        // System.out.println("Already connected to the client");
+        // }
     }
 
     public void initializeSeed() {
         if (crawlerCollection.countDocuments() >= MAX_PAGES_NUM) {
             Logging.printColored("[Warn] ", Color.YELLOW);
-            System.out.println("Crawling has reached its limit which is equal to " + MAX_PAGES_NUM + " ,System is rebooting");
+            System.out.println(
+                    "Crawling has reached its limit which is equal to " + MAX_PAGES_NUM + " ,System is rebooting");
             crawlerCollection.drop();
             seedCollection.drop();
         }
@@ -61,12 +63,12 @@ public class mongoDB {
                 Scanner cin = new Scanner(file);
                 while (cin.hasNextLine()) {
                     String url = cin.nextLine();
-                    if (WebCrawler.handleRobot("*", url, -1)) {
-                        org.jsoup.nodes.Document jdoc = WebCrawler.getDocument(url);
-                        if (jdoc != null) {
-                            Document doc = new Document("URL", url).append("KEY", WebCrawler.toHexString(WebCrawler.getSHA(jdoc.body().toString()))).append("BODY", jdoc.body().toString()).append("TITLE", jdoc.title());
-                            seedCollection.insertOne(doc);
-                        }
+                    org.jsoup.nodes.Document jdoc = WebCrawler.getDocument(url);
+                    if (jdoc != null) {
+                        Document doc = new Document("URL", url)
+                                .append("KEY", WebCrawler.toHexString(WebCrawler.getSHA(jdoc.body().toString())))
+                                .append("BODY", jdoc.body().toString()).append("TITLE", jdoc.title());
+                        seedCollection.insertOne(doc);
                     }
                 }
                 cin.close();
@@ -80,14 +82,16 @@ public class mongoDB {
         }
     }
 
-    public void addToCrawledPages(Document doc,int ID) {
+    public void addToCrawledPages(Document doc, int ID) {
         synchronized (this) {
-            if (doc == null) return;
+            if (doc == null)
+                return;
             if (getNumOfCrawledPages() < mongoDB.MAX_PAGES_NUM) {
                 if (!isCrawled(doc)) {
                     doc.append("_id", crawlerCollection.countDocuments() + 1);
                     Logging.printColored("[Insertion] ", Color.GREEN);
-                    System.out.println(ID + "=>Bot Received webpage with url = " + doc.get("URL") + " and the Title is : " + doc.get("TITLE"));
+                    System.out.println(ID + "=>Bot Received webpage with url = " + doc.get("URL")
+                            + " and the Title is : " + doc.get("TITLE"));
                     crawlerCollection.insertOne(doc);
                 }
             }
@@ -96,13 +100,15 @@ public class mongoDB {
 
     public boolean isCrawled(Document doc) {
         synchronized (this) {
-            return crawlerCollection.find(eq("KEY", doc.get("KEY"))).cursor().hasNext() || crawlerCollection.find(eq("URL", doc.get("URL"))).cursor().hasNext();
+            return crawlerCollection.find(eq("KEY", doc.get("KEY"))).cursor().hasNext()
+                    || crawlerCollection.find(eq("URL", doc.get("URL"))).cursor().hasNext();
         }
     }
 
     public void pushSeed(Document doc) {
         synchronized (this) {
-            if (doc == null) return;
+            if (doc == null)
+                return;
             seedCollection.insertOne(doc);
         }
     }
@@ -115,7 +121,8 @@ public class mongoDB {
 
     public boolean isSeeded(Document doc) {
         synchronized (this) {
-            return seedCollection.find(eq("KEY", doc.get("KEY"))).cursor().hasNext() || seedCollection.find(eq("URL", doc.get("URL"))).cursor().hasNext();
+            return seedCollection.find(eq("KEY", doc.get("KEY"))).cursor().hasNext()
+                    || seedCollection.find(eq("URL", doc.get("URL"))).cursor().hasNext();
         }
     }
 
@@ -142,17 +149,17 @@ public class mongoDB {
     }
 
     public static void List_All(MongoCollection collection) {
-//        Listing All Mongo Documents in Collection
+        // Listing All Mongo Documents in Collection
         FindIterable<Document> iterDoc = collection.find();
         int i = 1;
-// Getting the iterator
+        // Getting the iterator
         System.out.println("Listing All Mongo Documents");
         Iterator it = iterDoc.iterator();
         while (it.hasNext()) {
             System.out.println(it.next());
             i++;
         }
-//specific document retrieving in a collection
+        // specific document retrieving in a collection
         BasicDBObject searchQuery = new BasicDBObject();
         searchQuery.put("name", "Manga");
         System.out.println("Retrieving specific Mongo Document");
@@ -172,13 +179,13 @@ public class mongoDB {
     public List<Document> getWordDocuments(String search_word) {
         List<Document> results = new ArrayList<>();
 
-        //1.Create a query document
+        // 1.Create a query document
         Document query = new Document();
         query.append("word", search_word);
 
-        //2. create cursor to resulted documents
+        // 2. create cursor to resulted documents
         try (MongoCursor<Document> cursor = wordsCollection.find(query).iterator()) {
-            //3. iterate through it
+            // 3. iterate through it
             while (cursor.hasNext()) {
                 results.add(cursor.next()); // 4. add results
             }
@@ -190,17 +197,16 @@ public class mongoDB {
     public String getUrlBody(String url) {
         String result = null;
 
-        //1.Create a query document
+        // 1.Create a query document
         Document query = new Document("URL", url);
 
-        //2. create cursor to resulted documents
+        // 2. create cursor to resulted documents
         Document res_doc = crawlerCollection.find(query).first();
         if (res_doc != null)
             result = res_doc.getString("BODY");
 
         return result;
     }
-
 
     public void addIndexedWord(String newWord, List<Document> newWordPages) {
         if (newWordPages == null) {
@@ -216,7 +222,8 @@ public class mongoDB {
             int prevWordPagesCnt = prevWordPages.size();
             prevWordPages.addAll(newWordPages);
             wordsCollection.findOneAndUpdate(filter, new Document("$set", new Document("word", newWord)
-                    .append("IDF", Math.log(crawlerCollection.countDocuments() / (double) newWordPagesCnt + prevWordPagesCnt))
+                    .append("IDF",
+                            Math.log(crawlerCollection.countDocuments() / (double) newWordPagesCnt + prevWordPagesCnt))
                     .append("pages", prevWordPages)));
         } else {
             Document doc = new Document("word", newWord)
@@ -235,7 +242,8 @@ public class mongoDB {
             urlsCollection.insertOne(doc);
         }
     }
-    public void addPageRank(String url , double page_rank){
+
+    public void addPageRank(String url, double page_rank) {
         Document filter = new Document("url", url);
         urlsCollection.findOneAndUpdate(filter, new Document("$set", new Document("url", url)
                 .append("rank", page_rank)));
@@ -275,12 +283,11 @@ public class mongoDB {
         if (pages != null) {
             System.out.println(pages.get("IDF"));
         }
-        // { IDF ,  Array of pages }
+        // { IDF , Array of pages }
         System.out.println(iterable);
         iterable.into(results);
 
         return results;
     }
-
 
 }
