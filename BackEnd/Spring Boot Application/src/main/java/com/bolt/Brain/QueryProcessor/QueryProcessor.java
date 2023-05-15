@@ -206,7 +206,7 @@ public class QueryProcessor {
     }
 
     // loop on phrases and get all results
-   
+
 
     private Pattern regexPatternPhrase(List<String> words) {
         String regex = ".*" + String.join(".*", words) + ".*";
