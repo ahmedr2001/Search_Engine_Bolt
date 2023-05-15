@@ -8,7 +8,6 @@ import org.jsoup.select.Elements;
 import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,7 +17,7 @@ import javax.print.Doc;
 
 
 public class WebIndexer {
-    static final int TH_SZ = 3;
+    static final int TH_SZ = 16;
     static int elemTextIndex = -1;
     mongoDB DB;
     private HashMap<String, Document> indexedUrls; //
@@ -36,10 +35,8 @@ public class WebIndexer {
 
             List<Thread> thArr = new ArrayList<Thread>();
             List<List<String>> keys = new ArrayList<List<String>>();
-            HashSet<String> all_words = new HashSet<>();
-            List<String> all_words_lists = new ArrayList<>();
             public UpdateWordsCollection() throws InterruptedException {
-//                System.out.printf("Unique words: %d\n",indexedWords.keySet().size());
+                System.out.printf("Unique words: %d\n",indexedWords.keySet().size());
                 for (int i = 0; i < TH_SZ; i++) {
                     keys.add(new ArrayList<String>());
                 }
@@ -49,14 +46,14 @@ public class WebIndexer {
                     th.setName(I);
                     thArr.add(th);
                 }
+
                 int cnt = 0;
                 for (String word : indexedWords.keySet()) {
                     int idx = cnt % TH_SZ;
-//                    keys.get(idx).add(word);
-                    all_words.add(word);
+                    keys.get(idx).add(word);
                     cnt++;
                 }
-                all_words_lists.addAll(all_words);
+
                 for (Thread th : thArr) {
                     th.start();
                 }
@@ -70,17 +67,9 @@ public class WebIndexer {
                     Thread t = Thread.currentThread();
                     String name = t.getName();
                     int idx = Integer.parseInt(name);
-                    System.out.println(idx);
-                    int total = all_words.size() ;
-                    int st = total/TH_SZ * (idx) ;
-                    int end = total/TH_SZ *(idx+1);
-                    System.out.println(st+ " " + end);
-//                    for (String word : keys.get(idx)) {
-//                        DB.addIndexedWord(word, indexedWords.get(word));
-//                    }
-                    for(int i = st; i<end;i++){
-                        String word = all_words_lists.get(i);
-                        DB.addIndexedWord(word,indexedWords.get(word));
+//                    System.out.println(idx);
+                    for (String word : keys.get(idx)) {
+                        DB.addIndexedWord(word, indexedWords.get(word));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -109,7 +98,7 @@ public class WebIndexer {
 
     public void startIndexer(String body, String title, String url, Integer _id) throws InterruptedException {
         if (DB.isUrlIndexed(_id)) {
-//            System.out.println("Page already indexed");
+            System.out.println("Page already indexed");
             return;
         }
         indexedWords = new ConcurrentHashMap<String, List<Document>>();
@@ -137,10 +126,10 @@ public class WebIndexer {
             paragraph += elemText;
             paragraph += " ";
             if (paragraph.length() >= 200) {
-                synchronized (this) {
+//                synchronized (this) {
                     elemTextIndex++;
                     localElemTextIndex = elemTextIndex;
-                }
+//                }
                 updateParagraphsCollection(paragraph, localElemTextIndex);
                 cleaner = new Cleaner() ;
                 cleanElemText = cleaner.runCleaner(paragraph);
@@ -183,10 +172,10 @@ public class WebIndexer {
             }
         }
         if (paragraph.length() > 0) {
-            synchronized (this) {
+//            synchronized (this) {
                 elemTextIndex++;
                 localElemTextIndex = elemTextIndex;
-            }
+//            }
             updateParagraphsCollection(paragraph, localElemTextIndex);
             cleaner = new Cleaner() ;
             cleanElemText = cleaner.runCleaner(paragraph);
@@ -282,15 +271,15 @@ public class WebIndexer {
 
             if (TF < 0.5) { // Avoiding spamming
                 if (indexedWords.containsKey(word)) {
-                    synchronized (this) {
+//                    synchronized (this) {
                         indexedWords.get(word).add(doc);
-                    }
+//                    }
                 } else {
                     List<Document> docArray = new ArrayList<Document>();
                     docArray.add(doc);
-                    synchronized (this) {
+//                    synchronized (this) {
                         indexedWords.put(word, docArray);
-                    }
+//                    }
                 }
             }
         }

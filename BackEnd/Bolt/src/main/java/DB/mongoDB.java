@@ -2,15 +2,19 @@ package DB;
 
 import Crawler.WebCrawler;
 import Logging.*;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.ConnectionString;
+import com.mongodb.DBObject;
 import com.mongodb.client.*;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 
 import javax.print.Doc;
 
 import static com.mongodb.client.model.Aggregates.set;
+import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 
 import java.io.File;
@@ -135,11 +139,22 @@ public class mongoDB {
     // Indexing Functions
 
     public boolean isUrlIndexed(Integer _id) {
-        return urlsCollection.find(new Document("_id", _id)).iterator().hasNext();
+//        synchronized (this) {
+            return urlsCollection.find(new Document("_id", _id)).iterator().hasNext();
+//        }
     }
 
-    public boolean isParagraphIndexed(Integer paragraphId) {
-        return paragraphsCollection.find(new Document("_id", paragraphId)).iterator().hasNext();
+    public boolean isParagraphIndexed(String paragraph, Integer paragraphId) {
+        synchronized (this) {
+        DBObject and_part1 = new BasicDBObject("_id", new BasicDBObject("$eq", paragraphId));
+        DBObject and_part2 = new BasicDBObject("paragraph", new BasicDBObject("$eq", paragraph));
+        BasicDBList and = new BasicDBList();
+        and.add(and_part1);
+        and.add(and_part2);
+        DBObject query = new BasicDBObject("$and", and);
+
+            return paragraphsCollection.find((Bson) query).iterator().hasNext();
+        }
     }
 
     public static void List_All(MongoCollection collection) {
@@ -204,7 +219,7 @@ public class mongoDB {
 
 
     public void addIndexedWord(String newWord, List<Document> newWordPages) {
-        synchronized (this) {
+//        synchronized (this) {
             if (newWordPages == null) {
                 return;
             }
@@ -228,17 +243,19 @@ public class mongoDB {
                         .append("pages", newWordPages);
                 wordsCollection.insertOne(doc);
             }
-        }
+//        }
     }
 
     public void addIndexedUrl(Integer _id, String url, String title) {
-        Boolean pageExists = isUrlIndexed(_id);
-        if (!pageExists) {
-            Document doc = new Document("_id", _id)
-                    .append("url", url)
-                    .append("title", title);
-            urlsCollection.insertOne(doc);
-        }
+//        synchronized (this) {
+            Boolean pageExists = isUrlIndexed(_id);
+            if (!pageExists) {
+                Document doc = new Document("_id", _id)
+                        .append("url", url)
+                        .append("title", title);
+                urlsCollection.insertOne(doc);
+            }
+//        }
     }
     public void addPageRank(String url , double page_rank){
         Document filter = new Document("url", url);
@@ -247,17 +264,19 @@ public class mongoDB {
     }
 
     public void addIndexedParagraph(String paragraph, Integer paragraphId) {
-        Boolean paragraphExists = isParagraphIndexed(paragraphId);
-        if (paragraphExists) {
-            Document filter = new Document("_id", paragraphId);
-            paragraphsCollection.findOneAndUpdate(filter, new Document("$set", new Document("_id", paragraphId)
-                    .append("paragraph", paragraph)));
-        } else {
-            Document paragraphDoc = new Document();
-            paragraphDoc.append("_id", paragraphId)
-                    .append("paragraph", paragraph);
+        synchronized (this) {
+            Boolean paragraphExists = isParagraphIndexed(paragraph, paragraphId);
+            if (paragraphExists) {
+//                Document filter = new Document("paragraph", paragraph);
+//                paragraphsCollection.findOneAndUpdate(filter, new Document("$set", new Document("_id", paragraphId)
+//                        .append("paragraph", paragraph)));
+            } else {
+                Document paragraphDoc = new Document();
+                paragraphDoc.append("_id", paragraphId)
+                        .append("paragraph", paragraph);
 
-            paragraphsCollection.insertOne(paragraphDoc);
+                paragraphsCollection.insertOne(paragraphDoc);
+            }
         }
     }
 
@@ -268,9 +287,9 @@ public class mongoDB {
     }
 
     public int getNumberOfIndexedUrls() {
-        synchronized (this) {
+//        synchronized (this) {
             return (int) urlsCollection.countDocuments();
-        }
+//        }
     }
 
     public Iterable<Document> getPagesWithWord(String searchWord) {
