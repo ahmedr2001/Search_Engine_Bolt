@@ -14,48 +14,61 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class QueryProcessor {
-    private final Tokenizer tokenizer;
-    private final Stemmer stemmer;
-    private final StopWordsRemover stopWordsRemover;
+    ProcessQueryUnit processQueryUnit;
     private CrawlerService crawlerService;
-    private WordsService wordsService;
+    private static WordsService wordsService;
 
-    private ParagraphService paragraphService;
+    private static ParagraphService paragraphService;
 
 
 
 
 
     public QueryProcessor(CrawlerService crawlerService,WordsService wordsService, ParagraphService paragraphService)  {
-        tokenizer = new Tokenizer();
-        stopWordsRemover = new StopWordsRemover();
-        stemmer = new Stemmer();
+        processQueryUnit = new ProcessQueryUnit(new Tokenizer(), new Stemmer(), new StopWordsRemover());
         this.crawlerService = crawlerService;
         this.wordsService = wordsService;
         this.paragraphService = paragraphService;
     }
 
     public List<WordsDocument> run(String query) throws IOException {
+
+        List<BooleanItem> items = extractBooleanItem(query);
+
+        // solve phrases of operands
+        for(int i = 0;i < items.size(); i++) {
+            if(!(items.get(i) instanceof WordItem || items.get(i) instanceof PhraseItem) ) {
+                items.get(i).executeOne(items, i);
+                i--;
+            }
+        }
+        //solve single phrases and words
+        for(int i = 0;i < items.size(); i++) {
+            if((items.get(i) instanceof WordItem || items.get(i) instanceof PhraseItem) )
+                items.get(i).executeOne(items, i);
+
+        }
+
         //======= Variables Section ========//
-        List<String> phrases = extractPhrases(query);           //0. get Phrases
-        query = removePhraseFromQuery(query, phrases);
-        List<String> words = process(query);                    //1. process query and return all words after processing
+        List<WordsDocument> results = new ArrayList<>();
 
-        List<WordsDocument> results = getWordsResult(words);    //2. get normal query results
-        List<List<WordsDocument>> phrase_results = getPhraseResults(phrases);
-
-
-
-        if(results.size()  > 0 && phrase_results.size() > 0) {
-            //TODO: combine two lists and return it
-            results.addAll(phrase_results.stream().flatMap(Collection::stream).toList());
-
+        for(BooleanItem item: items) {
+            results.addAll(item.getResults());
         }
-        else if(phrase_results.size() > 0) {
-            //TODO: BONUS BUT now let combine results
-            return phrase_results.stream().flatMap(Collection::stream).collect(Collectors.toList());
+
+        //======== testing ======
+        for(WordsDocument wDoc: results) {
+            for(Page url: wDoc.getPages()){
+                for(Integer pid : url.getParagraphIndexes()) {
+                    String paragraph = paragraphService.findParagraph(pid).getParagraph();
+                    System.out.println(paragraph);
+                    System.out.println();
+                    System.out.println();
+
+                }
+            }
         }
-        // else
+
         return results;
     }
 
@@ -91,23 +104,43 @@ public class QueryProcessor {
     }
 
 
-    private List<String> basicProcess(String query) {
-        List<String> words;
-        words = tokenizer.runTokenizer(query);                          //1.Convert words to (list + toLowerCase)
-        words = stopWordsRemover.runStopWordsRemover(words);            //2.Remove Stop Words
-        return words;
+    private List<BooleanItem>  extractBooleanItem(String query) {
+        List<BooleanItem> items = new ArrayList<>();
+
+        List<String> tokens = new ArrayList<>();
+        // 1. break it to words and phrases
+        Matcher m = Pattern.compile("\"([^\"]*)\"|(\\S+)").matcher(query);
+        while (m.find()) {
+            if (m.group(1) != null) {
+                tokens.add("\"" + m.group(1) + "\"" ); // Add the quoted phrase
+            } else {
+                tokens.add(m.group(2)); // Add the unquoted word
+            }
+        }
+
+        // 2. build items
+        int tokens_sz = tokens.size();
+        for (int i = 0;i < tokens_sz;i++) {
+            if (PhraseItem.isPhrase(tokens, i))
+                items.add(new PhraseItem(processQueryUnit, tokens.get(i)));
+            else if(i > 0 && i < tokens_sz - 1 && ANDItem.isAND(tokens,i))
+                items.add(new ANDItem(processQueryUnit, "and"));
+            else if(i > 0 && i < tokens_sz - 1 && ORItem.isOR(tokens,i))
+                items.add(new ORItem(processQueryUnit, "or"));
+            else if(i > 0 && i < tokens_sz - 1 && NOTItem.isNOT(tokens,i))
+                items.add(new NOTItem(processQueryUnit, "not"));
+            else items.add(new WordItem(processQueryUnit, tokens.get(i)));
+        }
+//        for(BooleanItem itm: items) {
+//            System.out.println(itm.getContent());
+//        }
+        return items;
     }
 
-    private List<String> process(String query) throws IOException {
-        List<String> words;
-        words = basicProcess(query);                                    // [ convert it to words, remove stop words]
-        words = stemmer.runStemmer(words);                              //3.return to it's base
-        words = words.stream().distinct()                               //4.Remove Duplicates
-                .collect(Collectors.toList());
-        return words;
-    }
 
-    private List<WordsDocument> getWordsResult(List<String> words) {
+
+
+    public static List<WordsDocument> getWordsResult(List<String> words) {
         List<WordsDocument> results = new ArrayList<>();
 
         //===== Get Documents into results ===== //
@@ -117,16 +150,29 @@ public class QueryProcessor {
         return results;
     }
 
+    public static List<WordsDocument> getWordResult(String word) {
+        return wordsService.findWords(word);
+    }
 
     // get results for one phrase
     private List<WordsDocument> getPhraseResult(String phrase) throws IOException {
-        List<String> phraseWordsStemming = process(phrase);
-        List<String> phraseWords = basicProcess(phrase);
+        List<String> phraseWordsStemming = processQueryUnit.process(phrase);
+        List<String> phraseWords = processQueryUnit.basicProcess(phrase);
 
         Pattern phrasePattern = regexPatternPhrase(phraseWords);
         //get phrase results as normal
         List<WordsDocument> results = getWordsResult(phraseWordsStemming);
         // store processed paragraphs index so not process again
+
+        return runPhraseSearching(results, phrasePattern);
+
+    }
+
+
+
+
+
+    public static List<WordsDocument> runPhraseSearching(List<WordsDocument> results, Pattern pattern) {
         HashMap<Integer, Boolean> pargraphIndexsStore = new HashMap<>();
 
         Iterator<WordsDocument> iteratorWDoc = results.iterator();
@@ -149,7 +195,7 @@ public class QueryProcessor {
 
                     String paragraph = paragraphService.findParagraph(paragraphId).getParagraph();
 
-                    if(! wordsExistInParagraph(phrasePattern, paragraph)) {           // check pattern matcher
+                    if(! wordsExistInParagraph(pattern, paragraph)) {           // check pattern matcher
                         removeParagraphData(pg, i);
                         i--; // to calibrate loop
                         pargraphIndexsStore.put(paragraphId, false);
@@ -178,13 +224,12 @@ public class QueryProcessor {
         return Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
     }
 
-    private boolean wordsExistInParagraph(Pattern pattern, String paragraph) {
+    private static boolean wordsExistInParagraph(Pattern pattern, String paragraph) {
         Matcher matcher = pattern.matcher(paragraph);
         return  matcher.matches();
     }
 
-    private void removeParagraphData(Page pg, int i) {
-        pg.getTagIndexes().remove(i);
+    public static void removeParagraphData(Page pg, int i) {
         pg.getParagraphIndexes().remove(i);
         pg.getWordIndexes().remove(i);
         pg.getTagTypes().remove(i);

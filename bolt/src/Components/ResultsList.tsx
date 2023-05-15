@@ -10,7 +10,7 @@ interface ErrorType {
 	code: number;
 }
 
-export default function ResultsList({}: Props) {
+export default function ResultsList() {
 	const [query, isSeeingResults, setQuery] = useSearchParamQuery();
 	const [isLoading, setIsLoading] = useState(false);
 	const [results, setResults] = useState<resultType[]>([]);
@@ -69,6 +69,7 @@ export default function ResultsList({}: Props) {
 				const t1 = performance.now();
 				setRenderTime(t1 - t0);
 
+				console.log(data);
 				//const response_p = await fetch("");
 				setResults(data);
 			} catch (error) {
