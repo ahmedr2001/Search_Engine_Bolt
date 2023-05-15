@@ -90,7 +90,7 @@ export default function ResultsList() {
 				Error ... {error}
 			</div>
 		);
-	if (!isLoading && results.length > 0 && typeof paragrapgs != undefined)
+	if (!isLoading)
 		return (
 			<>
 				<div className="flex flex-col w-full pt-16 gap-8 text-highlight">

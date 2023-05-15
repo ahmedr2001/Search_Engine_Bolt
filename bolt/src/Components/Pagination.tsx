@@ -46,7 +46,7 @@ export default function Pagination({
 					.map((pageNumber) => (
 						<div
 							key={pageNumber}
-							className={`flex justify-center items-center text-lg rounded-full text-secondary  w-8 h-8 ${
+							className={`flex justify-center items-center text-lg rounded-full   w-8 h-8 ${
 								currentPage === pageNumber
 									? "bg-secondary text-overlay"
 									: "cursor-pointer text-res-color border-2 border-highlight hover:bg-res-bg"

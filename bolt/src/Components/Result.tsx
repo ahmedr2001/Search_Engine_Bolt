@@ -22,7 +22,7 @@ export default function Result({ res, paragraph }: Props) {
 					{paragraph.split(" ").map((word, index) => {
 						if (index == res.wIdx)
 							return (
-								<span className=" text-3xl font-bold underline text-highlight">
+								<span className=" text-xl font-bold  ">
 									{" "}
 									{word}{" "}
 								</span>
