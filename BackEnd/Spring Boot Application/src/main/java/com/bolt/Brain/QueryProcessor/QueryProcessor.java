@@ -7,7 +7,6 @@ import com.bolt.Brain.Utils.Tokenizer;
 import com.bolt.SpringBoot.*;
 
 import java.io.IOException;
-import java.io.Serial;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,10 +23,7 @@ public class QueryProcessor {
     private ParagraphService paragraphService;
 
 
-
-
-
-    public QueryProcessor(CrawlerService crawlerService,WordsService wordsService, ParagraphService paragraphService)  {
+    public QueryProcessor(CrawlerService crawlerService, WordsService wordsService, ParagraphService paragraphService) {
         tokenizer = new Tokenizer();
         stopWordsRemover = new StopWordsRemover();
         stemmer = new Stemmer();
@@ -45,23 +41,11 @@ public class QueryProcessor {
         List<WordsDocument> results = getWordsResult(words);    //2. get normal query results
         List<List<WordsDocument>> phrase_results = getPhraseResults(phrases);
 
-        for(List<WordsDocument> phrase_res: phrase_results) {
-            for(WordsDocument wDoc: phrase_res) {
-                for(Page pg: wDoc.getPages()) {
-                    for(Integer pix: pg.getParagraphIndexes()) {
-                        String paragraph = paragraphService.findParagraph(pix).getParagraph();
-                        System.out.println(pg.getUrlId() + " " + pix + ": " + paragraph);
-                    }
-                }
-            }
-        }
-
-        if(results.size()  > 0 && phrase_results.size() > 0) {
+        if (results.size() > 0 && phrase_results.size() > 0) {
             //TODO: combine two lists and return it
             results.addAll(phrase_results.stream().flatMap(Collection::stream).toList());
 
-        }
-        else if(phrase_results.size() > 0) {
+        } else if (phrase_results.size() > 0) {
             //TODO: BONUS BUT now let combine results
             return phrase_results.stream().flatMap(Collection::stream).collect(Collectors.toList());
         }
@@ -77,9 +61,22 @@ public class QueryProcessor {
         while (matcher.find()) {
             phrases.add(matcher.group(1));
         }
-
+//        //habd zone (split the phrase to words then trim it then remove stop words)
+//        List<String> phrases = new ArrayList<>();
+//        System.out.println("phrases");
+//        for (String s : tempphrases) {
+//            String[] temp = s.split(" ");
+//            for (int i = 0; i < temp.length; i++) {
+//                temp[i] = temp[i].trim();
+//            }
+//            Collections.addAll(phrases, temp);
+//        }
+//        phrases = stopWordsRemover.runStopWordsRemover(phrases);
+//        System.out.println(phrases);
+//        //end of habd zone
         return phrases;
     }
+
     private String removePhraseFromQuery(String query, List<String> phrases) {
         // This Code to remove phrase from query But I don't need it now
         for (String phrase : phrases) {
@@ -125,40 +122,37 @@ public class QueryProcessor {
         //get phrase results as normal
         List<WordsDocument> results = getWordsResult(phraseWordsStemming);
         // store processed paragraphs index so not process again
-        HashMap<Integer, Boolean> pargraphIndexsStore = new HashMap<>();
+        HashSet<Integer> pargraphIndexsStore = new HashSet<>();
 
-        Iterator<WordsDocument> iteratorWDoc = results.iterator();
-        while(iteratorWDoc.hasNext()) {                                  //1. loop on word search results
-            WordsDocument wDoc = iteratorWDoc.next();
-            Iterator<Page> iteratorPages = wDoc.getPages().iterator();
-            while(iteratorPages.hasNext()) {                                //2. loop on urls
-                Page pg = iteratorPages.next();
+        for (WordsDocument wDoc : results) {                                  //1. loop on word search results
+            for (Page pg : wDoc.getPages()) {                                //2. loop on urls
                 List<Integer> paragraphIndexes = pg.getParagraphIndexes();
-                for(int i = 0;i < paragraphIndexes.size();i++ ) {           //3. loop on p in url
-                    Integer paragraphId = paragraphIndexes.get(i) ;
+//                System.out.println("Before: " + paragraphIndexes.size());
+                for (int i = 0; i < paragraphIndexes.size(); i++) {           //3. loop on p in url
+                    Integer paragraphId = paragraphIndexes.get(i);
                     //3.1 if it already processed skip
-                    if(pargraphIndexsStore.containsKey(paragraphId)) {
-                        if(!pargraphIndexsStore.get(paragraphId)) {
-                            removeParagraphData(pg, i);
-                            i--;
-                        }
-                        continue;
-                    }
+                    if (pargraphIndexsStore.contains(paragraphId)) continue;
+                    else pargraphIndexsStore.add(paragraphId);
 
                     String paragraph = paragraphService.findParagraph(paragraphId).getParagraph();
 
-                    if(! wordsExistInParagraph(phrasePattern, paragraph)) {           // check pattern matcher
-                        removeParagraphData(pg, i);
+                    if (!wordsExistInParagraph(phrasePattern, paragraph)) {           // check pattern matcher
+                        //TODO: remove it
+                        pg.getTagIndexes().remove(i);
+                        pg.getParagraphIndexes().remove(i);
+                        pg.getWordIndexes().remove(i);
+                        pg.getTagTypes().remove(i);
                         i--; // to calibrate loop
-                        pargraphIndexsStore.put(paragraphId, false);
+//                        System.out.println("remove : \t" + paragraph);
 
-                    } else  pargraphIndexsStore.put(paragraphId, true);
+                    } else {
+//                        System.out.println("play : \t" +paragraph + " " + paragraphId);
+
+                    }
                 }
-                if(pg.getParagraphIndexes().isEmpty())
-                    iteratorPages.remove();
+//                System.out.println("After: " + paragraphIndexes.size());
+
             }
-            if(wDoc.getPages().isEmpty())
-                iteratorWDoc.remove();
         }
         return results;
     }
@@ -166,7 +160,7 @@ public class QueryProcessor {
     // loop on phrases and get all results
     private List<List<WordsDocument>> getPhraseResults(List<String> phrases) throws IOException {
         List<List<WordsDocument>> phrase_results = new ArrayList<>();
-        for(String phrase : phrases) {
+        for (String phrase : phrases) {
             List<WordsDocument> single_phrase_result = getPhraseResult(phrase);
             phrase_results.add(single_phrase_result);
         }
@@ -180,14 +174,7 @@ public class QueryProcessor {
 
     private boolean wordsExistInParagraph(Pattern pattern, String paragraph) {
         Matcher matcher = pattern.matcher(paragraph);
-        return  matcher.matches();
-    }
-
-    private void removeParagraphData(Page pg, int i) {
-        pg.getTagIndexes().remove(i);
-        pg.getParagraphIndexes().remove(i);
-        pg.getWordIndexes().remove(i);
-        pg.getTagTypes().remove(i);
+        return matcher.matches();
     }
 
 
