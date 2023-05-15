@@ -80,7 +80,7 @@
       <recent name="com.bolt.SpringBoot" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Main">
+  <component name="RunManager" selected="Application.Indexer">
     <configuration name="Indexer" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="Indexer.MainIndexer" />
       <module name="DB" />
@@ -123,19 +123,6 @@
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="JetRunConfigurationType">
-      <module name="DB" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="DB" />
-      <option name="filePath" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
