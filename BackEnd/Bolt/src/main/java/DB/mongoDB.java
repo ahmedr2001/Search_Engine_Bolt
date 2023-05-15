@@ -203,26 +203,28 @@ public class mongoDB {
 
 
     public void addIndexedWord(String newWord, List<Document> newWordPages) {
-        if (newWordPages == null) {
-            return;
-        }
-        Document filter = new Document("word", newWord);
-        FindIterable<Document> fi = wordsCollection.find(filter);
-        Iterator<Document> it = fi.iterator();
-        Boolean newWordExists = it.hasNext();
-        int newWordPagesCnt = newWordPages.size();
-        if (newWordExists) {
-            List<Document> prevWordPages = it.next().get("pages", List.class);
-            int prevWordPagesCnt = prevWordPages.size();
-            prevWordPages.addAll(newWordPages);
-            wordsCollection.findOneAndUpdate(filter, new Document("$set", new Document("word", newWord)
-                    .append("IDF", Math.log(crawlerCollection.countDocuments() / (double) newWordPagesCnt + prevWordPagesCnt))
-                    .append("pages", prevWordPages)));
-        } else {
-            Document doc = new Document("word", newWord)
-                    .append("IDF", Math.log(crawlerCollection.countDocuments() / (double) newWordPagesCnt))
-                    .append("pages", newWordPages);
-            wordsCollection.insertOne(doc);
+        synchronized (this) {
+            if (newWordPages == null) {
+                return;
+            }
+            Document filter = new Document("word", newWord);
+            FindIterable<Document> fi = wordsCollection.find(filter);
+            Iterator<Document> it = fi.iterator();
+            Boolean newWordExists = it.hasNext();
+            int newWordPagesCnt = newWordPages.size();
+            if (newWordExists) {
+                List<Document> prevWordPages = it.next().get("pages", List.class);
+                int prevWordPagesCnt = prevWordPages.size();
+                prevWordPages.addAll(newWordPages);
+                wordsCollection.findOneAndUpdate(filter, new Document("$set", new Document("word", newWord)
+                        .append("IDF", Math.log(crawlerCollection.countDocuments() / (double) newWordPagesCnt + prevWordPagesCnt))
+                        .append("pages", prevWordPages)));
+            } else {
+                Document doc = new Document("word", newWord)
+                        .append("IDF", Math.log(crawlerCollection.countDocuments() / (double) newWordPagesCnt))
+                        .append("pages", newWordPages);
+                wordsCollection.insertOne(doc);
+            }
         }
     }
 
