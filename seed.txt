@@ -9,3 +9,5 @@ https://www.amazon.com
 https://stackoverflow.com
 https://www.tutorialspoint.com
 https://codeforces.com
+https://medium.com
+https://www.merriam-webster.com

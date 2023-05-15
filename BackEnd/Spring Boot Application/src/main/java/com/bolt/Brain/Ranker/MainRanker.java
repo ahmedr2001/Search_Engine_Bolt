@@ -43,7 +43,6 @@ public class MainRanker {
         numberOfWordsOnEachPage = new HashMap<>();
         Calculate_Rank();
         Rank_Urls();
-//        for (String url : Ranked_Result_URLs) System.out.println(url);
         return Ranked_Results;
     }
 
@@ -52,14 +51,22 @@ public class MainRanker {
             calculate_TF_IDF(word_doc);
         }
     }
+    void addURLS(WordsDocument word_doc){
+        ArrayList<Page> pages = (ArrayList<Page>) word_doc.getPages();
+        Iterator<Page> pages_iterable = pages.iterator();
+        while (pages_iterable.hasNext()) {
+            Page page = pages_iterable.next();
+            double tf = (Double) page.getTF();
+            String url = (String) urlsService.findUrl(page.getUrlId())  ;
 
+        }
+    }
     void calculate_TF_IDF(WordsDocument word_doc) {
         double idf = (Double) word_doc.getIDF();
         ArrayList<Page> pages = (ArrayList<Page>) word_doc.getPages();
         Iterator<Page> pages_iterable = pages.iterator();
         while (pages_iterable.hasNext()) {
             Page page = pages_iterable.next();
-            System.out.println(page);
             double tf = (Double) page.getTF();
             String url = (String) urlsService.findUrl(page.getUrlId())  ;
             if(url == null) continue;
@@ -68,10 +75,10 @@ public class MainRanker {
             if (Page_Score.get(url) == null) {
                if(page.getParagraphIndexes().size() > 0 && page.getWordIndexes().size()>0)
                 insertReturnedData(url , page.getParagraphIndexes().get(0) , page.getWordIndexes().get(0));
-                Page_Score.put(url, TF_IDF+rank);
+                Page_Score.put(url, TF_IDF*(1+rank));
                 numberOfWordsOnEachPage.put(url, 1);
             } else {
-                Page_Score.put(url, Page_Score.get(url) + TF_IDF+rank);
+                Page_Score.put(url, Page_Score.get(url) + TF_IDF*(1+rank));
                 numberOfWordsOnEachPage.put(url, numberOfWordsOnEachPage.get(url) + 1);
             }
         }
@@ -86,6 +93,7 @@ public class MainRanker {
 
     void Rank_Urls() {
         Ranked_Result_URLs = Sorting.sortByValue(Page_Score);
+
         for(String url : Ranked_Result_URLs){
             Ranked_Results.add(Url_Document.get(url));
         }

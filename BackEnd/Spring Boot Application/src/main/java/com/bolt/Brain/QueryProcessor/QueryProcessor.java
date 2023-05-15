@@ -118,7 +118,7 @@ public class QueryProcessor {
         for(WordsDocument wDoc: results) {                                  //1. loop on word search results
             for(Page pg : wDoc.getPages()) {                                //2. loop on urls
                 List<Integer> paragraphIndexes = pg.getParagraphIndexes();
-                System.out.println("Before: " + paragraphIndexes.size());
+//                System.out.println("Before: " + paragraphIndexes.size());
                 for(int i = 0;i < paragraphIndexes.size();i++ ) {           //3. loop on p in url
                     Integer paragraphId = paragraphIndexes.get(i) ;
                     //3.1 if it already processed skip
@@ -134,14 +134,14 @@ public class QueryProcessor {
                         pg.getWordIndexes().remove(i);
                         pg.getTagTypes().remove(i);
                         i--; // to calibrate loop
-                        System.out.println("remove : \t" + paragraph);
+//                        System.out.println("remove : \t" + paragraph);
 
                     } else {
-                        System.out.println("play : \t" +paragraph + " " + paragraphId);
+//                        System.out.println("play : \t" +paragraph + " " + paragraphId);
 
                     }
                 }
-                System.out.println("After: " + paragraphIndexes.size());
+//                System.out.println("After: " + paragraphIndexes.size());
 
             }
         }
