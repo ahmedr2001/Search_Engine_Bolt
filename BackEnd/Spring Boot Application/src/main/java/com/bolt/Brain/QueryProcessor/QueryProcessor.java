@@ -7,6 +7,7 @@ import com.bolt.Brain.Utils.Tokenizer;
 import com.bolt.SpringBoot.*;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,6 +44,17 @@ public class QueryProcessor {
 
         List<WordsDocument> results = getWordsResult(words);    //2. get normal query results
         List<List<WordsDocument>> phrase_results = getPhraseResults(phrases);
+
+        for(List<WordsDocument> phrase_res: phrase_results) {
+            for(WordsDocument wDoc: phrase_res) {
+                for(Page pg: wDoc.getPages()) {
+                    for(Integer pix: pg.getParagraphIndexes()) {
+                        String paragraph = paragraphService.findParagraph(pix).getParagraph();
+                        System.out.println(pg.getUrlId() + " " + pix + ": " + paragraph);
+                    }
+                }
+            }
+        }
 
         if(results.size()  > 0 && phrase_results.size() > 0) {
             //TODO: combine two lists and return it
@@ -113,37 +125,40 @@ public class QueryProcessor {
         //get phrase results as normal
         List<WordsDocument> results = getWordsResult(phraseWordsStemming);
         // store processed paragraphs index so not process again
-        HashSet<Integer> pargraphIndexsStore = new HashSet<>();
+        HashMap<Integer, Boolean> pargraphIndexsStore = new HashMap<>();
 
-        for(WordsDocument wDoc: results) {                                  //1. loop on word search results
-            for(Page pg : wDoc.getPages()) {                                //2. loop on urls
+        Iterator<WordsDocument> iteratorWDoc = results.iterator();
+        while(iteratorWDoc.hasNext()) {                                  //1. loop on word search results
+            WordsDocument wDoc = iteratorWDoc.next();
+            Iterator<Page> iteratorPages = wDoc.getPages().iterator();
+            while(iteratorPages.hasNext()) {                                //2. loop on urls
+                Page pg = iteratorPages.next();
                 List<Integer> paragraphIndexes = pg.getParagraphIndexes();
-                System.out.println("Before: " + paragraphIndexes.size());
                 for(int i = 0;i < paragraphIndexes.size();i++ ) {           //3. loop on p in url
                     Integer paragraphId = paragraphIndexes.get(i) ;
                     //3.1 if it already processed skip
-                    if(pargraphIndexsStore.contains(paragraphId)) continue;
-                    else pargraphIndexsStore.add(paragraphId);
+                    if(pargraphIndexsStore.containsKey(paragraphId)) {
+                        if(!pargraphIndexsStore.get(paragraphId)) {
+                            removeParagraphData(pg, i);
+                            i--;
+                        }
+                        continue;
+                    }
 
                     String paragraph = paragraphService.findParagraph(paragraphId).getParagraph();
 
                     if(! wordsExistInParagraph(phrasePattern, paragraph)) {           // check pattern matcher
-                        //TODO: remove it
-                        pg.getTagIndexes().remove(i);
-                        pg.getParagraphIndexes().remove(i);
-                        pg.getWordIndexes().remove(i);
-                        pg.getTagTypes().remove(i);
+                        removeParagraphData(pg, i);
                         i--; // to calibrate loop
-                        System.out.println("remove : \t" + paragraph);
+                        pargraphIndexsStore.put(paragraphId, false);
 
-                    } else {
-                        System.out.println("play : \t" +paragraph + " " + paragraphId);
-
-                    }
+                    } else  pargraphIndexsStore.put(paragraphId, true);
                 }
-                System.out.println("After: " + paragraphIndexes.size());
-
+                if(pg.getParagraphIndexes().isEmpty())
+                    iteratorPages.remove();
             }
+            if(wDoc.getPages().isEmpty())
+                iteratorWDoc.remove();
         }
         return results;
     }
@@ -166,6 +181,13 @@ public class QueryProcessor {
     private boolean wordsExistInParagraph(Pattern pattern, String paragraph) {
         Matcher matcher = pattern.matcher(paragraph);
         return  matcher.matches();
+    }
+
+    private void removeParagraphData(Page pg, int i) {
+        pg.getTagIndexes().remove(i);
+        pg.getParagraphIndexes().remove(i);
+        pg.getWordIndexes().remove(i);
+        pg.getTagTypes().remove(i);
     }
 
 
