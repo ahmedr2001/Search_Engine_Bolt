@@ -9,22 +9,25 @@ import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javafx.util.Pair;
 
 import javax.print.Doc;
 
 
 public class WebIndexer {
-    static final int TH_SZ = 8;
-    static int elemNameIndex = -1;
+    static final int TH_SZ = 2;
     static int elemTextIndex = -1;
     mongoDB DB;
     private HashMap<String, Document> indexedUrls; //
-    static HashMap<String, List<Document>> indexedWords; // (Inverted File ) This stores for each word the documents that it was present in
+    private ConcurrentHashMap<String, List<Document>> indexedWords; // (Inverted File ) This stores for each word the documents that it was present in
 
     public WebIndexer(mongoDB db) {
-        indexedWords = new HashMap<String, List<Document>>();
         DB = db;
+        synchronized (this) {
+            elemTextIndex = DB.getNumOfIndexedParagraphs() - 1;
+        }
     }
 
     public void updateWordsCollection() throws InterruptedException {
@@ -33,6 +36,7 @@ public class WebIndexer {
             List<Thread> thArr = new ArrayList<Thread>();
             List<List<String>> keys = new ArrayList<List<String>>();
             public UpdateWordsCollection() throws InterruptedException {
+                System.out.printf("Unique words: %d\n",indexedWords.keySet().size());
                 for (int i = 0; i < TH_SZ; i++) {
                     keys.add(new ArrayList<String>());
                 }
@@ -73,45 +77,51 @@ public class WebIndexer {
             }
         }
         UpdateWordsCollection uDB = new UpdateWordsCollection();
-        System.out.println(indexedWords.keySet().size());
 //        for (String word : index.keySet()) {
 //            DB.addWord(word, index.get(word));
 //        }
 
     }
     public void updateUrlsCollection(String url){
-        Integer _id = indexedUrls.get(url).getInteger("_id");
-        String title = indexedUrls.get(url).getString("title");
-        DB.addIndexedUrl(_id, url, title);
+            Integer _id = indexedUrls.get(url).getInteger("_id");
+            String title = indexedUrls.get(url).getString("title");
+//        synchronized (this) {
+            DB.addIndexedUrl(_id, url, title);
+//        }
     }
 
     public void updateParagraphsCollection(String paragraph, Integer paragraphId) {
-        DB.addIndexedParagraph(paragraph, paragraphId);
+//        synchronized (this) {
+            DB.addIndexedParagraph(paragraph, paragraphId);
+//        }
     }
 
-    public void startIndexer(String body, String title, String url, Integer _id){
-        if (DB.isUrlIndexed(url)) {
+    public void startIndexer(String body, String title, String url, Integer _id) throws InterruptedException {
+        if (DB.isUrlIndexed(_id)) {
             System.out.println("Page already indexed");
             return;
         }
+        indexedWords = new ConcurrentHashMap<String, List<Document>>();
         indexedUrls = new HashMap<String, Document>();
         org.jsoup.nodes.Document pageDoc = Jsoup.parse(body);
         Elements allPageElems = pageDoc.getAllElements();
         List<Document> allWords = new ArrayList<>();
-        int localElemNameIndex, localElemTextIndex = 0;
+        int localElemTextIndex = 0, wordIndex;
         String paragraph = "";
+        String elemName = "", elemText, cleanElemText;
+        Cleaner cleaner;
+        Tokenizer tokenizer;
+        StopWordsRemover stopWordsRemover;
+        Stemmer stemmer;
+        List<String> elemWords, elemNoStopWords, finalElemWords;
         for (Element elem : allPageElems) {
-            String elemName = elem.nodeName();
+            elemName = elem.nodeName();
             if (elemName.equals("a")) {
                 continue;
             }
-            String elemText = elem.ownText();
+            elemText = elem.ownText();
             if (elemText.equals("")) {
                 continue;
-            }
-            synchronized (this) {
-                elemNameIndex++;
-                localElemNameIndex = elemNameIndex;
             }
             paragraph += elemText;
             paragraph += " ";
@@ -121,41 +131,44 @@ public class WebIndexer {
                     localElemTextIndex = elemTextIndex;
                 }
                 updateParagraphsCollection(paragraph, localElemTextIndex);
+                cleaner = new Cleaner() ;
+                cleanElemText = cleaner.runCleaner(paragraph);
+                // 3 -  Tokenization
+                tokenizer = new Tokenizer();
+                elemWords = tokenizer.runTokenizer(cleanElemText);
+
+                // 4 - Removing redundant words (Stop Words)
+                stopWordsRemover = new StopWordsRemover();
+                elemNoStopWords = stopWordsRemover.runStopWordsRemover(elemWords);
+    //        for(String word : words) System.out.println("Word: " + word);
+                stemmer = new Stemmer();
+                finalElemWords = stemmer.runStemmer(elemNoStopWords);
+                wordIndex = -1;
+                String originalWord;
+                Document elemNameDoc, elemTextDoc, wordDoc, allWordDoc;
+                for (String finalElemWord : finalElemWords) {
+                    wordIndex++;
+                    originalWord = elemNoStopWords.get(wordIndex);
+                    elemNameDoc = new Document();
+                    elemNameDoc.append("elemName", elemName);
+
+                    elemTextDoc = new Document();
+                    elemTextDoc.append("elemText", paragraph)
+                            .append("elemTextIndex", localElemTextIndex);
+
+                    wordDoc = new Document();
+                    wordDoc.append("word", finalElemWord)
+                            .append("originalWord", originalWord)
+                            .append("wordIndex", wordIndex);
+
+                    allWordDoc = new Document();
+                    allWordDoc.append("elemNameDoc", elemNameDoc)
+                            .append("elemTextDoc", elemTextDoc)
+                            .append("wordDoc", wordDoc);
+
+                    allWords.add(allWordDoc);
+                }
                 paragraph = "";
-            }
-            Cleaner cleaner = new Cleaner() ;
-            String cleanElemText = cleaner.runCleaner(elemText);
-            // 3 -  Tokenization
-            Tokenizer tokenizer = new Tokenizer();
-            List<String> elemWords = tokenizer.runTokenizer(cleanElemText);
-
-            // 4 - Removing redundant words (Stop Words)
-            StopWordsRemover stopWordsRemover = new StopWordsRemover();
-            List<String> elemNoStopWords = stopWordsRemover.runStopWordsRemover(elemWords);
-//        for(String word : words) System.out.println("Word: " + word);
-            Stemmer stemmer = new Stemmer();
-            List<String> finalElemWords = stemmer.runStemmer(elemNoStopWords);
-            Integer wordIndex = -1;
-            for (String finalElemWord : finalElemWords) {
-                wordIndex++;
-                Document elemNameDoc = new Document();
-                elemNameDoc.append("elemName", elemName)
-                        .append("elemNameIndex", localElemNameIndex);
-
-                Document elemTextDoc = new Document();
-                elemTextDoc.append("elemText", elemText)
-                        .append("elemTextIndex", localElemTextIndex);
-
-                Document wordDoc = new Document();
-                wordDoc.append("word", finalElemWord)
-                        .append("wordIndex", wordIndex);
-
-                Document allWordDoc = new Document();
-                allWordDoc.append("elemNameDoc", elemNameDoc)
-                        .append("elemTextDoc", elemTextDoc)
-                        .append("wordDoc", wordDoc);
-
-                allWords.add(allWordDoc);
             }
         }
         if (paragraph.length() > 0) {
@@ -164,6 +177,43 @@ public class WebIndexer {
                 localElemTextIndex = elemTextIndex;
             }
             updateParagraphsCollection(paragraph, localElemTextIndex);
+            cleaner = new Cleaner() ;
+            cleanElemText = cleaner.runCleaner(paragraph);
+            // 3 -  Tokenization
+            tokenizer = new Tokenizer();
+            elemWords = tokenizer.runTokenizer(cleanElemText);
+
+            // 4 - Removing redundant words (Stop Words)
+            stopWordsRemover = new StopWordsRemover();
+            elemNoStopWords = stopWordsRemover.runStopWordsRemover(elemWords);
+            //        for(String word : words) System.out.println("Word: " + word);
+            stemmer = new Stemmer();
+            finalElemWords = stemmer.runStemmer(elemNoStopWords);
+            wordIndex = -1;
+            String originalWord;
+            Document elemNameDoc, elemTextDoc, wordDoc, allWordDoc;
+            for (String finalElemWord : finalElemWords) {
+                wordIndex++;
+                originalWord = elemNoStopWords.get(wordIndex);
+                elemNameDoc = new Document();
+                elemNameDoc.append("elemName", elemName);
+
+                elemTextDoc = new Document();
+                elemTextDoc.append("elemText", paragraph)
+                        .append("elemTextIndex", localElemTextIndex);
+
+                wordDoc = new Document();
+                wordDoc.append("word", finalElemWord)
+                        .append("originalWord", originalWord)
+                        .append("wordIndex", wordIndex);
+
+                allWordDoc = new Document();
+                allWordDoc.append("elemNameDoc", elemNameDoc)
+                        .append("elemTextDoc", elemTextDoc)
+                        .append("wordDoc", wordDoc);
+
+                allWords.add(allWordDoc);
+            }
             paragraph = "";
         }
 
@@ -171,29 +221,29 @@ public class WebIndexer {
         HashMap<String, Document> wordDocMap = new HashMap<String, Document>();
         for (Document allWordDoc : allWords) {
             String tagType = allWordDoc.get("elemNameDoc", Document.class).getString("elemName");
-            Integer tagIndex = allWordDoc.get("elemNameDoc", Document.class).getInteger("elemNameIndex");
             Integer paragraphIndex = allWordDoc.get("elemTextDoc", Document.class).getInteger("elemTextIndex");
             String word = allWordDoc.get("wordDoc", Document.class).getString("word");
-            Integer wordIndex = allWordDoc.get("wordDoc", Document.class).getInteger("wordIndex");
+            String originalWord = allWordDoc.get("wordDoc", Document.class).getString("originalWord");
+            wordIndex = allWordDoc.get("wordDoc", Document.class).getInteger("wordIndex");
 
+            List<String> originalWordsArr = new ArrayList<String>();
             List<String> tagTypesArr = new ArrayList<String>();
-            List<Integer> tagIndexesArr = new ArrayList<Integer>();
             List<Integer> paragraphIndexesArr = new ArrayList<Integer>();
             List<Integer> wordIndexesArr = new ArrayList<Integer>();
             if (wordDocMap.containsKey(word)) {
+                originalWordsArr = wordDocMap.get(word).getList("originalWordsArr", String.class);
                 tagTypesArr = wordDocMap.get(word).getList("tagTypesArr", String.class);
-                tagIndexesArr = wordDocMap.get(word).getList("tagIndexesArr", Integer.class);
                 paragraphIndexesArr = wordDocMap.get(word).getList("paragraphIndexesArr", Integer.class);
                 wordIndexesArr = wordDocMap.get(word).getList("wordIndexesArr", Integer.class);
             }
 
+            originalWordsArr.add(originalWord);
             tagTypesArr.add(tagType);
-            tagIndexesArr.add(tagIndex);
             paragraphIndexesArr.add(paragraphIndex);
             wordIndexesArr.add(wordIndex);
             Document doc = new Document();
-            doc.append("tagTypesArr", tagTypesArr)
-                    .append("tagIndexesArr", tagIndexesArr)
+            doc.append("originalWordsArr", originalWordsArr)
+                    .append("tagTypesArr", tagTypesArr)
                     .append("paragraphIndexesArr", paragraphIndexesArr)
                     .append("wordIndexesArr", wordIndexesArr);
             if (wordDocMap.containsKey(word)) {
@@ -206,16 +256,16 @@ public class WebIndexer {
 
         for (String word : wordDocMap.keySet()) {
             double TF = wordDocMap.get(word).getInteger("TF") / (double) totalWords; // Normalized TF
+            List<String> originalWords = wordDocMap.get(word).getList("originalWordsArr", String.class);
             List<String> tagTypes = wordDocMap.get(word).getList("tagTypesArr", String.class);
-            List<Integer> tagIndexes = wordDocMap.get(word).getList("tagIndexesArr", Integer.class);
             List<Integer> paragraphIndexes = wordDocMap.get(word).getList("paragraphIndexesArr", Integer.class);
             List<Integer> wordIndexes = wordDocMap.get(word).getList("wordIndexesArr", Integer.class);
 
             Document doc = new Document();
             doc.append("urlId", _id)
+                    .append("originalWords", originalWords)
                     .append("TF", TF)
                     .append("tagTypes", tagTypes)
-                    .append("tagIndexes", tagIndexes)
                     .append("paragraphIndexes", paragraphIndexes)
                     .append("wordIndexes", wordIndexes);
 
@@ -238,6 +288,7 @@ public class WebIndexer {
                 .append("title", title);
         indexedUrls.put(url, urlDoc);
         updateUrlsCollection(url);
+        updateWordsCollection();
     }
 
 
