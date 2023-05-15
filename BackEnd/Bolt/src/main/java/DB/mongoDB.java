@@ -19,7 +19,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 public class mongoDB {
-    public static int MAX_PAGES_NUM = 1000;
+    public static int MAX_PAGES_NUM = 6000;
     private static MongoClient client;
     private static MongoDatabase DB;
     MongoCollection<Document> seedCollection;
@@ -131,8 +131,8 @@ public class mongoDB {
 
     // Indexing Functions
 
-    public boolean isUrlIndexed(Integer _id) {
-        return urlsCollection.find(new Document("_id", _id)).iterator().hasNext();
+    public boolean isUrlIndexed(String url) {
+        return urlsCollection.find(new Document("url", url)).iterator().hasNext();
     }
 
     public boolean isParagraphIndexed(Integer paragraphId) {
@@ -200,32 +200,25 @@ public class mongoDB {
     }
 
 
-    public void addIndexedWord(String newWord, List<Document> newWordPages) {
-        if (newWordPages == null) {
-            return;
-        }
-        Document filter = new Document("word", newWord);
+    public void addIndexedWord(String word, List<Document> wordPages) {
+        Document filter = new Document("word", word);
         FindIterable<Document> fi = wordsCollection.find(filter);
         Iterator<Document> it = fi.iterator();
-        Boolean newWordExists = it.hasNext();
-        int newWordPagesCnt = newWordPages.size();
-        if (newWordExists) {
-            List<Document> prevWordPages = it.next().get("pages", List.class);
-            int prevWordPagesCnt = prevWordPages.size();
-            prevWordPages.addAll(newWordPages);
-            wordsCollection.findOneAndUpdate(filter, new Document("$set", new Document("word", newWord)
-                    .append("IDF", Math.log(crawlerCollection.countDocuments() / (double) newWordPagesCnt + prevWordPagesCnt))
-                    .append("pages", prevWordPages)));
+        Boolean wordExists = it.hasNext();
+        if (wordExists) {
+            wordsCollection.findOneAndUpdate(filter, new Document("$set", new Document("word", word)
+                    .append("IDF", Math.log(crawlerCollection.countDocuments() / (double) wordPages.size()))
+                    .append("pages", wordPages)));
         } else {
-            Document doc = new Document("word", newWord)
-                    .append("IDF", Math.log(crawlerCollection.countDocuments() / (double) newWordPagesCnt))
-                    .append("pages", newWordPages);
+            Document doc = new Document("word", word)
+                    .append("IDF", Math.log(crawlerCollection.countDocuments() / (double) wordPages.size()))
+                    .append("pages", wordPages);
             wordsCollection.insertOne(doc);
         }
     }
 
     public void addIndexedUrl(Integer _id, String url, String title) {
-        Boolean pageExists = isUrlIndexed(_id);
+        Boolean pageExists = isUrlIndexed(url);
         if (!pageExists) {
             Document doc = new Document("_id", _id)
                     .append("url", url)
@@ -241,28 +234,12 @@ public class mongoDB {
 
     public void addIndexedParagraph(String paragraph, Integer paragraphId) {
         Boolean paragraphExists = isParagraphIndexed(paragraphId);
-        if (paragraphExists) {
-            Document filter = new Document("_id", paragraphId);
-            paragraphsCollection.findOneAndUpdate(filter, new Document("$set", new Document("_id", paragraphId)
-                    .append("paragraph", paragraph)));
-        } else {
+        if (!paragraphExists) {
             Document paragraphDoc = new Document();
             paragraphDoc.append("_id", paragraphId)
                     .append("paragraph", paragraph);
 
             paragraphsCollection.insertOne(paragraphDoc);
-        }
-    }
-
-    public int getNumOfIndexedParagraphs() {
-        synchronized (this) {
-            return (int) paragraphsCollection.countDocuments();
-        }
-    }
-
-    public int getNumberOfIndexedUrls() {
-        synchronized (this) {
-            return (int) urlsCollection.countDocuments();
         }
     }
 

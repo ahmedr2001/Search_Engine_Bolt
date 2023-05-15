@@ -20,12 +20,12 @@ public class MainIndexer {
     public static void runMainIndexer(mongoDB DB) throws InterruptedException {
         System.out.println(DB.getNumOfCrawledPages());
         class RunMainIndexer implements Runnable {
-            int cnt = (int) DB.getNumberOfIndexedUrls();
-            int batchSize = 10;
-            int iteration = cnt / batchSize - 1;
+            int cnt = 0;
+            int batchSize = 20;
+            int iteration = -1;
+            WebIndexer webIndexer = new WebIndexer(DB);
             List<Thread> thArr = new ArrayList<Thread>();
             public RunMainIndexer() throws InterruptedException {
-                System.out.printf("indexed pages: %d\n", cnt);
                 for (int i = 0; i < TH_SZ; i++) {
                     Thread th = new Thread(this);
                     String I = Integer.toString(i, 10);
@@ -39,8 +39,8 @@ public class MainIndexer {
                 for (Thread th : thArr) {
                     th.join();
                 }
+                webIndexer.updateWordsCollection();
             }
-            WebIndexer webIndexer = new WebIndexer(DB);
             public void run() {
                 try {
                     Iterator<Document> CrawledPagesCollection;
@@ -51,14 +51,12 @@ public class MainIndexer {
                         System.out.printf("Thread %s updating iteration first block, iteration = %d\n", Thread.currentThread().getName(), localIteration);
                     }
                     CrawledPagesCollection = DB.getCrawlerCollection(batchSize, localIteration).iterator();
-                    Document crawledPageDoc;
-                    String title, url, pageContent;
-                    Integer _id;
                     while (CrawledPagesCollection.hasNext()) {
-                        crawledPageDoc = CrawledPagesCollection.next();
-                        title = crawledPageDoc.getString("TITLE");
-                        url = crawledPageDoc.getString("URL");
-                        pageContent = crawledPageDoc.getString("BODY");
+                        Document crawledPageDoc = CrawledPagesCollection.next();
+                        String title = crawledPageDoc.getString("TITLE");
+                        String url = crawledPageDoc.getString("URL");
+                        String pageContent = crawledPageDoc.getString("BODY");
+                        Integer _id;
                         synchronized (this) {
                             cnt++;
                             _id = cnt;
