@@ -34,8 +34,6 @@ public class MainRanker {
     }
 
     public List<Document> runRanker() {
-        // Testing purpose --> Uncomment for testing
-//        RelatedDocuments = DB.getWordDocuments("cancel");
         if (RelatedDocuments == null) return null;
         Ranked_Result_URLs = new ArrayList<>();
         Page_Score = new HashMap<>();
@@ -43,7 +41,6 @@ public class MainRanker {
         numberOfWordsOnEachPage = new HashMap<>();
         Calculate_Rank();
         Rank_Urls();
-//        for (String url : Ranked_Result_URLs) System.out.println(url);
         return Ranked_Results;
     }
 
@@ -59,42 +56,46 @@ public class MainRanker {
         Iterator<Page> pages_iterable = pages.iterator();
         while (pages_iterable.hasNext()) {
             Page page = pages_iterable.next();
-//            System.out.println(page);
             double tf = (Double) page.getTF();
             String url = (String) urlsService.findUrl(page.getUrlId());
             if (url == null) continue;
             double rank = urlsService.findRank(url);
             double TF_IDF = idf * tf;
+            double score = 0 ;
             if (Page_Score.get(url) == null) {
-                if (page.getParagraphIndexes().size() > 0 && page.getWordIndexes().size() > 0)
-                    insertReturnedData(url, page.getParagraphIndexes().get(0), page.getWordIndexes().get(0));
-                Page_Score.put(url, TF_IDF + rank);
+                if (page.getParagraphIndexes().size() > 0 && page.getWordIndexes().size() > 0) {
+                    String title = insertReturnedData(url, page.getParagraphIndexes().get(0), page.getWordIndexes().get(0));
+                    if(Contains(title , word_doc.getWord()))  score = (1+rank); // Ranking by title
+                }
+                score += TF_IDF*(1+rank);
+                Page_Score.put(url,score);
                 numberOfWordsOnEachPage.put(url, 1);
             } else {
-                Page_Score.put(url, Page_Score.get(url) + TF_IDF + rank);
+                Page_Score.put(url, Page_Score.get(url) + TF_IDF * (rank+1));
                 numberOfWordsOnEachPage.put(url, numberOfWordsOnEachPage.get(url) + 1);
             }
         }
     }
+    boolean Contains(String title , String word){
+        return title.contains(word);
+    }
 
-    void insertReturnedData(String url, int paragraphIndex, int wordIndex) {
+    String insertReturnedData(String url, int paragraphIndex, int wordIndex) {
         Document doc = new Document().append("pIdx", paragraphIndex).append("wIdx", wordIndex);
         doc.append("url", url);
         String title = urlsService.getTitle(url);
         doc.append("title", title);
         Url_Document.put(url, doc);
+        return title;
     }
 
     void Rank_Urls() {
+        // Ranking by count of words present in the website
+        Page_Score.replaceAll((u, v) -> Page_Score.get(u) * numberOfWordsOnEachPage.get(u));
         Ranked_Result_URLs = Sorting.sortByValue(Page_Score);
         for (String url : Ranked_Result_URLs) {
             Ranked_Results.add(Url_Document.get(url));
         }
-        // Testing
-//        for(String url : Ranked_Result_URLs ) {
-//            System.out.println(url + "    :") ;
-//            System.out.println(Page_Score.get(url));
-//        }
     }
 
 }

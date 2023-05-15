@@ -43,7 +43,6 @@ public class PageRankAlgorithm {
         init();
         page_rank = new double[cnt] ;
         for (int i = 0 ; i<cnt ; i++){
-            System.out.println(i);
             addChildren(i);
         }
         InitialPageRank = 1 /(double)(cnt-1);
@@ -105,7 +104,6 @@ public class PageRankAlgorithm {
             adjList.get(idx).add(URL_ID.get(child_url));  // It means there is edge from parent to child
         }
         OutgoingLinks.add(adjList.get(idx).size()+1);
-        System.out.println(adjList.get(idx).size());
     }
     public org.jsoup.select.Elements getChildren(String url) {
             String body = DB.getUrlBody(url) ;

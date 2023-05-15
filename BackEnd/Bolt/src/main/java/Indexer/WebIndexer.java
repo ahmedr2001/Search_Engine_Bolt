@@ -36,7 +36,7 @@ public class WebIndexer {
             List<Thread> thArr = new ArrayList<Thread>();
             List<List<String>> keys = new ArrayList<List<String>>();
             public UpdateWordsCollection() throws InterruptedException {
-                System.out.printf("Unique words: %d\n",indexedWords.keySet().size());
+//                System.out.printf("Unique words: %d\n",indexedWords.keySet().size());
                 for (int i = 0; i < TH_SZ; i++) {
                     keys.add(new ArrayList<String>());
                 }
@@ -98,7 +98,7 @@ public class WebIndexer {
 
     public void startIndexer(String body, String title, String url, Integer _id) throws InterruptedException {
         if (DB.isUrlIndexed(_id)) {
-            System.out.println("Page already indexed");
+//            System.out.println("Page already indexed");
             return;
         }
         indexedWords = new ConcurrentHashMap<String, List<Document>>();
