@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class mongoDB {
     public static int MAX_PAGES_NUM = 6000  ;
@@ -216,9 +217,11 @@ public class mongoDB {
                 List<Document> prevWordPages = it.next().get("pages", List.class);
                 int prevWordPagesCnt = prevWordPages.size();
                 prevWordPages.addAll(newWordPages);
+                HashSet<Document> uniquePages = new HashSet<>();
+                uniquePages.addAll(prevWordPages);
                 wordsCollection.findOneAndUpdate(filter, new Document("$set", new Document("word", newWord)
                         .append("IDF", Math.log(crawlerCollection.countDocuments() / (double) newWordPagesCnt + prevWordPagesCnt))
-                        .append("pages", prevWordPages)));
+                        .append("pages", uniquePages)));
             } else {
                 Document doc = new Document("word", newWord)
                         .append("IDF", Math.log(crawlerCollection.countDocuments() / (double) newWordPagesCnt))
