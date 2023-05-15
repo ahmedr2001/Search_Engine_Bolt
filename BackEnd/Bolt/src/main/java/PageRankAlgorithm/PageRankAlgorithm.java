@@ -43,7 +43,6 @@ public class PageRankAlgorithm {
         init();
         page_rank = new double[cnt] ;
         for (int i = 0 ; i<cnt ; i++){
-            System.out.println(i);
             addChildren(i);
         }
         InitialPageRank = 1 /(double)(cnt-1);
@@ -58,18 +57,18 @@ public class PageRankAlgorithm {
         while (ITERATION_STEP-- >0) // Iterations
         {
             // Store the PageRank for All Nodes in Temporary Array
-            for ( k = 1; k < cnt; k++) {
+            for ( k = 0; k < cnt; k++) {
                 old_page_rank[k] = page_rank[k];
                 page_rank[k] = 0.0;
             }
             for (int internalNode = 0; internalNode < cnt; internalNode++) {
-                for( Integer externalNode : adjList.get(internalNode)){
+                for(Integer externalNode : adjList.get(internalNode)){
                     if(internalNode == externalNode) continue;
                     page_rank[internalNode] += old_page_rank[externalNode] * (1 / (double)OutgoingLinks.get(externalNode));
                 }
             }
             System.out.printf("\n After " + ITERATION_STEP + "th Step \n");
-            for (k = 1; k < cnt; k++)
+            for (k = 0; k < cnt; k++)
                 System.out.printf(" Page Rank of " + k + " is :\t" + page_rank[k] + "\n");
         }
         // Add the Damping Factor to PageRank
@@ -105,7 +104,6 @@ public class PageRankAlgorithm {
             adjList.get(idx).add(URL_ID.get(child_url));  // It means there is edge from parent to child
         }
         OutgoingLinks.add(adjList.get(idx).size()+1);
-        System.out.println(adjList.get(idx).size());
     }
     public org.jsoup.select.Elements getChildren(String url) {
             String body = DB.getUrlBody(url) ;

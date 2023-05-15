@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.print.Doc;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,9 +45,9 @@ public class WordsController {
     public ResponseEntity<List<Document>> search(@RequestParam String q) throws IOException {
         QueryProcessor queryProcessor = new QueryProcessor(crawlerService, wordsService, paragraphService);
         List<WordsDocument> RelatedDocuments = queryProcessor.run(q);
+//        return new ResponseEntity<List<WordsDocument>>(RelatedDocuments, HttpStatus.OK);
         MainRanker mainRanker = new MainRanker(RelatedDocuments, urlsService );
         List<Document>list = mainRanker.runRanker();
         return new ResponseEntity<List<Document>>(list, HttpStatus.OK);
-//        return new ResponseEntity<List<WordsDocument>>(service.findWords(q), HttpStatus.OK);
     }
 }
