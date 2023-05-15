@@ -42,7 +42,7 @@ public class QueryProcessor {
         // solve phrases of operands
         for(int i = 0;i < items.size(); i++) {
             if(!(items.get(i) instanceof WordItem || items.get(i) instanceof PhraseItem) ) {
-                items.get(i).executeOne(items, i);
+                items.get(i).execute(items, i);
                 i--;
             }
         }
@@ -99,14 +99,6 @@ public class QueryProcessor {
 
         return phrases;
     }
-    private String removePhraseFromQuery(String query, List<String> phrases) {
-        // This Code to remove phrase from query But I don't need it now
-        for (String phrase : phrases) {
-            query = query.replace("\"" + phrase + "\"", "").trim();
-        }
-        return query.replaceAll("\\s+", " ");
-    }
-
 
     private List<BooleanItem>  extractBooleanItem(String query) {
         List<BooleanItem> items = new ArrayList<>();
@@ -214,14 +206,7 @@ public class QueryProcessor {
     }
 
     // loop on phrases and get all results
-    private List<List<WordsDocument>> getPhraseResults(List<String> phrases) throws IOException {
-        List<List<WordsDocument>> phrase_results = new ArrayList<>();
-        for(String phrase : phrases) {
-            List<WordsDocument> single_phrase_result = getPhraseResult(phrase);
-            phrase_results.add(single_phrase_result);
-        }
-        return phrase_results;
-    }
+   
 
     private Pattern regexPatternPhrase(List<String> words) {
         String regex = ".*" + String.join(".*", words) + ".*";

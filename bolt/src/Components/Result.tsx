@@ -7,8 +7,6 @@ type Props = {
 };
 
 export default function Result({ res, paragraph }: Props) {
-	//console.log(res.paragraph.split(" ")[res.wIdx]);
-	console.log(paragraph);
 	return (
 		<div className=" flex flex-col gap-1 items-start">
 			<a href={res.url}>
@@ -19,7 +17,20 @@ export default function Result({ res, paragraph }: Props) {
 			<a className=" text-neutral-500 " href={res.url}>
 				{res.url}
 			</a>
-			{paragraph && <p className=" text-neutral-600 ">{paragraph}</p>}
+			{paragraph && (
+				<p className=" text-neutral-600 ">
+					{paragraph.split(" ").map((word, index) => {
+						if (index == res.wIdx)
+							return (
+								<span className=" text-3xl font-bold underline text-highlight">
+									{" "}
+									{word}{" "}
+								</span>
+							);
+						return word + " ";
+					})}
+				</p>
+			)}
 		</div>
 	);
 }
