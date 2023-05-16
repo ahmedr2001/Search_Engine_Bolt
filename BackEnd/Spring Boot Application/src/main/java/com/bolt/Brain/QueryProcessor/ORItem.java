@@ -14,16 +14,30 @@ public class ORItem extends BooleanItem{
     }
     @Override
     public void executeOne(List<BooleanItem> items, int index) throws IOException {
-        if(items.get(index - 1).getResults() == null) items.get(index-1).executeOne(items, index-1);
-        if(items.get(index + 1).getResults() == null) items.get(index+1).executeOne(items, index+1);
+        List<String> phraseWordsStemming1 = processQueryUnit.process(items.get(index - 1).getContent());
+        List<String> phraseWords1 = processQueryUnit.basicProcess(items.get(index - 1).getContent());
+
+        List<String> phraseWordsStemming2 = processQueryUnit.process(items.get(index + 1).getContent());
+        List<String> phraseWords2 = processQueryUnit.basicProcess(items.get(index + 1).getContent());
 
 
-        results = items.get(index - 1).getResults();
-        results.addAll(items.get(index - 1).getResults());
+        List<WordsDocument> basicRes = QueryProcessor.getWordsResult(phraseWordsStemming1);
+        basicRes.addAll(QueryProcessor.getWordsResult(phraseWordsStemming2));
+
+        results = QueryProcessor.runPhraseSearching(basicRes, getPattern(phraseWords1, phraseWords2));
 
         items.remove(index - 1);
         items.remove(index);
     }
+
+    @Override
+    public Pattern getPattern(List<String> phraseWords1, List<String> phraseWords2) {
+        String phraseWords1Regex = String.join(".*", phraseWords1);
+        String phraseWords2Regex = String.join(".*", phraseWords2);
+        ;
+        return  Pattern.compile("^(?=.*" + phraseWords1Regex + ")(|.*" + phraseWords2Regex + ").*$", Pattern.CASE_INSENSITIVE);
+    }
+
 
 
     public void executeSets(List<BooleanItem> items, int index) throws IOException {

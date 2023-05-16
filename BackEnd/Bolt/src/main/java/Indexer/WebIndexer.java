@@ -97,7 +97,7 @@ public class WebIndexer {
     }
 
     public void startIndexer(String body, String title, String url, Integer _id) throws InterruptedException {
-        if (DB.isUrlIndexed(_id)) {
+        if (DB.isUrlIndexed(url)) {
             System.out.println("Page already indexed");
             return;
         }

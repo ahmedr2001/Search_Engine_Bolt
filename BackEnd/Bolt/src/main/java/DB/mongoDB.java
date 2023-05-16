@@ -9,19 +9,13 @@ import com.mongodb.DBObject;
 import com.mongodb.client.*;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
-
-import javax.print.Doc;
 
 import static com.mongodb.client.model.Aggregates.set;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class mongoDB {
     public static int MAX_PAGES_NUM = 6000  ;
@@ -68,13 +62,11 @@ public class mongoDB {
                 Scanner cin = new Scanner(file);
                 while (cin.hasNextLine()) {
                     String url = cin.nextLine();
-                    if (WebCrawler.handleRobot("*", url, -1)) {
                         org.jsoup.nodes.Document jdoc = WebCrawler.getDocument(url);
                         if (jdoc != null) {
                             Document doc = new Document("URL", url).append("KEY", WebCrawler.toHexString(WebCrawler.getSHA(jdoc.body().toString()))).append("BODY", jdoc.body().toString()).append("TITLE", jdoc.title());
                             seedCollection.insertOne(doc);
                         }
-                    }
                 }
                 cin.close();
             } catch (Exception e) {
@@ -140,9 +132,9 @@ public class mongoDB {
 
     // Indexing Functions
 
-    public boolean isUrlIndexed(Integer _id) {
+    public boolean isUrlIndexed(String url) {
 //        synchronized (this) {
-            return urlsCollection.find(new Document("_id", _id)).iterator().hasNext();
+            return urlsCollection.find(new Document("url", url)).iterator().hasNext();
 //        }
     }
 
@@ -186,7 +178,9 @@ public class mongoDB {
         iterable.into(results);
         return results;
     }
-
+    public MongoCollection<Document> getUrlsCollection (){
+        return  urlsCollection;
+    }
     public List<Document> getWordDocuments(String search_word) {
         List<Document> results = new ArrayList<>();
 
@@ -250,7 +244,7 @@ public class mongoDB {
 
     public void addIndexedUrl(Integer _id, String url, String title) {
 //        synchronized (this) {
-            Boolean pageExists = isUrlIndexed(_id);
+            Boolean pageExists = isUrlIndexed(url);
             if (!pageExists) {
                 Document doc = new Document("_id", _id)
                         .append("url", url)
@@ -263,8 +257,16 @@ public class mongoDB {
         Document filter = new Document("url", url);
         urlsCollection.findOneAndUpdate(filter, new Document("$set", new Document("url", url)
                 .append("rank", page_rank)));
+//        String title =" " ;
+//        List<Document> docs = (List<Document>) urlsCollection.find(filter);
+//        for(Document doc:docs){
+//            filter = new Document("_id", doc.get("_id"));
+//            urlsCollection.findOneAndDelete(filter);
+//            title = doc.getString("title");
+//        }
+//        urlsCollection.insertOne(new Document("$set", new Document("url", url)
+//                .append("rank", page_rank).append("title",title)));
     }
-
     public void addIndexedParagraph(String paragraph, Integer paragraphId) {
         synchronized (this) {
             Boolean paragraphExists = isParagraphIndexed(paragraph, paragraphId);
