@@ -13,32 +13,31 @@ interface ErrorType {
 export default function ResultsList() {
 	const [query, isSeeingResults, setQuery] = useSearchParamQuery();
 	const [isLoading, setIsLoading] = useState(false);
-	const [results, setResults] = useState<resultType[]>([]);
+	const [results, setResults] = useState<resultType[] | null>(null);
 	const [paragrapgs, setParagraphs] = useState<Map<number, string>>();
 	const [error, setError] = useState("");
 	const [renderTime, setRenderTime] = useState(0);
 
 	const maxResultsPerPage = 10;
-	const totalPages = Math.ceil(results?.length / maxResultsPerPage);
+	const totalPages = results
+		? Math.ceil(results?.length / maxResultsPerPage)
+		: 1;
 	const [currentPage, setCurrentPage] = useState(1);
 	const startIndexResult = (currentPage - 1) * maxResultsPerPage;
-	const lastIndexResult = Math.min(
-		startIndexResult + maxResultsPerPage,
-		results?.length
-	);
+	const lastIndexResult = results
+		? Math.min(startIndexResult + maxResultsPerPage, results?.length)
+		: 0;
 	useEffect(() => {
 		const fetchParagraphs = async () => {
 			setIsLoading(true);
 
-			if (results && results.length == 0) {
-				setIsLoading(false);
-				return;
-			}
 			try {
 				// get paragraph indexes that i want
 				const pixs = results
-					.slice(startIndexResult, lastIndexResult)
-					?.map((r) => r.pIdx);
+					? results
+							.slice(startIndexResult, lastIndexResult)
+							?.map((r) => r.pIdx)
+					: [];
 				//get data
 				const parag_res = await fetch(
 					`http://localhost:8080/search/p?pids=${pixs.join(",")}`
@@ -102,7 +101,8 @@ export default function ResultsList() {
 						About {results?.length} resutls in (
 						{(renderTime / 1000).toPrecision(2)} in seconds)
 					</div>
-					{results.length > 0 &&
+					{results &&
+						results.length > 0 &&
 						results
 							?.slice(startIndexResult, lastIndexResult)
 							.map((res: resultType, index) => {
