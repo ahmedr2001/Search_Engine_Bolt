@@ -30,6 +30,10 @@ export default function ResultsList() {
 		const fetchParagraphs = async () => {
 			setIsLoading(true);
 
+			if (results && results.length == 0) {
+				setIsLoading(false);
+				return;
+			}
 			try {
 				// get paragraph indexes that i want
 				const pixs = results
@@ -98,17 +102,18 @@ export default function ResultsList() {
 						About {results?.length} resutls in (
 						{(renderTime / 1000).toPrecision(2)} in seconds)
 					</div>
-					{results
-						?.slice(startIndexResult, lastIndexResult)
-						.map((res: resultType, index) => {
-							return (
-								<Result
-									key={index}
-									res={res}
-									paragraph={paragrapgs?.get(res.pIdx)!}
-								/>
-							);
-						})}
+					{results.length > 0 &&
+						results
+							?.slice(startIndexResult, lastIndexResult)
+							.map((res: resultType, index) => {
+								return (
+									<Result
+										key={index}
+										res={res}
+										paragraph={paragrapgs?.get(res.pIdx)!}
+									/>
+								);
+							})}
 				</div>
 				<Pagination
 					setCurrentPage={setCurrentPage}

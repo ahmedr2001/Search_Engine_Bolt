@@ -3,7 +3,7 @@
 	"private": true,
 	"version": "0.0.0",
 	"type": "module",
-	"homepage": "https://github.com/AhmedZahran02/Search_Engine_Bolt/",
+	"homepage": "https://ahmedzahran02.github.io/Search_Engine_Bolt",
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc && vite build",
