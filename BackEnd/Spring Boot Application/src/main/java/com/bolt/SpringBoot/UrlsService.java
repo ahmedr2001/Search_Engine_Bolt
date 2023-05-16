@@ -32,14 +32,14 @@ public class UrlsService {
     }
 
     public Double findRank(String url) {
-        if (repository.findByUrl(url).isPresent()){
-            return repository.findByUrl(url).get().getRank();
+        if (repository.findByUrl(url).size() >= 1){
+            return repository.findByUrl(url).get(0).getRank();
         }
         return null;
     }
     public String getTitle(String url){
-        if (repository.findByUrl(url).isPresent()){
-            return repository.findByUrl(url).get().getTitle();
+        if (repository.findByUrl(url).size() >= 1){
+            return repository.findByUrl(url).get(0).getTitle();
         }
         return null;
     }

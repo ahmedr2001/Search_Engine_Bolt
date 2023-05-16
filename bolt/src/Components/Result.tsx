@@ -12,11 +12,20 @@ export default function Result({ res, paragraph }: Props) {
 	const [query, isSeeingResults, setQuery] = useSearchParamQuery();
 	let wordIndexes: number[] = [];
 
+	const isH: (x: string) => boolean = (wordP: string) => {
+		const newQuery = query.replaceAll('"', " ").toLowerCase().split(" ");
+		for (let i = 0; i < newQuery.length; i++) {
+			if (newQuery[i] == '"' || newQuery[i] == "") continue;
+			if (wordP.toLowerCase().startsWith(newQuery[i].toLowerCase()))
+				return true;
+		}
+		return false;
+	};
 	return (
 		<div className=" flex flex-col gap-1 items-start">
 			<a href={res.url}>
 				<h3 className=" font-bold text-lg hover:underline text-highlight">
-					{res.title}
+					{res.title == "" ? res.url : res.title}
 				</h3>
 			</a>
 			<a className=" text-neutral-500 " href={res.url}>
@@ -24,14 +33,8 @@ export default function Result({ res, paragraph }: Props) {
 			</a>
 			{paragraph && (
 				<p className=" text-neutral-600 ">
-					{paragraph.split(" ").map((word, index) => {
-						if (
-							query
-								.replaceAll('"', " ")
-								.toLowerCase()
-								.split(" ")
-								.includes(word.toLowerCase())
-						) {
+					{paragraph.split(" ").map((word: string, index) => {
+						if (isH(word)) {
 							return (
 								<span className="text-xl font-bold" key={index}>
 									{" "}
