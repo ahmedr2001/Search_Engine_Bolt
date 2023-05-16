@@ -147,22 +147,11 @@ public class QueryProcessor {
     }
 
     public static List<WordsDocument> getWordResult(String word) {
+
         return wordsService.findWords(word);
     }
 
-    // get results for one phrase
-    private List<WordsDocument> getPhraseResult(String phrase) throws IOException {
-        List<String> phraseWordsStemming = processQueryUnit.process(phrase);
-        List<String> phraseWords = processQueryUnit.basicProcess(phrase);
 
-        Pattern phrasePattern = regexPatternPhrase(phraseWords);
-        //get phrase results as normal
-        List<WordsDocument> results = getWordsResult(phraseWordsStemming);
-        // store processed paragraphs index so not process again
-
-        return runPhraseSearching(results, phrasePattern);
-
-    }
 
 
 

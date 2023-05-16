@@ -1,5 +1,7 @@
 import React from "react";
 import resultType from "../types/resultType";
+import useSearchParamQuery from "../hooks/useSearchParamQuery";
+import { useEffect } from "react";
 
 type Props = {
 	res: resultType;
@@ -7,6 +9,9 @@ type Props = {
 };
 
 export default function Result({ res, paragraph }: Props) {
+	const [query, isSeeingResults, setQuery] = useSearchParamQuery();
+	let wordIndexes: number[] = [];
+
 	return (
 		<div className=" flex flex-col gap-1 items-start">
 			<a href={res.url}>
@@ -20,14 +25,26 @@ export default function Result({ res, paragraph }: Props) {
 			{paragraph && (
 				<p className=" text-neutral-600 ">
 					{paragraph.split(" ").map((word, index) => {
-						if (index == res.wIdx)
+						if (
+							query
+								.replaceAll('"', " ")
+								.toLowerCase()
+								.split(" ")
+								.includes(word.toLowerCase())
+						) {
 							return (
-								<span className=" text-xl font-bold  ">
+								<span className="text-xl font-bold" key={index}>
 									{" "}
 									{word}{" "}
 								</span>
 							);
-						return word + " ";
+						}
+						return (
+							<span className="text-neutral-600" key={index}>
+								{" "}
+								{word}{" "}
+							</span>
+						);
 					})}
 				</p>
 			)}

@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface SearchHistoryRespository extends MongoRepository<SearchHistoryDocument, ObjectId> {
-    List<SearchHistoryDocument> findAll();
+    List<SearchHistoryDocument> findAllByOrderByVisitedDesc();
 
     default SearchHistoryDocument increaseByBody(String body) {
         SearchHistoryDocument document = findOneByBody(body);

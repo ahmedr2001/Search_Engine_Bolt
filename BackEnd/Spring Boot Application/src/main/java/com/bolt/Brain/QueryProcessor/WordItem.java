@@ -11,6 +11,7 @@ public class WordItem extends BooleanItem {
     }
     @Override
     public void executeOne(List<BooleanItem> items, int index) throws IOException {
-        results = QueryProcessor.getWordResult(content);
+        List<String> w = processQueryUnit.process(content);
+        results = QueryProcessor.getWordResult(w.get(0));
     }
 }

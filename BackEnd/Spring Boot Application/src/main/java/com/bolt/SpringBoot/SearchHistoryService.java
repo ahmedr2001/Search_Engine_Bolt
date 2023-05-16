@@ -18,7 +18,7 @@ public class SearchHistoryService {
     }
 
     public List<SearchHistoryDocument> allResults() {
-        return repository.findAll();
+        return repository.findAllByOrderByVisitedDesc();
     }
 
     public void increaseCount(String body) {
