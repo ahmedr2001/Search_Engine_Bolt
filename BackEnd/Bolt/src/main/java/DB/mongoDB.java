@@ -28,6 +28,7 @@ public class mongoDB {
     private static MongoClient client;
     private static MongoDatabase DB;
     MongoCollection<Document> seedCollection;
+    MongoCollection<Document> searchHistoryCollection;
     MongoCollection<Document> crawlerCollection;
     MongoCollection<Document> wordsCollection;
 
@@ -46,6 +47,7 @@ public class mongoDB {
         wordsCollection = DB.getCollection("WordsCollection");
         paragraphsCollection = DB.getCollection("ParagraphsCollection");
         urlsCollection = DB.getCollection("URLsCollection");
+        searchHistoryCollection = DB.getCollection("SearchHistoryCollection");
 //            crawlerCollection.drop();
 //            seedCollection.drop();
         //} else {

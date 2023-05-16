@@ -9,23 +9,43 @@ import Logo from "./Components/Logo";
 import useSearchParamQuery from "./hooks/useSearchParamQuery";
 import ResultsList from "./Components/ResultsList";
 
+export type historyItem = {
+	body: string;
+	visited: number;
+};
 export default function App() {
 	const [query, isSeeingResults, setQuery] = useSearchParamQuery();
 
+	const [searchHistoryList, setSearchHistoryList] = useState<historyItem[]>(
+		[]
+	);
 	const [isSearching, setIsSearching] = useState(false);
 	const [txt, setText] = useState("");
 	const [isFocused, setIsFocused] = useState(false);
 	const [isMouseInside, setIsMouseInside] = useState(false);
 
+	const fetchingHistory = async () => {
+		try {
+			const res = await fetch("http://localhost:8080/search/history");
+			const data: historyItem[] = await res.json();
+			console.log(data);
+			setSearchHistoryList(data);
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
 	const inputRef = useRef<HTMLInputElement>(null);
 	useEffect(() => {
 		applyTheme(dark);
+		fetchingHistory();
 	}, []);
 
 	useEffect(() => {
 		if (isSeeingResults()) {
 			addSearchQueryToHistory(query);
 		}
+		fetchingHistory();
 	}, [query]);
 
 	return (
@@ -58,6 +78,7 @@ export default function App() {
 								setText={setText}
 								inputRef={inputRef}
 								setIsMouseInside={setIsMouseInside}
+								searchHistoryList={searchHistoryList}
 							/>
 						)}
 					</div>
