@@ -1,14 +1,14 @@
 <br />
 <br />
 <p align="center">
-  <a href="https://github.com/shadyfahmy/SearchEngine">
-    <img src="readme_images/spidey.png" alt="Logo" width="125" height="125">
+  <a href="https://github.com/ahmedr2001/Search_Engine_Bolt">
+    <img src="bolt/src/assets/Vector.png" alt="Logo" width="125" height="125">
   </a>
   
-  <h3 align="center">:spider: Spidey :spider_web:</h3>
+  <h3 align="center">:zap: Bolt :zap:</h3>
 
   <p align="center">
-    Fully working search engine which can search by text or voice for webpages or images, it also has its own crawler, indexer, ranker, query engine and UI
+    Fully working search engine which can search by text or voice for webpages, it also has its own crawler, indexer, ranker that implements Google's Page Rank algorithm, query engine and UI
   </p>
 </p>
 
@@ -16,11 +16,11 @@
 
 <div align="center">
 
-[![GitHub issues](https://img.shields.io/github/contributors/shadyfahmy/SearchEngine)](https://github.com/shadyfahmy/SearchEngine/contributors)
-[![GitHub issues](https://img.shields.io/github/issues/shadyfahmy/SearchEngine)](https://github.com/shadyfahmy/SearchEngine/issues)
-[![GitHub forks](https://img.shields.io/github/forks/shadyfahmy/SearchEngine)](https://github.com/shadyfahmy/SearchEngine/network)
-[![GitHub stars](https://img.shields.io/github/stars/shadyfahmy/SearchEngine)](https://github.com/shadyfahmy/SearchEngine/stargazers)
-[![GitHub license](https://img.shields.io/github/license/shadyfahmy/SearchEngine)](https://github.com/shadyfahmy/SearchEngine/blob/master/LICENSE)
+[![GitHub issues](https://img.shields.io/github/contributors/ahmedr2001/Search_Engine_Bolt)](https://github.com/ahmedr2001/Search_Engine_Bolt/contributors)
+[![GitHub issues](https://img.shields.io/github/issues/ahmedr2001/Search_Engine_Bolt)](https://github.com/ahmedr2001/Search_Engine_Bolt/issues)
+[![GitHub forks](https://img.shields.io/github/forks/ahmedr2001/Search_Engine_Bolt)](https://github.com/ahmedr2001/Search_Engine_Bolt/network)
+[![GitHub stars](https://img.shields.io/github/stars/ahmedr2001/Search_Engine_Bolt)](https://github.com/ahmedr2001/Search_Engine_Bolt/stargazers)
+[![GitHub license](https://img.shields.io/github/license/ahmedr2001/Search_Engine_Bolt)](https://github.com/ahmedr2001/Search_Engine_Bolt/blob/main/LICENSE)
 
 </div>
 
@@ -28,14 +28,17 @@
 
 - [java](https://www.java.com)
 - [javac](https://docs.oracle.com/javase/8/docs/technotes/tools/windows/javac.html)
-- [mysql-server](https://dev.mysql.com)
+- [mongodb-driver-sync](https://www.mongodb.com/docs/drivers/java/sync/current/)
 - [Nodejs](https://nodejs.org)
 - [npm](https://www.npmjs.com)
-- [angular-cli](https://angular.io/cli)
+- [vite](https://vitejs.dev/)
+- [Spring Boot](https://spring.io/projects/spring-boot/)
+- [Java Servlet](https://docs.oracle.com/javaee/5/tutorial/doc/bnafe.html)
 
-# :package: [Libraries](/lib)
+# :package: Libraries
 
 - [jsoup](https://jsoup.org)
+- [porter-stemmer](https://mvnrepository.com/artifact/ca.rmen/porter-stemmer/1.0.0)
 - [jfreechart](http://www.jfree.org/jfreechart/)
 - [lucene-snowball](http://www.java2s.com/Code/Jar/a/Downloadapachelucenesnowballjar.htm)
 - [mysql-connector-java](https://dev.mysql.com/downloads/connector/j/5.1.html)
@@ -43,135 +46,87 @@
 
 # :pencil: Modules
 
-- [Crawler](/src/crawler)
-- [Indexer](/src/indexer)
-- [Ranker](/src/ranker/)
-  - [Page Ranker](/src/ranker/PageRanker.java)
-  - [Query Results Fetcher](/src/ranker/QueryResultsFetcher.java)
-- [Query Engine](/query_processor)
-- [Performace Analysis](/src/performance_analysis)
-- [DataBase Manager](/src/database_manager)
-- [UI](/front_end)
+- [Crawler](/BackEnd/Bolt/src/main/java/Crawler)
+- [Indexer](/BackEnd/Bolt/src/main/java/Indexer)
+- Ranker
+  - [Page Rank Algorithm](/BackEnd/Bolt/src/main/java/PageRankAlgorithm)
+  - [Main Ranker](/BackEnd/Spring&nbsp;Boot&nbsp;Application/src/main/java/com/bolt/Brain/Ranker)
+- [Query Engine](/BackEnd/Spring&nbsp;Boot&nbsp;Application/src/main/java/com/bolt/Brain/QueryProcessor)
+- [DataBase Manager](/BackEnd/Bolt/src/main/java/DB)
+- [UI](/bolt)
+- [Backend](/BackEnd/Spring&nbsp;Boot&nbsp;Application/src/main/java/com/bolt/SpringBoot)
 
 # :rocket: Running Main Modules
 
 1. Clone using vesion control using any IDE ,e.g: [IntelliJ IDEA](https://www.jetbrains.com/help/idea/set-up-a-git-repository.html)
-2. Install mysql server
-   `sudo apt-get install mysql-server`
-3. Login to root user
-   `sudo mysql -u root -p`
-4. Create new user named admin with admin password
-   `CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';`
-5. Grant all privileges to user **admin** on **test_search_egnine** database
-   `GRANT ALL PRIVILEGES ON test_search_engine.* TO 'admin'@'localhost';`
-6. Run [Create Database](/src/database_manager/CreateDatabase.java)
-7. Run [Crawler](/src/crawler/Crawler.java) (preferred to wait 5 minutes before moving to the next step)
-8. Run [Indexer](/src/indexer/Indexer.java)
-9. Run [Query Processor](/query_processor/src/main/java/com/search/queryprocessor/QueryprocessorApplication.java) (wait until it lauches to move to the next step)
-10. Run [Performance Analysis](/src/performance_analysis/PerformanceAnalysis.java)
+2. [Install mongodb](https://www.mongodb.com/docs/manual/installation/)
+3. [Install mongodb compass](https://www.mongodb.com/docs/compass/master/install/)
+4. Connect to `mongodb://localhost:27017`
+5. Run [Crawler](/BackEnd/Bolt/src/main/java/Crawler/Main.java)
+6. Run [Indexer](/BackEnd/Bolt/src/main/java/Indexer/MainIndexer.java)
+7. Run [Page Rank Algorithm](/BackEnd/Bolt/src/main/java/PageRankAlgorithm/PageRankAlgorithm.java)
 
-# :art: Running Front-End
-
-1. Run [Query Processor](/query_processor/src/main/java/com/search/queryprocessor/QueryprocessorApplication.java) (wait until it lauches to move to the next step)
-2. Open front end folder
-   `cd front_end/`
-3. Install packages
-   `npm install`
-4. Run `ng serve` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files
-
-:memo: Note: use google chrome because we use its API in speech recognition.
-
-# :chart_with_upwards_trend: Analysis
-
-## Analysis with 500 pages
-
-This analysis has been made with this parameters using [Performance Analysis](/src/performance_analysis/PerformanceAnalysis.java) module
-
-```
-public static final int MAX_WEBSITES = 500;
-public final static int SECONDS_TO_SLEEP = 5;
-```
-
-### 1. How many simultaneous search requests can your solution handle?
-
-![Max Number Of Simultaneous Search Requet](readme_images/max_num_sim_search_requests_500.png)
-
-### 2. How is the latency of your solution affected by the number of simultaneous search requests?
-
-![Latency VS Simultaneous Search Requests](readme_images/latency_vs_sim_num_requests_500.png)
-
-### 3. How is the search request latency of your solution affected by the number of web pages crawled?
-
-![Latency VS Number Of Web pages Crawled](readme_images/latency_vs_crawled_num_500.png)
-
-### 4. How is the search request latency of your solution affected by the size of the index table?
-
-![Latency VS Size Of The Index Table](readme_images/latency_vs_indexed_num_500.png)
-
-### 5. How is the search request latency of your solution affected by the ranking process?
-
-![Latency VS Number Of KeyWords Of The Ranking Process](readme_images/latency_vs_num_keywords_500.png)
-
-## Analysis with 5000 pages
-
-This analysis has been made with this parameters using [Performance Analysis](/src/performance_analysis/PerformanceAnalysis.java) module
-
-```
-public static final int MAX_WEBSITES = 5000;
-public final static int SECONDS_TO_SLEEP = 120;
-```
-
-### 1. How many simultaneous search requests can your solution handle?
-
-![Max Number Of Simultaneous Search Requet](readme_images/max_num_sim_search_requests_5000.png)
-
-### 2. How is the latency of your solution affected by the number of simultaneous search requests?
-
-![Latency VS Simultaneous Search Requests](readme_images/latency_vs_sim_num_requests_5000.png)
-
-### 3. How is the search request latency of your solution affected by the number of web pages crawled?
-
-![Latency VS Number Of Web pages Crawled](readme_images/latency_vs_crawled_num_5000.png)
-
-### 4. How is the search request latency of your solution affected by the size of the index table?
-
-![Latency VS Size Of The Index Table](readme_images/latency_vs_indexed_num_5000.png)
-
-### 5. How is the search request latency of your solution affected by the ranking process?
-
-![Latency VS Number Of KeyWords Of The Ranking Process](readme_images/latency_vs_num_keywords_5000.png)
+# :rocket: Running Web App
+1. Run [Backend](/BackEnd/Spring&nbsp;Boot&nbsp;Application/src/main/java/com/bolt/SpringBoot/Root.java)
+2. Run Frontend
+    - Go to `/bolt` then open a terminal and type `npm run dev`
+3. Go to `localhost:5173`
 
 # :fire: Spidey On The Action
 
 ## Search By Text
 
-![Search By Text Test GIF](readme_images/search_text_test_1.gif)
+![search_by_text](https://github.com/ahmedr2001/Search_Engine_Bolt/assets/77215230/29b58125-7d7c-4a7c-93f4-72717a982112)
+
 
 ## Navigate Result Pages
 
-![Search By Text Test GIF](readme_images/pages_test.gif)
+![Navigate Result Pages](https://github.com/ahmedr2001/Search_Engine_Bolt/assets/77215230/112bec77-1d6b-4a68-9341-7b6d4b605a88)
+
 
 ## Search By Voice
 
-![Search By Voice Test GIF](readme_images/voice_test.gif)
+![Navigate Result Pages](https://github.com/ahmedr2001/Search_Engine_Bolt/assets/77215230/784e76b8-8ef6-47a2-a8a7-f144865c0521)
 
-## Search For Images
 
-![Search For Images Test GIF](readme_images/search_image_test.gif)
+## Themes
 
-## Night Mode
+![Themes](https://github.com/ahmedr2001/Search_Engine_Bolt/assets/77215230/2be82495-08b4-433a-bfeb-67837b7e32ec)
 
-![Night Mode Test GIF](readme_images/nightmode_test.gif)
+## Phrase Searching
+
+![phrase searching 1](https://github.com/ahmedr2001/Search_Engine_Bolt/assets/77215230/7a921ff5-b553-4a1a-b17c-165986594817)
+![phrase searching 2](https://github.com/ahmedr2001/Search_Engine_Bolt/assets/77215230/d22df332-462e-4d2a-95cb-1e56e28fc1ab)
+
 
 # :copyright: Developers
 
-<center>
-  
-| Name                                |              Email               |
-| ----------------------------------- | :------------------------------: |
-| Abdulrahman Khalid Hassan           | abdulrahman.elshafei98@gmail.com |
-| Shady Fahmy Abd Elhafez             |       Shadyfahmy67@gmail.com     |
-| AbdElRahman Muhammad Ahmad ElGamil  |     abdurrumanmohamed@gmail.com  |
-| Yosry Mohammad Yosry                |         yosrym93@gmail.com       |
-
-</center>
+<table>
+  <tr>
+    <td align="center">
+    <a href="https://github.com/ahmedr2001" target="_black">
+    <img src="https://github.com/ahmedr2001.png" width="150px;" alt="Ahmed Abdelatty"/>
+    <br />
+    <sub><b>Ahmed Abdelatty</b></sub></a>
+    </td>
+    <td align="center">
+    <a href="https://github.com/AhmedZahran02" target="_black">
+    <img src="https://github.com/AhmedZahran02.png" width="150px;" alt="Ahmed Zahran"/>
+    <br />
+    <sub><b>Ahmed Zahran</b></sub></a>
+    </td>
+    <td align="center">
+    <a href="https://github.com/AhmedOsama198" target="_black">
+    <img src="https://github.com/AhmedOsama198.png" width="150px;" alt="Ahmed Osama Helmy"/>
+    <br />
+    <sub><b>Ahmed Osama Helmy</b></sub></a>
+    </td>
+    <td align="center">
+    <a href="https://github.com/aliaagheisX" target="_black">
+    <img src="https://github.com/aliaagheisX.png" width="150px;" alt="Aliaa Gheis"/>
+    <br />
+    <sub><b>Aliaa Gheis</b></sub></a>
+    </td>
+    </td>
+    </tr>
+ </table>
