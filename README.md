@@ -46,7 +46,7 @@
 - [Indexer](/BackEnd/Bolt/src/main/java/Indexer)
 - Ranker
   - [Page Rank Algorithm](/BackEnd/Bolt/src/main/java/PageRankAlgorithm)
-  - [Main Ranker](/BackEnd/Spring&nbsp;Boot&nbsp;Application/src/main/java/com/bolt/Brain/Ranker)
+  - [Main Ranker](</BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/Ranker>)
 - [Query Engine](/BackEnd/Spring&nbsp;Boot&nbsp;Application/src/main/java/com/bolt/Brain/QueryProcessor)
 - [DataBase Manager](/BackEnd/Bolt/src/main/java/DB)
 - [UI](/bolt)
