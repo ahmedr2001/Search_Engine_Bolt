@@ -39,10 +39,6 @@
 
 - [jsoup](https://jsoup.org)
 - [porter-stemmer](https://mvnrepository.com/artifact/ca.rmen/porter-stemmer/1.0.0)
-- [jfreechart](http://www.jfree.org/jfreechart/)
-- [lucene-snowball](http://www.java2s.com/Code/Jar/a/Downloadapachelucenesnowballjar.htm)
-- [mysql-connector-java](https://dev.mysql.com/downloads/connector/j/5.1.html)
-- [progressbar](http://www.java2s.com/Code/Jar/p/Downloadprogressbar14171jar.htm)
 
 # :pencil: Modules
 
