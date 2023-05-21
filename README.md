@@ -47,10 +47,10 @@
 - Ranker
   - [Page Rank Algorithm](/BackEnd/Bolt/src/main/java/PageRankAlgorithm)
   - [Main Ranker](</BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/Ranker>)
-- [Query Engine](/BackEnd/Spring&nbsp;Boot&nbsp;Application/src/main/java/com/bolt/Brain/QueryProcessor)
+- [Query Engine](</BackEnd/Spring Boot Application/src/main/java/com/bolt/Brain/QueryProcessor>)
 - [DataBase Manager](/BackEnd/Bolt/src/main/java/DB)
 - [UI](/bolt)
-- [Backend](/BackEnd/Spring&nbsp;Boot&nbsp;Application/src/main/java/com/bolt/SpringBoot)
+- [Backend](</BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot>)
 
 # :rocket: Running Main Modules
 
@@ -63,7 +63,7 @@
 7. Run [Page Rank Algorithm](/BackEnd/Bolt/src/main/java/PageRankAlgorithm/PageRankAlgorithm.java)
 
 # :rocket: Running Web App
-1. Run [Backend](/BackEnd/Spring&nbsp;Boot&nbsp;Application/src/main/java/com/bolt/SpringBoot/Root.java)
+1. Run [Backend](</BackEnd/Spring Boot Application/src/main/java/com/bolt/SpringBoot/Root.java>)
 2. Run Frontend
     - Go to `/bolt` then open a terminal and type `npm run dev`
 3. Go to `localhost:5173`
