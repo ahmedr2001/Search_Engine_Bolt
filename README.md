@@ -68,7 +68,7 @@
     - Go to `/bolt` then open a terminal and type `npm run dev`
 3. Go to `localhost:5173`
 
-# :fire: Spidey On The Action
+# :fire: Bolt On The Action
 
 ## Search By Text
 
