@@ -5,7 +5,7 @@
     <img src="bolt/src/assets/Vector.png" alt="Logo" width="125" height="125">
   </a>
   
-  <h3 align="center">:zap: Bolt :zap:</h3>
+  <h3 align="center">⚡ Bolt ⚡</h3>
 
   <p align="center">
     Fully working search engine which can search by text or voice for webpages, it also has its own crawler, indexer, ranker that implements Google's Page Rank algorithm, query engine and UI
